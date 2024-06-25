@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 12:02:23 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/25 16:27:50 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,5 @@ int main(int ac, char **av)
 		std::cerr << "Usage: " << av[0] << " <port> <password>" << std::endl;
 		return 1;
 	}
-	int fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd == -1)
-	{
-		std::cerr << "Error: socket creation failed" << std::endl;
-		return 1;
-	}
+	Server server(av[1], av[2]);
 }
