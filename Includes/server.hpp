@@ -1,28 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 12:02:23 by lmicheli         ###   ########.fr       */
+/*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
+/*   Updated: 2024/06/25 12:40:43 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <main.hpp>
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
-int main(int ac, char **av)
+# include <iostream>
+# include <main.hpp>
+
+class Server
 {
-	if (ac != 3)
-	{
-		std::cerr << "Usage: " << av[0] << " <port> <password>" << std::endl;
-		return 1;
-	}
-	int fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd == -1)
-	{
-		std::cerr << "Error: socket creation failed" << std::endl;
-		return 1;
-	}
-}
+	private:
+		int			m_socket;
+		int			m_port;
+		std::string m_psw;
+		Server() {}
+		Server(Server const &src);
+		Server &operator=(Server const &src);
+
+	public:
+		Server(char *port, char *psw);
+		~Server();
+		void	create_socket();
+		void	bind_socket();
+};
+
+#endif

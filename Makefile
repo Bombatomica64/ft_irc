@@ -6,13 +6,15 @@
 #    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/06/25 10:32:20 by lmicheli         ###   ########.fr        #
+#    Updated: 2024/06/25 12:00:04 by lmicheli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ircserv
 
-SRCS = main.cpp
+SRCS =	main.cpp \
+		parse.cpp \
+		server.cpp
 
 INC = -I Includes
 

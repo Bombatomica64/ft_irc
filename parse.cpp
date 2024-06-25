@@ -1,28 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   parse.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 12:02:23 by lmicheli         ###   ########.fr       */
+/*   Created: 2024/06/25 10:56:04 by lmicheli          #+#    #+#             */
+/*   Updated: 2024/06/25 11:01:07 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <main.hpp>
 
-int main(int ac, char **av)
+void	check_input(char *port, char *psw)
 {
-	if (ac != 3)
+	if (port == NULL || psw == NULL)
 	{
-		std::cerr << "Usage: " << av[0] << " <port> <password>" << std::endl;
-		return 1;
+		std::cerr << "Usage: <host> <port>" << std::endl;
+		exit(1);
 	}
-	int fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd == -1)
+	std::string portstr(port);
+	if (portstr.find_first_not_of("0123456789") != std::string::npos)
 	{
-		std::cerr << "Error: socket creation failed" << std::endl;
-		return 1;
+		std::cerr << "Invalid port number" << std::endl;
+		exit(1);
+	}
+	double portnm = std::strtod(port, NULL);
+	if (portnm < 0 || portnm > 65535)
+	{
+		std::cerr << "Invalid port number" << std::endl;
+		exit(1);
 	}
 }
