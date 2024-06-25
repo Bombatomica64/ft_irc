@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 18:23:22 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/25 18:58:13 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void Server::accept_connection()
 
 	while (true)
 	{
-		int ret = poll(fds.data(), fds.size(), -1); // -1 means wait indefinitely
+		int ret = poll(fds.data(), fds.size(), -1);
 		if (ret == -1)
 			throw Server::PollException();
 
@@ -81,7 +81,6 @@ void Server::accept_connection()
 			{
 				if (fds[i].fd == m_socket)
 				{
-					// Accept new connection
 					struct sockaddr_in client_addr;
 					socklen_t client_addr_size = sizeof(client_addr);
 					int client_socket = accept(m_socket, (struct sockaddr *)&client_addr, &client_addr_size);
@@ -114,4 +113,22 @@ void Server::accept_connection()
 			}
 		}
 	}
+}
+
+void Server::read_from_client(int client)
+{
+	char buffer[1024];
+	int ret = recv(client, buffer, 1024, 0);
+	if (ret == -1)
+	{
+		// Handle error
+		return;
+	}
+	if (ret == 0)
+	{
+		close(client);
+		return;
+	}
+	std::string msg(buffer, ret);
+	std::cout << "Received: " << msg << std::endl;
 }

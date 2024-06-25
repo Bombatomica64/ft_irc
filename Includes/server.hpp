@@ -6,13 +6,23 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 18:22:48 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/25 19:01:28 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+# include <iostream>
+# include <server.hpp>
+# include <arpa/inet.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <sys/socket.h>
+# include <cstdlib>
+# include <poll.h>
+# include <vector>
+# include <netinet/in.h> 
 # include <main.hpp>
 
 class Server
