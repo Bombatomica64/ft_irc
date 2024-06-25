@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 16:32:08 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/25 18:22:48 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,26 @@ class Server
 	public:
 		Server(char *port, char *psw);
 		~Server();
-		void	create_socket();
-		void	bind_socket();
+		void	create_socket( void );
+		void	bind_socket( void );
+		void	accept_connection( void );
+		void	read_from_client(int client);
+
+	public:
+		class clientSocketException : public std::exception
+		{
+			virtual const char *what() const throw()
+			{
+				return "Error: client socket non-blocking failed";
+			}
+		};
+		class PollException : public std::exception
+		{
+			virtual const char *what() const throw()
+			{
+				return "Error: poll failed";
+			}
+		};
 };
 
 #endif

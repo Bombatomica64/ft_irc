@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 16:32:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/25 18:23:22 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,59 @@ void Server::bind_socket( void )
 		std::cerr << "Error: socket non-blocking failed" << std::endl;
 		exit(1);
 	}
+}
 
+void Server::accept_connection()
+{
+	std::vector<struct pollfd> fds;
+	struct pollfd server_fd;
+	server_fd.fd = m_socket;
+	server_fd.events = POLLIN;
+	fds.push_back(server_fd);
+
+	while (true)
+	{
+		int ret = poll(fds.data(), fds.size(), -1); // -1 means wait indefinitely
+		if (ret == -1)
+			throw Server::PollException();
+
+		for (size_t i = 0; i < fds.size(); ++i)
+		{
+			if (fds[i].revents & POLLIN)
+			{
+				if (fds[i].fd == m_socket)
+				{
+					// Accept new connection
+					struct sockaddr_in client_addr;
+					socklen_t client_addr_size = sizeof(client_addr);
+					int client_socket = accept(m_socket, (struct sockaddr *)&client_addr, &client_addr_size);
+					if (client_socket == -1)
+					{
+						// Handle error
+						continue;
+					}
+					if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
+					{
+						close(client_socket);
+						throw Server::clientSocketException();
+					}
+					struct pollfd client_fd;
+					client_fd.fd = client_socket;
+					client_fd.events = POLLIN;
+					fds.push_back(client_fd);
+				}
+				else
+				{
+					try
+					{
+						read_from_client(fds[i].fd);
+					}
+					catch(const std::exception& e)
+					{
+						continue ;
+					}
+				}
+			}
+		}
+	}
 }

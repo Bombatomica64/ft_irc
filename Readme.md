@@ -1,0 +1,16 @@
+
+# My Project
+
+## TO IMPLEMENT
+
+- unordered queue
+- parse inputs
+- how to accept / reject guys
+- client class with
+  - nick
+  - privmsg
+  - mod
+- channels
+  - kick/invite/topic
+  - mode
+    - I , T , K , O

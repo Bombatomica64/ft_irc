@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 16:27:50 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/25 17:14:35 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,4 +20,13 @@ int main(int ac, char **av)
 		return 1;
 	}
 	Server server(av[1], av[2]);
+	try
+	{
+		server.accept_connection();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	
 }
