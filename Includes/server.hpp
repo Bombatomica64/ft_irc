@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 19:01:28 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/26 09:58:02 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,13 @@ class Server
 			virtual const char *what() const throw()
 			{
 				return "Error: poll failed";
+			}
+		};
+		class ClientException : public std::exception
+		{
+			virtual const char *what() const throw()
+			{
+				return "Error: client failed";
 			}
 		};
 };

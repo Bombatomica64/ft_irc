@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/25 18:58:13 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/26 09:58:12 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ void Server::accept_connection()
 					}
 					catch(const std::exception& e)
 					{
+						close(fds[i].fd);
+						std::cerr << e.what() << std::endl;
 						continue ;
 					}
 				}
@@ -121,7 +123,7 @@ void Server::read_from_client(int client)
 	int ret = recv(client, buffer, 1024, 0);
 	if (ret == -1)
 	{
-		// Handle error
+		throw Server::ClientException();
 		return;
 	}
 	if (ret == 0)
