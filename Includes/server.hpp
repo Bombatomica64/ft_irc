@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 09:58:02 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/26 16:28:19 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,13 @@
 class Server
 {
 	private:
+		std::string m_psw;
+		std::vector<struct pollfd> fds;
+		struct pollfd server_fd;
+
+	protected :
 		int			m_socket;
 		int			m_port;
-		std::string m_psw;
 		struct sockaddr_in m_addr;
 		Server() {}
 		Server(Server const &src);

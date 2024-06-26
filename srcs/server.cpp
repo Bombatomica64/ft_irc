@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 09:58:12 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/26 16:28:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,6 @@ void Server::bind_socket( void )
 
 void Server::accept_connection()
 {
-	std::vector<struct pollfd> fds;
-	struct pollfd server_fd;
 	server_fd.fd = m_socket;
 	server_fd.events = POLLIN;
 	fds.push_back(server_fd);
