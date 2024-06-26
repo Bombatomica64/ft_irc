@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 16:28:19 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/26 17:03:32 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 # include <vector>
 # include <netinet/in.h> 
 # include <main.hpp>
+# include <Client.hpp>
+
+class Client;
 
 class Server
 {
@@ -31,6 +34,7 @@ class Server
 		std::string m_psw;
 		std::vector<struct pollfd> fds;
 		struct pollfd server_fd;
+		std::vector<Client*> m_clients;
 
 	protected :
 		int			m_socket;

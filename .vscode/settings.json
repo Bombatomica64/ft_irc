@@ -46,6 +46,7 @@
 		"utility": "cpp",
 		"fstream": "cpp",
 		"ranges": "cpp",
-		"sstream": "cpp"
+		"sstream": "cpp",
+		"map": "cpp"
 	}
 }
