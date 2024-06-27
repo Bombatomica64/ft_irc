@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 17:03:32 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:51:38 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <netinet/in.h> 
 # include <main.hpp>
 # include <Client.hpp>
+# include <set>
 
 class Client;
 
@@ -37,6 +38,7 @@ class Server
 		std::vector<Client*> m_clients;
 
 	protected :
+		std::set<std::string> m_commands;
 		int			m_socket;
 		int			m_port;
 		struct sockaddr_in m_addr;
@@ -47,10 +49,12 @@ class Server
 	public:
 		Server(char *port, char *psw);
 		~Server();
-		void	create_socket( void );
-		void	bind_socket( void );
+		void create_socket(void);
+		void bind_socket(void);
 		void	accept_connection( void );
 		void	read_from_client(int client);
+		void get_cmds();
+		Client *find_client(int fd);
 
 	public:
 		class clientSocketException : public std::exception

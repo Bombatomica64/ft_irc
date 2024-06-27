@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 16:49:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:52:20 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class Client : public Server
 	public:
 		std::string get_nick( void ) const { return m_nick; }
 		std::string get_user( void ) const { return m_user; }
+		int			get_clientSocket( void ) const { return m_clientSocket; }
 		bool		get_registered( void ) const { return m_registered; }
 		bool		get_connected( void ) const { return m_connected; }
 };

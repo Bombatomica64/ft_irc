@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 17:45:21 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:45:40 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ class Channel
 	private:
 		std::string m_name;
 		std::vector<Client> m_clients;
-		std::map<char, bool> m_modes; 
+		std::map<char, bool> m_modes;
 		Channel() {}
 		Channel(Channel const &src);
 		Channel &operator=(Channel const &src);

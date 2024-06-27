@@ -1,0 +1,114 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	//
+$(NAME)	Makefile	/^$(NAME):$/;"	t
+*.tcc	.vscode/settings.json	/^		"*.tcc": "cpp",$/;"	s	object:files.associations
+BUFFER_SIZE	Includes/main.hpp	/^# define BUFFER_SIZE /;"	d
+CC	Makefile	/^CC = clang++ -std=c++98 -Wall -Wextra -Werror -g$/;"	m
+CHANNEL_HPP	Includes/Channel.hpp	/^# define CHANNEL_HPP$/;"	d
+CLIENT_HPP	Includes/Client.hpp	/^# define CLIENT_HPP$/;"	d
+Channel	Includes/Channel.hpp	/^		Channel() {}$/;"	f	class:Channel
+Channel	Includes/Channel.hpp	/^class Channel$/;"	c
+Client	Includes/Client.hpp	/^		Client() {}$/;"	f	class:Client
+Client	Includes/Client.hpp	/^class Client : public Server$/;"	c
+ClientException	Includes/server.hpp	/^		class ClientException : public std::exception$/;"	c	class:Server
+INC	Makefile	/^INC = -I Includes$/;"	m
+MAIN_HPP	Includes/main.hpp	/^# define MAIN_HPP$/;"	d
+My Project	Readme.md	/^# My Project$/;"	c
+NAME	Makefile	/^NAME = ircserv$/;"	m
+PollException	Includes/server.hpp	/^		class PollException : public std::exception$/;"	c	class:Server
+SERVER_HPP	Includes/server.hpp	/^# define SERVER_HPP$/;"	d
+SRCS	Makefile	/^SRCS =	srcs\/main.cpp \\$/;"	m
+Server	Includes/server.hpp	/^		Server() {}$/;"	f	class:Server
+Server	Includes/server.hpp	/^class Server$/;"	c
+Server	srcs/server.cpp	/^Server::Server(char *port, char *psw)$/;"	f	class:Server
+TO IMPLEMENT	Readme.md	/^## TO IMPLEMENT$/;"	s
+accept_connection	srcs/server.cpp	/^void Server::accept_connection()$/;"	f	class:Server	typeref:typename:void
+algorithm	.vscode/settings.json	/^		"algorithm": "cpp",$/;"	s	object:files.associations
+all	Makefile	/^all: $(NAME)$/;"	t
+array	.vscode/settings.json	/^		"array": "cpp",$/;"	s	object:files.associations
+atomic	.vscode/settings.json	/^		"atomic": "cpp",$/;"	s	object:files.associations
+bind_socket	srcs/server.cpp	/^void Server::bind_socket( void )$/;"	f	class:Server	typeref:typename:void
+bit	.vscode/settings.json	/^		"bit": "cpp",$/;"	s	object:files.associations
+cctype	.vscode/settings.json	/^		"cctype": "cpp",$/;"	s	object:files.associations
+check_input	srcs/parse.cpp	/^void	check_input(char *port, char *psw)$/;"	f	typeref:typename:void
+clean	Makefile	/^clean:$/;"	t
+clientSocketException	Includes/server.hpp	/^		class clientSocketException : public std::exception$/;"	c	class:Server
+clocale	.vscode/settings.json	/^		"clocale": "cpp",$/;"	s	object:files.associations
+cmath	.vscode/settings.json	/^		"cmath": "cpp",$/;"	s	object:files.associations
+compare	.vscode/settings.json	/^		"compare": "cpp",$/;"	s	object:files.associations
+concepts	.vscode/settings.json	/^		"concepts": "cpp",$/;"	s	object:files.associations
+create_socket	srcs/server.cpp	/^void Server::create_socket( void )$/;"	f	class:Server	typeref:typename:void
+cstdarg	.vscode/settings.json	/^		"cstdarg": "cpp",$/;"	s	object:files.associations
+cstddef	.vscode/settings.json	/^		"cstddef": "cpp",$/;"	s	object:files.associations
+cstdint	.vscode/settings.json	/^		"cstdint": "cpp",$/;"	s	object:files.associations
+cstdio	.vscode/settings.json	/^		"cstdio": "cpp",$/;"	s	object:files.associations
+cstdlib	.vscode/settings.json	/^		"cstdlib": "cpp",$/;"	s	object:files.associations
+cwchar	.vscode/settings.json	/^		"cwchar": "cpp",$/;"	s	object:files.associations
+cwctype	.vscode/settings.json	/^		"cwctype": "cpp",$/;"	s	object:files.associations
+deque	.vscode/settings.json	/^		"deque": "cpp",$/;"	s	object:files.associations
+exception	.vscode/settings.json	/^		"exception": "cpp",$/;"	s	object:files.associations
+fclean	Makefile	/^fclean: clean$/;"	t
+files.associations	.vscode/settings.json	/^	"files.associations": {$/;"	o
+fstream	.vscode/settings.json	/^		"fstream": "cpp",$/;"	s	object:files.associations
+functional	.vscode/settings.json	/^		"functional": "cpp",$/;"	s	object:files.associations
+get_connected	Includes/Client.hpp	/^		bool		get_connected( void ) const { return m_connected; }$/;"	f	class:Client	typeref:typename:bool
+get_nick	Includes/Client.hpp	/^		std::string get_nick( void ) const { return m_nick; }$/;"	f	class:Client	typeref:typename:std::string
+get_registered	Includes/Client.hpp	/^		bool		get_registered( void ) const { return m_registered; }$/;"	f	class:Client	typeref:typename:bool
+get_user	Includes/Client.hpp	/^		std::string get_user( void ) const { return m_user; }$/;"	f	class:Client	typeref:typename:std::string
+initializer_list	.vscode/settings.json	/^		"initializer_list": "cpp",$/;"	s	object:files.associations
+iosfwd	.vscode/settings.json	/^		"iosfwd": "cpp",$/;"	s	object:files.associations
+iostream	.vscode/settings.json	/^		"iostream": "cpp",$/;"	s	object:files.associations
+istream	.vscode/settings.json	/^		"istream": "cpp",$/;"	s	object:files.associations
+iterator	.vscode/settings.json	/^		"iterator": "cpp",$/;"	s	object:files.associations
+limits	.vscode/settings.json	/^		"limits": "cpp",$/;"	s	object:files.associations
+m_addr	Includes/server.hpp	/^		struct sockaddr_in m_addr;$/;"	m	class:Server	typeref:struct:sockaddr_in
+m_clientAddr	Includes/Client.hpp	/^		struct sockaddr_in m_clientAddr;$/;"	m	class:Client	typeref:struct:sockaddr_in
+m_clientSocket	Includes/Client.hpp	/^		int			m_clientSocket;$/;"	m	class:Client	typeref:typename:int
+m_clients	Includes/Channel.hpp	/^		std::vector<Client> m_clients;$/;"	m	class:Channel	typeref:typename:std::vector<Client>
+m_clients	Includes/server.hpp	/^		std::vector<Client*> m_clients;$/;"	m	class:Server	typeref:typename:std::vector<Client * >
+m_connected	Includes/Client.hpp	/^		bool		m_connected;$/;"	m	class:Client	typeref:typename:bool
+m_modes	Includes/Channel.hpp	/^		std::map<char, bool> m_modes; $/;"	m	class:Channel	typeref:typename:std::map<char,bool>
+m_name	Includes/Channel.hpp	/^		std::string m_name;$/;"	m	class:Channel	typeref:typename:std::string
+m_nick	Includes/Client.hpp	/^		std::string m_nick;$/;"	m	class:Client	typeref:typename:std::string
+m_port	Includes/server.hpp	/^		int			m_port;$/;"	m	class:Server	typeref:typename:int
+m_psw	Includes/server.hpp	/^		std::string m_psw;$/;"	m	class:Server	typeref:typename:std::string
+m_registered	Includes/Client.hpp	/^		bool		m_registered;$/;"	m	class:Client	typeref:typename:bool
+m_socket	Includes/server.hpp	/^		int			m_socket;$/;"	m	class:Server	typeref:typename:int
+m_user	Includes/Client.hpp	/^		std::string m_user;$/;"	m	class:Client	typeref:typename:std::string
+main	client.cpp	/^int main() {$/;"	f	typeref:typename:int
+main	srcs/main.cpp	/^int main(int ac, char **av)$/;"	f	typeref:typename:int
+map	.vscode/settings.json	/^		"map": "cpp"$/;"	s	object:files.associations
+memory	.vscode/settings.json	/^		"memory": "cpp",$/;"	s	object:files.associations
+memory_resource	.vscode/settings.json	/^		"memory_resource": "cpp",$/;"	s	object:files.associations
+new	.vscode/settings.json	/^		"new": "cpp",$/;"	s	object:files.associations
+numeric	.vscode/settings.json	/^		"numeric": "cpp",$/;"	s	object:files.associations
+optional	.vscode/settings.json	/^		"optional": "cpp",$/;"	s	object:files.associations
+ostream	.vscode/settings.json	/^		"ostream": "cpp",$/;"	s	object:files.associations
+play	Makefile	/^play: re$/;"	t
+random	.vscode/settings.json	/^		"random": "cpp",$/;"	s	object:files.associations
+ranges	.vscode/settings.json	/^		"ranges": "cpp",$/;"	s	object:files.associations
+re	Makefile	/^re: fclean all$/;"	t
+read_from_client	srcs/server.cpp	/^void Server::read_from_client(int client)$/;"	f	class:Server	typeref:typename:void
+server_fd	Includes/server.hpp	/^		struct pollfd server_fd;$/;"	m	class:Server	typeref:struct:pollfd
+sstream	.vscode/settings.json	/^		"sstream": "cpp",$/;"	s	object:files.associations
+stdexcept	.vscode/settings.json	/^		"stdexcept": "cpp",$/;"	s	object:files.associations
+streambuf	.vscode/settings.json	/^		"streambuf": "cpp",$/;"	s	object:files.associations
+string	.vscode/settings.json	/^		"string": "cpp",$/;"	s	object:files.associations
+string_view	.vscode/settings.json	/^		"string_view": "cpp",$/;"	s	object:files.associations
+system_error	.vscode/settings.json	/^		"system_error": "cpp",$/;"	s	object:files.associations
+tuple	.vscode/settings.json	/^		"tuple": "cpp",$/;"	s	object:files.associations
+type_traits	.vscode/settings.json	/^		"type_traits": "cpp",$/;"	s	object:files.associations
+typeinfo	.vscode/settings.json	/^		"typeinfo": "cpp",$/;"	s	object:files.associations
+unordered_map	.vscode/settings.json	/^		"unordered_map": "cpp",$/;"	s	object:files.associations
+utility	.vscode/settings.json	/^		"utility": "cpp",$/;"	s	object:files.associations
+val	Makefile	/^val : re$/;"	t
+vector	.vscode/settings.json	/^		"vector": "cpp",$/;"	s	object:files.associations
+what	Includes/server.hpp	/^			virtual const char *what() const throw()$/;"	f	class:Server::ClientException	typeref:typename:const char *
+what	Includes/server.hpp	/^			virtual const char *what() const throw()$/;"	f	class:Server::PollException	typeref:typename:const char *
+what	Includes/server.hpp	/^			virtual const char *what() const throw()$/;"	f	class:Server::clientSocketException	typeref:typename:const char *
+~Server	srcs/server.cpp	/^Server::~Server()$/;"	f	class:Server
