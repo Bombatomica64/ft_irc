@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/26 16:28:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/27 10:35:56 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void Server::accept_connection()
 					int client_socket = accept(m_socket, (struct sockaddr *)&client_addr, &client_addr_size);
 					if (client_socket == -1)
 					{
-						// Handle error
+						// Handle errors
 						continue;
 					}
 					if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)

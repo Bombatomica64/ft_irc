@@ -1,4 +1,7 @@
             - name: Run Parasoft C/C++test
+  - on push:
+    branches:
+      - main
   # You may pin to the exact commit or the version.
   # uses: parasoft/run-cpptest-action@b8d80cb3a54e92da530d4857477c18b9b55e707b
   uses: parasoft/run-cpptest-action@2.0.1
