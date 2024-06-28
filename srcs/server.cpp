@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/28 11:43:26 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/28 18:20:59 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,58 @@ void	Server::register_client(int client)
 		throw Server::ClientException();
 	std::string msg(buffer, ret);
 	std::vector<std::string> split_msg = split(msg, " ");
+	switch (m_clients[client]->get_reg_steps())
+	{
+		case 0:
+			if (split_msg[0] == "PASS")
+			{
+				if (split_msg[1] == m_psw && split_msg.size() == 2)
+					m_clients[client]->set_reg(1);
+				else
+				{
+					write_to_client(client, "Wrong password");
+					close(client);
+				}
+			}
+			else
+			{
+				write_to_client(client, "You must send a password first");
+				close(client);
+			}
+			break;
+		case 1:
+			if (split_msg[0] == "NICK")
+			{
+				if (split_msg.size() == 2)
+				{
+					m_clients[client]->set_nick(split_msg[1]);
+					m_clients[client]->set_reg(2);
+				}
+				else
+				{
+					write_to_client(client, "You must send a nickname first");
+				}
+			}
+			else
+			{
+				write_to_client(client, "You must send a nickname first");
+			}
+			break;
+		case 2:
+			if (split_msg[0] == "USER")
+			{
+				if (split_msg.size() == 2)
+				{
+					m_clients[client]->set_user(split_msg[1]);
+					m_clients[client]->set_reg(3);
+				}
+				else
+					write_to_client(client, "You must send a username first");
+			}
+			else
+				write_to_client(client, "You must send a username first");
+	}
+	
 }
 	// std::cout << "Received: " << msg << std::endl;
 	// if (msg.find("PASS") != std::string::npos)
@@ -204,3 +256,8 @@ void	Server::register_client(int client)
 	// 	write_to_client(client, "You must send a password first");
 	// 	close(client);
 	// }
+
+void Server::write_to_client(int client, std::string msg)
+{
+	send(client, msg.c_str(), msg.size(), 0);// possibly add MSG_NOSIGNAL with errno TODO
+}

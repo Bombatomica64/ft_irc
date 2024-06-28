@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/28 10:23:05 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/28 15:58:36 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class Server
 		std::string m_psw;
 		std::vector<struct pollfd> fds;
 		struct pollfd server_fd;
-		std::vector<Client*> m_clients;
+		std::map<int, Client*> m_clients;
 
 	protected :
 		std::set<std::string> m_commands;

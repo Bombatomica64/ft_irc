@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/28 11:39:26 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/28 15:00:57 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::vector<std::string> split(std::string str, std::string token)
 		if(index != std::string::npos)
 		{
 			result.push_back(str.substr(0,index));
-			str = str.substr(index+token.size());
+			str = str.substr(index + token.size());
 			if(str.size() == 0)result.push_back(str);
 		}
 		else
