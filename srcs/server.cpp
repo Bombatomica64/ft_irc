@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/28 18:20:59 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/28 18:23:37 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,9 @@ void	Server::register_client(int client)
 			}
 			else
 				write_to_client(client, "You must send a username first");
+			break;
+		default:
+			break;
 	}
 	
 }
