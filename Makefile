@@ -6,7 +6,7 @@
 #    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/06/25 16:35:45 by lmicheli         ###   ########.fr        #
+#    Updated: 2024/06/28 11:41:41 by lmicheli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,12 @@ NAME = ircserv
 
 SRCS =	srcs/main.cpp \
 		srcs/parse.cpp \
-		srcs/server.cpp
+		srcs/server.cpp \
+		srcs/Client.cpp
+
+UTILS = utils/string_utils.cpp
+
+SRC = $(SRCS) $(UTILS)
 
 INC = -I Includes
 
@@ -25,7 +30,7 @@ OBJS = $(SRCS:.cpp=.o)
 all: $(NAME)
 
 $(NAME):
-	$(CC) $(INC) $(SRCS) -o $(NAME)
+	$(CC) $(INC) $(SRC) -o $(NAME)
 
 clean:
 	rm -f $(OBJS)

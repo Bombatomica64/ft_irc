@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/27 17:52:51 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/28 11:43:26 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,14 @@ void Server::get_cmds()
 	m_commands.insert("INVITE");
 }
 
-Client* Server::find_client(int fd)
+bool Server::find_client(int fd)
 {
 	for (size_t i = 0; i < m_clients.size(); ++i)
 	{
 		if (m_clients[i]->get_clientSocket() == fd)
-			return m_clients[i];
+			return true;
 	}
-	return NULL;
+	return false;
 }
 
 void Server::create_socket(void)
@@ -130,7 +130,10 @@ void Server::accept_connection()
 				{
 					try
 					{
-						read_from_client(fds[i].fd);
+						if (find_client(fds[i].fd) == false)
+							register_client(fds[i].fd);
+						else
+							read_from_client(fds[i].fd);
 					}
 					catch (const std::exception &e)
 					{
@@ -146,6 +149,11 @@ void Server::accept_connection()
 
 void Server::read_from_client(int client)
 {
+	if (m_clients[client]->get_registered() == false || m_clients[client]->get_connected() == false)
+	{
+		register_client(client);
+		return ;
+	}
 	char buffer[BUFFER_SIZE];
 	int ret = recv(client, buffer, BUFFER_SIZE, 0);
 	if (ret == -1)
@@ -153,7 +161,7 @@ void Server::read_from_client(int client)
 		throw Server::ClientException();
 		return ;
 	}
-	parse_msg(client, buffer, ret);
+	//parse_msg(client, buffer, ret);
 	if (ret == 0)
 	{
 		close(client);
@@ -162,3 +170,37 @@ void Server::read_from_client(int client)
 	std::string msg(buffer, ret);
 	std::cout << "Received: " << msg << std::endl;
 }
+
+void	Server::register_client(int client)
+{
+	char buffer[BUFFER_SIZE];
+	int ret = recv(client, buffer, BUFFER_SIZE, 0);
+	if (ret == -1)
+		throw Server::ClientException();
+	std::string msg(buffer, ret);
+	std::vector<std::string> split_msg = split(msg, " ");
+}
+	// std::cout << "Received: " << msg << std::endl;
+	// if (msg.find("PASS") != std::string::npos)
+	// {
+	// 	if (msg.find(m_psw) != std::string::npos)
+	// 	{
+	// 		write_to_client(client, "Welcome to the server");
+	// 		m_clients.push_back(new Client(client, m_addr));
+	// 		m_clients.back()->connect_to_server();
+	// 		m_clients.back()->send_message();
+	// 		m_clients.back()->receive_message();
+	// 		m_clients.back()->connect_to_channel();
+	// 		m_clients.back()->quit();
+	// 	}
+	// 	else
+	// 	{
+	// 		write_to_client(client, "Wrong password");
+	// 		close(client);
+	// 	}
+	// }
+	// else
+	// {
+	// 	write_to_client(client, "You must send a password first");
+	// 	close(client);
+	// }

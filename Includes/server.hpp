@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/27 17:51:38 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/06/28 10:23:05 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,22 @@ class Server
 	public:
 		Server(char *port, char *psw);
 		~Server();
-		void create_socket(void);
-		void bind_socket(void);
+
+	public:
+		void	create_socket(void);
+		void	bind_socket(void);
 		void	accept_connection( void );
+		void	get_cmds();
+
+	/**
+	 * @brief client functions
+	 */
+	public:
 		void	read_from_client(int client);
-		void get_cmds();
-		Client *find_client(int fd);
+		void	write_to_client(int client, std::string msg);
+		void	register_client(int client);
+		bool	find_client(int fd);
+
 
 	public:
 		class clientSocketException : public std::exception
