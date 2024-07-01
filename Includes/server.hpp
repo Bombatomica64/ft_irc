@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 11:12:13 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 16:04:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Server
 		void	read_from_client(int client);
 		void	write_to_client(int client, std::string msg);
 		void	register_client(int client);
+		void	parse_cmds(int client, std::string cmd);
 
 
 	public:

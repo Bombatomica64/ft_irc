@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 12:37:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 17:37:24 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Server::Server(char *port, char *psw)
 
 void Server::get_cmds()
 {
-	m_commands.insert("PASS");
+	// m_commands.insert("PASS"); 
 	m_commands.insert("NICK");
 	m_commands.insert("USER");
 	m_commands.insert("JOIN");
@@ -36,17 +36,8 @@ void Server::get_cmds()
 	m_commands.insert("TOPIC");
 	m_commands.insert("MODE");
 	m_commands.insert("INVITE");
+	m_commands.insert("OPER");
 }
-
-// bool Server::find_client(int fd)
-// {
-// 	for (size_t i = 0; i < m_clients.size(); ++i)
-// 	{
-// 		if (m_clients[i]->get_clientSocket() == fd)
-// 			return true;
-// 	}
-// 	return false;
-// }
 
 void Server::create_socket(void)
 {
@@ -61,7 +52,7 @@ void Server::create_socket(void)
 
 Server::~Server()
 {
-	close(m_socket);	
+	close(m_socket);
 	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
 		delete it->second;
@@ -74,26 +65,26 @@ Server::~Server()
 void Server::bind_socket(void)
 {
 	int optval = 1;
-    setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+	setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
 	m_addr.sin_family = AF_INET;
 	m_addr.sin_port = htons(m_port);
 	m_addr.sin_addr.s_addr = INADDR_ANY;
 	if (bind(m_socket, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1)
-    {
-        std::cerr << "Error: socket binding failed - " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if (listen(m_socket, 10) == -1)
-    {
-        std::cerr << "Error: socket listening failed - " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if (fcntl(m_socket, F_SETFL, O_NONBLOCK) == -1)
-    {
-        std::cerr << "Error: setting socket to non-blocking failed - " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
-    }
+	{
+		std::cerr << "Error: socket binding failed - " << strerror(errno) << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	if (listen(m_socket, 10) == -1)
+	{
+		std::cerr << "Error: socket listening failed - " << strerror(errno) << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	if (fcntl(m_socket, F_SETFL, O_NONBLOCK) == -1)
+	{
+		std::cerr << "Error: setting socket to non-blocking failed - " << strerror(errno) << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 void Server::accept_connection()
@@ -179,9 +170,16 @@ void Server::read_from_client(int client)
 		close(client);
 		return;
 	}
-	
+
 	std::string msg(buffer, ret);
-	if (msg == "QUIT") //temporary
+	std::vector<std::string> split_msg = split(msg, " ");
+	if (m_commands.find(split_msg[0]) == m_commands.end())
+	{
+		write_to_client(client, "Unknown command");
+		return;
+	}
+	parse_cmds(client, msg);
+	if (msg == "QUIT") // temporary
 	{
 		throw std::runtime_error("close");
 	}
@@ -190,12 +188,17 @@ void Server::read_from_client(int client)
 
 void Server::register_client(int client)
 {
-	char buffer[BUFFER_SIZE];
-	int ret = recv(client, buffer, BUFFER_SIZE, 0);
-	if (ret == -1)
-		throw Server::ClientException();
-	std::string msg(buffer, ret);
-	std::cerr << RED"Received: " << msg << RESET << std::endl;
+	std::string msg;
+	char temp[BUFFER_SIZE];
+	int ret;
+
+	while ((ret = recv(client, temp, BUFFER_SIZE, 0)) > 0)
+	{
+		msg.append(temp, ret);
+		if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
+			break;
+	}
+	std::cerr << RED "Received: " << msg << RESET << std::endl; // TODO remove
 	std::vector<std::string> split_msg = split(msg, " ");
 	switch (m_clients[client]->get_reg_steps())
 	{
@@ -252,6 +255,12 @@ void Server::register_client(int client)
 		exit(1);
 		break;
 	}
+}
+
+void	Server::parse_cmds(int client, std::string cmd)
+{
+	if (!cmd.empty() && m_clients.find(client) != m_clients.end())
+		m_clients[client]->parse_cmds(cmd);
 }
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)

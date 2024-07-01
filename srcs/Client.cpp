@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 11:15:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 17:49:44 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,21 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_registered = false;
 	m_connected = false;
 	m_reg_steps = 0;
+	m_oper = false;
+	Server::get_cmds();
+	m_cmds["QUIT"] = &Client::quit;
+	m_cmds["JOIN"] = &Client::join;
+	m_cmds["PART"] = &Client::part;
+	m_cmds["PRIVMSG"] = &Client::privmsg;
+	m_cmds["NICK"] = &Client::nick;
+	m_cmds["OPER"] = &Client::oper;
+	m_cmds["MODE"] = &Client::mode;
+	m_cmds["INVITE"] = &Client::invite;
+	m_cmds["KICK"] = &Client::kick;
+	// m_cmds["PING"] = &Client::ping;
+	// m_cmds["PONG"] = &Client::pong;
+	m_cmds["TOPIC"] = &Client::topic;
+
 }
 
 Client::~Client()
@@ -35,4 +50,17 @@ std::ostream &operator<<(std::ostream &out, Client const &src)
 	out << "Client connected: " << src.get_connected() << std::endl;
 	out << "Client registration steps: " << src.get_reg_steps() << std::endl;
 	return out;
+}
+
+void	Client::parse_cmds(std::string cmd)
+{
+	std::vector<std::string> split_cmd = split(cmd, " ");
+	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
+	{
+		if (!(this->*m_cmds[split_cmd[0]])(cmd))
+			write_to_client( m_clientSocket,"421 " + m_nick + " " + split_cmd[0] + " :Unknown command");
+	}
+	else
+		write_to_client( m_clientSocket, "421 " + m_nick + " " + split_cmd[0] + " :Unknown command");
+	//TODO error sending
 }
