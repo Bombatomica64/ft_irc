@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/28 11:38:16 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 11:06:37 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,10 @@
 # include <map>
 # include <set>
 # include <string>
+# include <algorithm>
+# include <colours.h>
+# include <errno.h>
+# include <cstring>
 
 # define BUFFER_SIZE 2048
 

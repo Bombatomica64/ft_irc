@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/28 15:58:36 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 11:12:13 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <main.hpp>
 # include <Client.hpp>
 # include <set>
+# include <map>
 
 class Client;
 
@@ -33,7 +34,7 @@ class Server
 {
 	private:
 		std::string m_psw;
-		std::vector<struct pollfd> fds;
+		std::vector<struct pollfd> client_fds;
 		struct pollfd server_fd;
 		std::map<int, Client*> m_clients;
 
@@ -63,7 +64,6 @@ class Server
 		void	read_from_client(int client);
 		void	write_to_client(int client, std::string msg);
 		void	register_client(int client);
-		bool	find_client(int fd);
 
 
 	public:
