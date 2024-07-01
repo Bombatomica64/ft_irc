@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 11:36:02 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 11:54:01 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ Server::~Server()
 	}
 	m_clients.clear();
 	m_commands.clear();
+	client_fds.clear();
+	//helo
 }
 
 void Server::bind_socket(void)
@@ -148,7 +150,11 @@ void Server::accept_connection()
 					{
 						close(client_fds[i].fd);
 						std::cerr << e.what() << std::endl;
+						std::string msg(e.what());
+						if (msg == "close")
+							throw std::runtime_error("close");
 						continue;
+						
 					}
 				}
 			}
@@ -180,7 +186,7 @@ void Server::read_from_client(int client)
 	std::string msg(buffer, ret);
 	if (msg == "QUIT") //temporary
 	{
-		exit(0);
+		throw std::runtime_error("close");
 	}
 	std::cout << BLUE << *m_clients[client] << " " << msg << RESET << std::endl;
 }
