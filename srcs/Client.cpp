@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 17:49:44 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 18:29:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_oper = false;
 	Server::get_cmds();
 	m_cmds["QUIT"] = &Client::quit;
-	m_cmds["JOIN"] = &Client::join;
-	m_cmds["PART"] = &Client::part;
+	// m_cmds["JOIN"] = &Client::join;
+	// m_cmds["PART"] = &Client::part;
 	m_cmds["PRIVMSG"] = &Client::privmsg;
 	m_cmds["NICK"] = &Client::nick;
-	m_cmds["OPER"] = &Client::oper;
-	m_cmds["MODE"] = &Client::mode;
-	m_cmds["INVITE"] = &Client::invite;
-	m_cmds["KICK"] = &Client::kick;
+	// m_cmds["OPER"] = &Client::oper;
+	// m_cmds["MODE"] = &Client::mode;
+	// m_cmds["INVITE"] = &Client::invite;
+	// m_cmds["KICK"] = &Client::kick;
 	// m_cmds["PING"] = &Client::ping;
 	// m_cmds["PONG"] = &Client::pong;
-	m_cmds["TOPIC"] = &Client::topic;
+	// m_cmds["TOPIC"] = &Client::topic;
 
 }
 
@@ -63,4 +63,25 @@ void	Client::parse_cmds(std::string cmd)
 	else
 		write_to_client( m_clientSocket, "421 " + m_nick + " " + split_cmd[0] + " :Unknown command");
 	//TODO error sending
+}
+
+bool	Client::quit(std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 1)
+	{
+		write_to_client(m_clientSocket, m_nick);
+	}
+	else
+	{
+		std::string msg;
+		for (size_t i = 1; i < split_msg.size(); i++)
+			msg += split_msg[i] + " ";
+		write_to_client(m_clientSocket, msg);
+	}
+}
+
+bool	Client::privmsg(std::string message)
+{
+	Server::get_id();
 }

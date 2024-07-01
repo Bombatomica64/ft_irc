@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 17:45:23 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 18:20:06 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,15 @@ class Client : public Server
 		using	Server::get_cmds;
 		void	parse_cmds(std::string cmd);
 		bool	quit(std::string message);
-		bool	join(std::string channel);
-		bool	part(std::string channels);
+		// bool	join(std::string channel);
+		// bool	part(std::string channels);
 		bool	privmsg(std::string message);
 		bool	nick(std::string new_nick);
-		bool	oper(std::string user);
-		bool	mode(std::string message);
-		bool	invite(std::string message);
-		bool	kick(std::string message);
-		bool	topic(std::string message);
+		// bool	oper(std::string user);
+		// bool	mode(std::string message);
+		// bool	invite(std::string message);
+		// bool	kick(std::string message);
+		// bool	topic(std::string message);
 
 
 	//accessors
