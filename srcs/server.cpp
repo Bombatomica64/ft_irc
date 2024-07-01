@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 11:54:01 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/01 12:37:10 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void Server::create_socket(void)
 
 Server::~Server()
 {
-	close(m_socket);
+	close(m_socket);	
 	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
 		delete it->second;
@@ -69,7 +69,6 @@ Server::~Server()
 	m_clients.clear();
 	m_commands.clear();
 	client_fds.clear();
-	//helo
 }
 
 void Server::bind_socket(void)
@@ -109,7 +108,7 @@ void Server::accept_connection()
 	client_fds.push_back(server_fd);
 	while (true)
 	{
-		ret = poll(client_fds.data(), client_fds.size(), -1); // Use client_fds.size() for the count
+		ret = poll(client_fds.data(), client_fds.size(), -1);
 		if (ret == -1)
 			throw Server::PollException();
 		for (size_t i = 0; i < client_fds.size(); ++i)
@@ -153,8 +152,6 @@ void Server::accept_connection()
 						std::string msg(e.what());
 						if (msg == "close")
 							throw std::runtime_error("close");
-						continue;
-						
 					}
 				}
 			}

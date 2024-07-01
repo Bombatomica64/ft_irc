@@ -1,41 +1,41 @@
-==579889== Memcheck, a memory error detector
-==579889== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==579889== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==579889== Command: ./ircserv 8000 2
-==579889== 
+==616124== Memcheck, a memory error detector
+==616124== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==616124== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==616124== Command: ./ircserv 8000 2
+==616124== 
 [0;31mReceived: PASS 2[0m
-[0;31mReceived: NICK lore[0m
-[0;31mReceived: USER lor[0m
+[0;31mReceived: NICK pipo[0m
+[0;31mReceived: USER ciap[0m
 close
 close
-==579889== 
-==579889== FILE DESCRIPTORS: 7 open at exit.
-==579889== Open file descriptor 103: /usr/share/code/v8_context_snapshot.bin
-==579889==    <inherited from parent>
-==579889== 
-==579889== Open file descriptor 40: /usr/share/code/resources/app/node_modules.asar
-==579889==    <inherited from parent>
-==579889== 
-==579889== Open file descriptor 39: /dev/ptmx
-==579889==    <inherited from parent>
-==579889== 
-==579889== Open file descriptor 38: /nfs/homes/lmicheli/.config/Code/logs/20240701T095724/ptyhost.log
-==579889==    <inherited from parent>
-==579889== 
-==579889== Open file descriptor 2: /nfs/homes/lmicheli/Documents/ft_irc/out_val.log
-==579889==    <inherited from parent>
-==579889== 
-==579889== Open file descriptor 1: /dev/pts/1
-==579889==    <inherited from parent>
-==579889== 
-==579889== Open file descriptor 0: /dev/pts/1
-==579889==    <inherited from parent>
-==579889== 
-==579889== 
-==579889== HEAP SUMMARY:
-==579889==     in use at exit: 0 bytes in 0 blocks
-==579889==   total heap usage: 28 allocs, 28 frees, 74,340 bytes allocated
-==579889== 
-==579889== All heap blocks were freed -- no leaks are possible
-==579889== 
-==579889== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==616124== 
+==616124== FILE DESCRIPTORS: 7 open at exit.
+==616124== Open file descriptor 103: /usr/share/code/v8_context_snapshot.bin
+==616124==    <inherited from parent>
+==616124== 
+==616124== Open file descriptor 40: /usr/share/code/resources/app/node_modules.asar
+==616124==    <inherited from parent>
+==616124== 
+==616124== Open file descriptor 39: /dev/ptmx
+==616124==    <inherited from parent>
+==616124== 
+==616124== Open file descriptor 38: /nfs/homes/lmicheli/.config/Code/logs/20240701T095724/ptyhost.log
+==616124==    <inherited from parent>
+==616124== 
+==616124== Open file descriptor 2: /nfs/homes/lmicheli/Documents/ft_irc/out_val.log
+==616124==    <inherited from parent>
+==616124== 
+==616124== Open file descriptor 1: /dev/pts/1
+==616124==    <inherited from parent>
+==616124== 
+==616124== Open file descriptor 0: /dev/pts/1
+==616124==    <inherited from parent>
+==616124== 
+==616124== 
+==616124== HEAP SUMMARY:
+==616124==     in use at exit: 0 bytes in 0 blocks
+==616124==   total heap usage: 29 allocs, 29 frees, 75,364 bytes allocated
+==616124== 
+==616124== All heap blocks were freed -- no leaks are possible
+==616124== 
+==616124== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
