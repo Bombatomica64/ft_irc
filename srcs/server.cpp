@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 18:22:59 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/02 18:31:16 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Server::Server(char *port, char *psw)
 {
 	get_cmds();
 	check_input(port, psw);
-	m_port = std::atoi(port);
+	m_port = std::strtold(port, NULL);
 	m_psw = psw;
 	create_socket();
 }
@@ -159,7 +159,7 @@ void Server::read_from_client(int client)
 		register_client(client);
 		return;
 	}
-	char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE] = {0};
 	int ret = recv(client, buffer, BUFFER_SIZE, 0);
 	if (ret == -1)
 	{
