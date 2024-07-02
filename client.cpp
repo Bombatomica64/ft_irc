@@ -44,11 +44,11 @@ int main() {
 		}
 
 		// Receive a response from the server
-		char buffer[4096] = {0};
-		int valread = read(clientSocket, buffer, 4096);
-		if (valread > 0) {
-			std::cout << "Server: " << buffer << std::endl;
-		}
+		// char buffer[4096] = {0};
+		// int valread = read(clientSocket, buffer, 4096);
+		// if (valread > 0) {
+		// 	std::cout << "Server: " << buffer << std::endl;
+		// }
 	}
 
 	// Close the socket
