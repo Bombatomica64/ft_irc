@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 12:28:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 18:22:59 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,12 @@ void Server::accept_connection()
 					}
 					catch (const std::exception &e)
 					{
-						close(client_fds[i].fd);
 						std::cerr << e.what() << std::endl;
+						close(client_fds[i].fd);
 						std::string msg(e.what());
 						if (msg == "close")
 							throw std::runtime_error("close");
+						//return;
 					}
 				}
 			}
@@ -174,12 +175,12 @@ void Server::read_from_client(int client)
 
 	std::string msg(buffer, ret);
 	std::vector<std::string> split_msg = split(msg, " ");
-	if (m_commands.find(split_msg[0]) == m_commands.end())
-	{
-		write_to_client(client, "Unknown command");
-		return;
-	}
-	parse_cmds(client, msg);
+	// if (m_commands.find(split_msg[0]) == m_commands.end())
+	// {
+	// 	write_to_client(client, "Unknown command");
+	// 	return;
+	// }
+	// parse_cmds(client, msg);
 	if (msg == "QUIT") // temporary
 	{
 		throw std::runtime_error("close");
@@ -199,6 +200,18 @@ void Server::register_client(int client)
 		if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
 			break;
 	}
+	std::cerr << ret << std::endl;
+	if (msg.empty())
+	{
+		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+		throw Server::ClientException();
+		return;
+	}
+	/*if (ret == -1)
+	{
+		std::cout << "Error: mannagia a cristo" << std::endl;
+		return;
+	}*/
 	std::cerr << RED "Received: " << msg << RESET << std::endl; // TODO remove
 	std::vector<std::string> split_msg = split(msg, " ");
 	switch (m_clients[client]->get_reg_steps())
@@ -211,13 +224,12 @@ void Server::register_client(int client)
 			else
 			{
 				write_to_client(client, "Wrong password");
-				close(client);
+				
 			}
 		}
 		else
 		{
 			write_to_client(client, "You must send a password first");
-			close(client);
 		}
 		break;
 	case 1:
@@ -239,26 +251,36 @@ void Server::register_client(int client)
 		{
 			if (split_msg.size() >= 5)
 			{
-				m_clients[client]->set_user(split_msg[1]);
-				m_clients[client]->set_hostname(split_msg[2]);
-				m_clients[client]->set_servername(split_msg[3]);
 				
-				std::string realname; //togliere i : dal realname
-				for (size_t i = 3; i < split_msg.size(); i++)
+				std::string realname;
+				size_t i = 4;
+				while (i < split_msg.size() && split_msg[i].find(":") != 0)
+					i++;
+				if (i == split_msg.size())
 				{
+					m_clients[client]->send_message("USER :Not enough parameters");
+				}
+				while (i < split_msg.size())
+				{
+					if (split_msg[i].find(":") == 0)
+						split_msg[i].erase(0, 1);
+					
 					realname.append(split_msg[i]);
 					if (i != split_msg.size() - 1)
 						realname.append(" ");
+					i++;
 				}
+				m_clients[client]->set_user(split_msg[1]);
+				m_clients[client]->set_hostname(split_msg[2]);
+				m_clients[client]->set_servername(split_msg[3]);
 				m_clients[client]->set_realname(realname);
-
-				//m_clients[client]->set_realname(split_msg[4]);
 				m_clients[client]->set_reg(3);
 				m_clients[client]->set_connected(true);
 				m_clients[client]->set_registered(true);
 			}
 			else
 				write_to_client(client, "You must send a username first");
+			break;
 		}
 	default:
 		std::cerr << " how do you get here? " << std::endl;

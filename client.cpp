@@ -35,7 +35,10 @@ int main() {
 	std::string message;
 	while (true) {
 		std::cout << "Enter a message to send: ";
-		std::getline(std::cin, message);
+		if (std::getline(std::cin, message).eof()) {
+			break;
+		}
+
 
 		// Send the message to the server
 		if (send(clientSocket, message.c_str(), message.size(), 0) < 0) {
