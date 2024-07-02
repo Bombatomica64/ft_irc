@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 12:53:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 16:17:09 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,13 @@ std::ostream &operator<<(std::ostream &out, Client const &src)
 {
 	out << "Client socket: " << src.get_clientSocket() << std::endl;
 	out << "Client nick: " << src.get_nick() << std::endl;
-	out << "Client user: " << src.get_user() << std::endl;
 	out << "Client registered: " << src.get_registered() << std::endl;
 	out << "Client connected: " << src.get_connected() << std::endl;
 	out << "Client registration steps: " << src.get_reg_steps() << std::endl;
+	out << "Client username: " << src.get_user() << std::endl;
+	out << "Client hostname: " << src.get_hostname() << std::endl;
+	out << "Client servername: " << src.get_servername() << std::endl;
+	out << "Client realname: " << src.get_realname() << std::endl;
 	return out;
 }
 

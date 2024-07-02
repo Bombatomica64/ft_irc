@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 12:54:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 16:19:14 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,9 @@ class Client
 	public:
 		std::string get_nick( void ) const { return m_nick; }
 		std::string get_user( void ) const { return m_user; }
+		std::string get_realname( void ) const { return m_realname; }
+		std::string get_hostname( void ) const { return m_hostname; }
+		std::string get_servername( void ) const { return m_servername; }
 		int			get_clientSocket( void ) const { return m_clientSocket; }
 		int			get_reg_steps( void ) const { return m_reg_steps; }
 		bool		get_registered( void ) const { return m_registered; }
@@ -79,9 +82,9 @@ class Client
 		void		set_user(std::string user) { m_user = user; }
 		void		set_registered(bool reg) { m_registered = reg; }
 		void		set_connected(bool conn) { m_connected = conn; }
-		void		set_realname(std::string realname) { m_realname = realname; std::cout << "realname: " << m_realname << std::endl;}
-		void		set_hostname(std::string hostname) { m_hostname = hostname; std::cout << "hostname: " << m_hostname << std::endl;}
-		void		set_servername(std::string servername) { m_servername = servername; std::cout << "servername: " << m_servername << std::endl;}
+		void		set_hostname(std::string hostname) { m_hostname = hostname; }
+		void		set_servername(std::string servername) { m_servername = servername; }
+		void		set_realname(std::string realname) { m_realname = realname; }
 };
 
 std::ostream &operator<<(std::ostream &out, Client const &src);
