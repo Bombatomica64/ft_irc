@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 12:51:00 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 17:24:51 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ class Server
 	 */
 	public:
 		Channel*	get_channel(std::string name);
+		void		add_channel(std::string name);
+		void		add_channel(std::string name, std::map<char, int> modes);
 	/**
 	 * @brief client functions
 	 */

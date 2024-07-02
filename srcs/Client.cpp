@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 12:53:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 18:11:59 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,16 @@ std::ostream &operator<<(std::ostream &out, Client const &src)
 bool Client::send_message(std::string message)
 {
 	if (send(m_clientSocket, message.c_str(), message.size(), 0) == -1)
+	{
+		std::cerr << "Error: send failed" << std::endl; // TODO handle error
+		return false;
+	}
+	return true;
+}
+
+bool Client::send_message(Client receiver, std::string message)
+{
+	if (send(receiver.get_clientSocket(), message.c_str(), message.size(), 0) == -1)
 	{
 		std::cerr << "Error: send failed" << std::endl; // TODO handle error
 		return false;
@@ -157,9 +167,25 @@ bool Client::nick(std::string new_nick)
 bool Client::join(std::string channel)
 {
 	std::vector<std::string> split_msg = split(channel, " ");
-	if (split_msg.size() == 2)
+	std::vector<std::string> split_channel = split(split_msg[1], ",");
+	std::vector<std::string> split_key;
+	int i = 0;
+	if (split_msg.size() < 2)
 	{
-		m_server->get_channel(split_msg[1])->join_channel(*this);
+		// TODO handle error
+		return false;
+	}
+	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_msg.end(); it++)
+	{
+		Channel *chan = m_server->get_channel(*it);
+		if (chan)
+			chan->join_channel(*this, split_key[i++]);
+		else
+		{
+			m_server->add_channel(*it);
+			chan = m_server->get_channel(*it);
+			chan->add_client(*this);
+		}
 		return true;
 	}
 	// TODO handle error
@@ -169,13 +195,24 @@ bool Client::join(std::string channel)
 bool Client::part(std::string channels)
 {
 	std::vector<std::string> split_msg = split(channels, " ");
-	if (split_msg.size() == 2)
+	std::vector<std::string> split_channel = split(split_msg[1], ",");
+	if (split_msg.size() < 2)
 	{
-		m_server->get_channel(split_msg[1])->leave_channel(*this);
-		return true;
+		// TODO handle error
+		return false;
 	}
-	// TODO handle error
-	return false;
+	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
+	{
+		Channel *chan = m_server->get_channel(*it);
+		if (chan)
+			chan->leave_channel(*this);
+		else
+		{
+			// TODO handle error
+			return false;
+		}
+	}
+	return true;
 }
 
 bool Client::ping(std::string message)

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 12:54:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 15:22:41 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class Client
 		Client(int clientSocket, struct sockaddr_in clientAddr, Server *server);
 		~Client();
 		bool	send_message(std::string message);
+		bool	send_message(Client receiver, std::string message);
 		/*
 		void	receive_message( void );
 		void	connect_to_channel( void );
