@@ -6,13 +6,13 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 18:29:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:01:51 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Client.hpp>
 
-Client::Client(int clientSocket, struct sockaddr_in clientAddr)
+Client::Client(int clientSocket, struct sockaddr_in clientAddr, Server *server) : m_server(server)
 {
 	m_clientSocket = clientSocket;
 	m_clientAddr = clientAddr;
@@ -22,17 +22,16 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_oper = false;
 	Server::get_cmds();
 	m_cmds["QUIT"] = &Client::quit;
-	// m_cmds["JOIN"] = &Client::join;
-	// m_cmds["PART"] = &Client::part;
+	m_cmds["JOIN"] = &Client::join;
+	m_cmds["PART"] = &Client::part;
 	m_cmds["PRIVMSG"] = &Client::privmsg;
 	m_cmds["NICK"] = &Client::nick;
-	// m_cmds["OPER"] = &Client::oper;
-	// m_cmds["MODE"] = &Client::mode;
-	// m_cmds["INVITE"] = &Client::invite;
-	// m_cmds["KICK"] = &Client::kick;
-	// m_cmds["PING"] = &Client::ping;
-	// m_cmds["PONG"] = &Client::pong;
-	// m_cmds["TOPIC"] = &Client::topic;
+	m_cmds["OPER"] = &Client::oper;
+	m_cmds["MODE"] = &Client::mode;
+	m_cmds["INVITE"] = &Client::invite;
+	m_cmds["KICK"] = &Client::kick;
+	m_cmds["PING"] = &Client::ping;
+	m_cmds["TOPIC"] = &Client::topic;
 
 }
 
@@ -50,6 +49,16 @@ std::ostream &operator<<(std::ostream &out, Client const &src)
 	out << "Client connected: " << src.get_connected() << std::endl;
 	out << "Client registration steps: " << src.get_reg_steps() << std::endl;
 	return out;
+}
+
+bool	Client::send_message(std::string message)
+{
+	if (send(m_clientSocket, message.c_str(), message.size(), 0) == -1)
+	{
+		std::cerr << "Error: send failed" << std::endl; //TODO handle error
+		return false;
+	}
+	return true;
 }
 
 void	Client::parse_cmds(std::string cmd)
@@ -83,5 +92,107 @@ bool	Client::quit(std::string message)
 
 bool	Client::privmsg(std::string message)
 {
-	Server::get_id();
+	size_t start = message.find("PRIVMSG");
+	if (start == std::string::npos)
+	{
+		//handle error
+		return false;
+	}
+	std::string msg = message.substr(start + strlen("PRIVMSG "));
+	std::string to_send = msg.substr(msg.find(" :") + 2);
+	std::string target_str = msg.substr(0, msg.find(" :"));
+	std::vector<std::string> split_targets = split(target_str, ",");
+	for (std::vector<std::string>::iterator it = split_targets.begin(); it != split_targets.end(); it++)
+	{
+		switch ((*it)[0])
+		{
+				//send to channel
+			case '#':
+			case '&':
+					 if(!m_server->get_channel(*it)->send_message(*this, to_send))
+					 	return false;
+				break;
+			default:
+				//send to user
+					if(!send_message(to_send))
+						return false;
+				break;
+		}
+	}
+	return true;
+}
+
+bool	Client::nick(std::string new_nick)
+{
+	std::vector<std::string> split_msg = split(new_nick, " ");
+	if (split_msg.size() == 2)
+	{
+		m_nick = split_msg[1];
+		return true;
+	}
+	//TODO handle error
+	return false;
+}
+
+bool	Client::join(std::string channel)
+{
+	std::vector<std::string> split_msg = split(channel, " ");
+	if (split_msg.size() == 2)
+	{
+		m_server->get_channel(split_msg[1])->join_channel(*this);
+		return true;
+	}
+	//TODO handle error
+	return false;
+}
+
+
+bool	Client::part(std::string channels)
+{
+	std::vector<std::string> split_msg = split(channels, " ");
+	if (split_msg.size() == 2)
+	{
+		m_server->get_channel(split_msg[1])->leave_channel(*this);
+		return true;
+	}
+	//TODO handle error
+	return false;
+}
+
+bool	Client::ping(std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 2 && send_message("PONG " + split_msg[1]))
+		return true;
+	//TODO handle error
+	return false;
+}
+
+bool	Client::mode(std::string message)
+{
+	std::vector<std::string> l_command;
+	l_command.push_back(message.substr(message.find("MODE") + strlen("MODE"))); // "MODE"
+	message = message.substr(message.find("MODE") + strlen("MODE"));
+	l_command.push_back(message.substr(message.find(" ") + 1)); // "channel"
+	message = message.substr(message.find(" ") + 1);
+	l_command.push_back(message.substr(message.find(" ") + 1)); // "operation"
+	message = message.substr(message.find(" ") + 1);
+	if (message.find(" ") != std::string::npos)
+		l_command.push_back(message.substr(message.find(" ") + 1)); // "arguments"
+	if (m_server->get_channel(l_command[1])->modify_mode(l_command, *this))
+		return true;
+	//TODO handle error
+	return false;
+}
+
+bool	Client::invite(std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 3)
+	{
+		m_server->get_channel(split_msg[1])->add_client(*m_server->get_client_by_nick(split_msg[2]));
+		return true;
+	}
+	//TODO handle error
+	return false;
 }

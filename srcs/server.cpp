@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 17:37:24 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 10:05:46 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void Server::accept_connection()
 					client_fd.fd = client_socket;
 					client_fd.events = POLLIN;
 					client_fds.push_back(client_fd);
-					m_clients[client_socket] = new Client(client_socket, client_addr);
+					m_clients[client_socket] = new Client(client_socket, client_addr, this);
 				}
 				else
 				{

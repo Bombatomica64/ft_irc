@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 16:04:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 11:01:28 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <main.hpp>
 # include <Client.hpp>
 # include <set>
+# include <Channel.hpp>
 # include <map>
 
 class Client;
@@ -37,6 +38,7 @@ class Server
 		std::vector<struct pollfd> client_fds;
 		struct pollfd server_fd;
 		std::map<int, Client*> m_clients;
+		std::map<std::string, Channel*> m_channels;
 
 	protected :
 		std::set<std::string> m_commands;
@@ -58,6 +60,11 @@ class Server
 		void	get_cmds();
 
 	/**
+	 * @brief server functions
+	 */
+	public:
+		Channel*	get_channel(std::string name);
+	/**
 	 * @brief client functions
 	 */
 	public:
@@ -65,7 +72,7 @@ class Server
 		void	write_to_client(int client, std::string msg);
 		void	register_client(int client);
 		void	parse_cmds(int client, std::string cmd);
-
+		Client*	get_client_by_nick(std::string nick);
 
 	public:
 		class clientSocketException : public std::exception

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/06/27 17:45:40 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:01:29 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ class Channel
 		~Channel();
 		void	add_client(Client client);
 		void	remove_client(Client client);
-		void	send_message(Client sender, std::string message);
+		bool	send_message(Client sender, std::string message);
 		void	join_channel(Client client);
 		void	leave_channel(Client client);
-		bool	modify_mode(char mode, bool value, std::string param, Client client);
+		bool	modify_mode(std::vector<std::string> command, Client client);
 };
 
 #endif
