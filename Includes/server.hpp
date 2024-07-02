@@ -6,29 +6,17 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 11:01:28 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:51:00 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include <iostream>
-# include <server.hpp>
-# include <arpa/inet.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include <sys/socket.h>
-# include <cstdlib>
-# include <poll.h>
-# include <vector>
-# include <netinet/in.h> 
 # include <main.hpp>
-# include <Client.hpp>
-# include <set>
 # include <Channel.hpp>
-# include <map>
 
+class Channel;
 class Client;
 
 class Server
@@ -46,8 +34,8 @@ class Server
 		int			m_port;
 		struct sockaddr_in m_addr;
 		Server() {}
-		Server(Server const &src);
-		Server &operator=(Server const &src);
+		//Server(Server const &src);
+		//Server &operator=(Server const &src);
 
 	public:
 		Server(char *port, char *psw);

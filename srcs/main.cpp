@@ -6,11 +6,11 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/01 18:31:27 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:21:32 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <main.hpp>
+#include <server.hpp>
 
 int main(int ac, char **av)
 {

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 10:05:46 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:28:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ Server::~Server()
 	m_clients.clear();
 	m_commands.clear();
 	client_fds.clear();
+	m_channels.clear();
 }
 
 void Server::bind_socket(void)
@@ -234,11 +235,24 @@ void Server::register_client(int client)
 			write_to_client(client, "You must send a nickname first");
 		break;
 	case 2:
-		if (split_msg[0] == "USER")
+				if (split_msg[0] == "USER")
 		{
-			if (split_msg.size() == 2)
+			if (split_msg.size() >= 5)
 			{
 				m_clients[client]->set_user(split_msg[1]);
+				m_clients[client]->set_hostname(split_msg[2]);
+				m_clients[client]->set_servername(split_msg[3]);
+				
+				std::string realname; //togliere i : dal realname
+				for (size_t i = 3; i < split_msg.size(); i++)
+				{
+					realname.append(split_msg[i]);
+					if (i != split_msg.size() - 1)
+						realname.append(" ");
+				}
+				m_clients[client]->set_realname(realname);
+
+				//m_clients[client]->set_realname(split_msg[4]);
 				m_clients[client]->set_reg(3);
 				m_clients[client]->set_connected(true);
 				m_clients[client]->set_registered(true);
@@ -246,9 +260,6 @@ void Server::register_client(int client)
 			else
 				write_to_client(client, "You must send a username first");
 		}
-		else
-			write_to_client(client, "You must send a username first");
-		break;
 	default:
 		std::cerr << " how do you get here? " << std::endl;
 		close(client);
@@ -290,4 +301,21 @@ void	Server::parse_cmds(int client, std::string cmd)
 void Server::write_to_client(int client, std::string msg)
 {
 	send(client, msg.c_str(), msg.size(), 0); // possibly add MSG_NOSIGNAL with errno TODO
+}
+
+Client*		Server::get_client_by_nick(std::string nick)
+{
+	for (std::map<int, Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	{
+		if (it->second->get_nick() == nick)
+			return it->second;
+	}
+	return NULL;
+}
+
+Channel*	Server::get_channel(std::string name)
+{
+	if (m_channels.find(name) != m_channels.end())
+		return m_channels[name];
+	return NULL;
 }
