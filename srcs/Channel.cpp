@@ -6,13 +6,28 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 16:04:52 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 18:30:21 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Channel.hpp>
 
-Channel::Channel(std::string name)
+Channel::Channel(std::string name, Server *server) : m_server(server)
+{
+	m_name = name;
+	m_modes['i'] = 0;
+	m_modes['t'] = 0;
+	m_modes['k'] = 0;
+	m_modes['o'] = 0;
+	m_modes['l'] = 0;
+	m_mode_funcs['i'] = &Channel::modify_invite;
+	m_mode_funcs['t'] = &Channel::modify_topic_mode;
+	m_mode_funcs['k'] = &Channel::modify_key_mode;
+	m_mode_funcs['o'] = &Channel::modify_op;
+	m_mode_funcs['l'] = &Channel::modify_limit;
+}
+
+Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : m_server(server) , m_modes(modes)
 {
 	m_name = name;
 	m_modes['i'] = 0;
@@ -183,7 +198,7 @@ void	Channel::modify_limit(Client client, std::string parameters, bool what)
 	{
 		try
 		{
-			m_modes['l'] = std::strtol(parameters, NULL, 10);
+			m_modes['l'] = std::strtol(parameters.c_str(), NULL, 10);
 			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +l " + parameters + "\r\n");
 		}
 		catch(const std::exception& e)

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 16:01:02 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 18:29:12 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,14 @@ class Channel
 		std::string 		m_topic;
 		int					m_limit;
 		std::string 		m_key;
+		Server				*m_server;
 		Channel() {}
 		Channel(Channel const &src);
 		Channel &operator=(Channel const &src);
 
 	public:
-		Channel(std::string name);
-		// Channel(std::string name, std::map<char, int> modes);
+		Channel(std::string name, Server *server);
+		Channel(std::string name, Server *server,std::map<char, int> modes);
 		~Channel();
 		void	add_client(Client client);
 		void	remove_client(Client client);

@@ -8,58 +8,94 @@
 $(NAME)	Makefile	/^$(NAME):$/;"	t
 *.tcc	.vscode/settings.json	/^		"*.tcc": "cpp",$/;"	s	object:files.associations
 BG_BLACK	Includes/colours.h	/^# define BG_BLACK /;"	d
+BG_BLACK	Includes/colours.hpp	/^# define BG_BLACK /;"	d
 BG_BLUE	Includes/colours.h	/^# define BG_BLUE /;"	d
+BG_BLUE	Includes/colours.hpp	/^# define BG_BLUE /;"	d
 BG_BRIGHT_BLACK	Includes/colours.h	/^# define BG_BRIGHT_BLACK /;"	d
+BG_BRIGHT_BLACK	Includes/colours.hpp	/^# define BG_BRIGHT_BLACK /;"	d
 BG_BRIGHT_BLUE	Includes/colours.h	/^# define BG_BRIGHT_BLUE /;"	d
+BG_BRIGHT_BLUE	Includes/colours.hpp	/^# define BG_BRIGHT_BLUE /;"	d
 BG_BRIGHT_CYAN	Includes/colours.h	/^# define BG_BRIGHT_CYAN /;"	d
+BG_BRIGHT_CYAN	Includes/colours.hpp	/^# define BG_BRIGHT_CYAN /;"	d
 BG_BRIGHT_GREEN	Includes/colours.h	/^# define BG_BRIGHT_GREEN /;"	d
+BG_BRIGHT_GREEN	Includes/colours.hpp	/^# define BG_BRIGHT_GREEN /;"	d
 BG_BRIGHT_MAGENTA	Includes/colours.h	/^# define BG_BRIGHT_MAGENTA /;"	d
+BG_BRIGHT_MAGENTA	Includes/colours.hpp	/^# define BG_BRIGHT_MAGENTA /;"	d
 BG_BRIGHT_RED	Includes/colours.h	/^# define BG_BRIGHT_RED /;"	d
+BG_BRIGHT_RED	Includes/colours.hpp	/^# define BG_BRIGHT_RED /;"	d
 BG_BRIGHT_WHITE	Includes/colours.h	/^# define BG_BRIGHT_WHITE /;"	d
+BG_BRIGHT_WHITE	Includes/colours.hpp	/^# define BG_BRIGHT_WHITE /;"	d
 BG_BRIGHT_YELLOW	Includes/colours.h	/^# define BG_BRIGHT_YELLOW /;"	d
+BG_BRIGHT_YELLOW	Includes/colours.hpp	/^# define BG_BRIGHT_YELLOW /;"	d
 BG_CYAN	Includes/colours.h	/^# define BG_CYAN /;"	d
+BG_CYAN	Includes/colours.hpp	/^# define BG_CYAN /;"	d
 BG_GREEN	Includes/colours.h	/^# define BG_GREEN /;"	d
+BG_GREEN	Includes/colours.hpp	/^# define BG_GREEN /;"	d
 BG_MAGENTA	Includes/colours.h	/^# define BG_MAGENTA /;"	d
+BG_MAGENTA	Includes/colours.hpp	/^# define BG_MAGENTA /;"	d
 BG_RED	Includes/colours.h	/^# define BG_RED /;"	d
+BG_RED	Includes/colours.hpp	/^# define BG_RED /;"	d
 BG_RESET	Includes/colours.h	/^# define BG_RESET /;"	d
+BG_RESET	Includes/colours.hpp	/^# define BG_RESET /;"	d
 BG_WHITE	Includes/colours.h	/^# define BG_WHITE /;"	d
+BG_WHITE	Includes/colours.hpp	/^# define BG_WHITE /;"	d
 BG_YELLOW	Includes/colours.h	/^# define BG_YELLOW /;"	d
+BG_YELLOW	Includes/colours.hpp	/^# define BG_YELLOW /;"	d
 BLACK	Includes/colours.h	/^# define BLACK /;"	d
+BLACK	Includes/colours.hpp	/^# define BLACK /;"	d
 BLUE	Includes/colours.h	/^# define BLUE /;"	d
+BLUE	Includes/colours.hpp	/^# define BLUE /;"	d
 BOLD	Includes/colours.h	/^# define BOLD /;"	d
+BOLD	Includes/colours.hpp	/^# define BOLD /;"	d
 BRIGHT_BLACK	Includes/colours.h	/^# define BRIGHT_BLACK /;"	d
+BRIGHT_BLACK	Includes/colours.hpp	/^# define BRIGHT_BLACK /;"	d
 BRIGHT_BLUE	Includes/colours.h	/^# define BRIGHT_BLUE /;"	d
+BRIGHT_BLUE	Includes/colours.hpp	/^# define BRIGHT_BLUE /;"	d
 BRIGHT_CYAN	Includes/colours.h	/^# define BRIGHT_CYAN /;"	d
+BRIGHT_CYAN	Includes/colours.hpp	/^# define BRIGHT_CYAN /;"	d
 BRIGHT_GREEN	Includes/colours.h	/^# define BRIGHT_GREEN /;"	d
+BRIGHT_GREEN	Includes/colours.hpp	/^# define BRIGHT_GREEN /;"	d
 BRIGHT_MAGENTA	Includes/colours.h	/^# define BRIGHT_MAGENTA /;"	d
+BRIGHT_MAGENTA	Includes/colours.hpp	/^# define BRIGHT_MAGENTA /;"	d
 BRIGHT_RED	Includes/colours.h	/^# define BRIGHT_RED /;"	d
+BRIGHT_RED	Includes/colours.hpp	/^# define BRIGHT_RED /;"	d
 BRIGHT_WHITE	Includes/colours.h	/^# define BRIGHT_WHITE /;"	d
+BRIGHT_WHITE	Includes/colours.hpp	/^# define BRIGHT_WHITE /;"	d
 BRIGHT_YELLOW	Includes/colours.h	/^# define BRIGHT_YELLOW /;"	d
+BRIGHT_YELLOW	Includes/colours.hpp	/^# define BRIGHT_YELLOW /;"	d
 BUFFER_SIZE	Includes/main.hpp	/^# define BUFFER_SIZE /;"	d
 CC	Makefile	/^CC = clang++ -std=c++98 -Wall -Wextra -Werror -g$/;"	m
 CHANNEL_HPP	Includes/Channel.hpp	/^# define CHANNEL_HPP$/;"	d
 CLIENT_HPP	Includes/Client.hpp	/^# define CLIENT_HPP$/;"	d
 COLOURS_H	Includes/colours.h	/^# define COLOURS_H$/;"	d
+COLOURS_H	Includes/colours.hpp	/^# define COLOURS_H$/;"	d
 CYAN	Includes/colours.h	/^# define CYAN /;"	d
+CYAN	Includes/colours.hpp	/^# define CYAN /;"	d
 Channel	Includes/Channel.hpp	/^		Channel() {}$/;"	f	class:Channel
 Channel	Includes/Channel.hpp	/^class Channel$/;"	c
-Channel	srcs/Channel.cpp	/^Channel::Channel(std::string name)$/;"	f	class:Channel
+Channel	srcs/Channel.cpp	/^Channel::Channel(std::string name, Server *server) : m_server(server)$/;"	f	class:Channel
 Client	Includes/Client.hpp	/^		Client() {}$/;"	f	class:Client
 Client	Includes/Client.hpp	/^class Client$/;"	c
 Client	srcs/Client.cpp	/^Client::Client(Client const &src)$/;"	f	class:Client
 Client	srcs/Client.cpp	/^Client::Client(int clientSocket, struct sockaddr_in clientAddr, Server *server) : m_server(serve/;"	f	class:Client
 ClientException	Includes/server.hpp	/^		class ClientException : public std::exception$/;"	c	class:Server
 GREEN	Includes/colours.h	/^# define GREEN /;"	d
+GREEN	Includes/colours.hpp	/^# define GREEN /;"	d
 INC	Makefile	/^INC = -I Includes$/;"	m
 MAGENTA	Includes/colours.h	/^# define MAGENTA /;"	d
+MAGENTA	Includes/colours.hpp	/^# define MAGENTA /;"	d
 MAIN_HPP	Includes/main.hpp	/^# define MAIN_HPP$/;"	d
 My Project	Readme.md	/^# My Project$/;"	c
 NAME	Makefile	/^NAME = ircserv$/;"	m
 PURPLE	Includes/colours.h	/^# define PURPLE /;"	d
+PURPLE	Includes/colours.hpp	/^# define PURPLE /;"	d
 PollException	Includes/server.hpp	/^		class PollException : public std::exception$/;"	c	class:Server
 RED	Includes/colours.h	/^# define RED /;"	d
+RED	Includes/colours.hpp	/^# define RED /;"	d
 RESET	Includes/colours.h	/^# define RESET /;"	d
+RESET	Includes/colours.hpp	/^# define RESET /;"	d
 REVERSED	Includes/colours.h	/^# define REVERSED /;"	d
+REVERSED	Includes/colours.hpp	/^# define REVERSED /;"	d
 SERVER_HPP	Includes/server.hpp	/^# define SERVER_HPP$/;"	d
 SRC	Makefile	/^SRC = $(SRCS) $(UTILS)$/;"	m
 SRCS	Makefile	/^SRCS =	srcs\/main.cpp \\$/;"	m
@@ -68,11 +104,17 @@ Server	Includes/server.hpp	/^class Server$/;"	c
 Server	srcs/server.cpp	/^Server::Server(char *port, char *psw)$/;"	f	class:Server
 TO IMPLEMENT	Readme.md	/^## TO IMPLEMENT$/;"	s
 UNDERLINE	Includes/colours.h	/^# define UNDERLINE /;"	d
+UNDERLINE	Includes/colours.hpp	/^# define UNDERLINE /;"	d
 UTILS	Makefile	/^UTILS = utils\/string_utils.cpp$/;"	m
 WHITE	Includes/colours.h	/^# define WHITE /;"	d
+WHITE	Includes/colours.hpp	/^# define WHITE /;"	d
 YELLOW	Includes/colours.h	/^# define YELLOW /;"	d
+YELLOW	Includes/colours.hpp	/^# define YELLOW /;"	d
 accept_connection	srcs/server.cpp	/^void Server::accept_connection()$/;"	f	class:Server	typeref:typename:void
+add_ban	Includes/Channel.hpp	/^		void	add_ban(std::string ban) { m_bans.push_back(ban); (void)ban; }$/;"	f	class:Channel	typeref:typename:void
 add_client	srcs/Channel.cpp	/^void	Channel::add_client(Client client)$/;"	f	class:Channel	typeref:typename:void
+add_invite	Includes/Channel.hpp	/^		void	add_invite(Client invite) { m_invites.insert(invite); (void)invite;}$/;"	f	class:Channel	typeref:typename:void
+add_op	Includes/Channel.hpp	/^		void	add_op(Client op) { m_ops.insert(op); (void)op; }$/;"	f	class:Channel	typeref:typename:void
 algorithm	.vscode/settings.json	/^		"algorithm": "cpp",$/;"	s	object:files.associations
 all	Makefile	/^all: $(NAME)$/;"	t
 array	.vscode/settings.json	/^		"array": "cpp",$/;"	s	object:files.associations
@@ -102,14 +144,26 @@ fclean	Makefile	/^fclean: clean$/;"	t
 files.associations	.vscode/settings.json	/^	"files.associations": {$/;"	o
 fstream	.vscode/settings.json	/^		"fstream": "cpp",$/;"	s	object:files.associations
 functional	.vscode/settings.json	/^		"functional": "cpp",$/;"	s	object:files.associations
+get_bans	Includes/Channel.hpp	/^		std::vector<std::string>	get_bans() { return m_bans; }$/;"	f	class:Channel	typeref:typename:std::vector<std::string>
 get_channel	srcs/server.cpp	/^Channel*	Server::get_channel(std::string name)$/;"	f	class:Server	typeref:typename:Channel *
 get_clientSocket	Includes/Client.hpp	/^		int			get_clientSocket( void ) const { return m_clientSocket; }$/;"	f	class:Client	typeref:typename:int
 get_client_by_nick	srcs/server.cpp	/^Client*		Server::get_client_by_nick(std::string nick)$/;"	f	class:Server	typeref:typename:Client *
+get_clients	Includes/Channel.hpp	/^		std::vector<Client>	get_clients() { return m_clients; }$/;"	f	class:Channel	typeref:typename:std::vector<Client>
 get_cmds	srcs/server.cpp	/^void Server::get_cmds()$/;"	f	class:Server	typeref:typename:void
 get_connected	Includes/Client.hpp	/^		bool		get_connected( void ) const { return m_connected; }$/;"	f	class:Client	typeref:typename:bool
+get_hostname	Includes/Client.hpp	/^		std::string get_hostname( void ) const { return m_hostname; }$/;"	f	class:Client	typeref:typename:std::string
+get_invites	Includes/Channel.hpp	/^		std::set<Client>	get_invites() { return m_invites; }$/;"	f	class:Channel	typeref:typename:std::set<Client>
+get_key	Includes/Channel.hpp	/^		std::string	get_key() { return m_key; }$/;"	f	class:Channel	typeref:typename:std::string
+get_limit	Includes/Channel.hpp	/^		int	get_limit() { return m_limit; }$/;"	f	class:Channel	typeref:typename:int
+get_modes	Includes/Channel.hpp	/^		std::map<char, int>	get_modes() { return m_modes; }$/;"	f	class:Channel	typeref:typename:std::map<char,int>
+get_name	Includes/Channel.hpp	/^		std::string	get_name() { return m_name; }$/;"	f	class:Channel	typeref:typename:std::string
 get_nick	Includes/Client.hpp	/^		std::string get_nick( void ) const { return m_nick; }$/;"	f	class:Client	typeref:typename:std::string
+get_ops	Includes/Channel.hpp	/^		std::set<Client>	get_ops() { return m_ops; }$/;"	f	class:Channel	typeref:typename:std::set<Client>
+get_realname	Includes/Client.hpp	/^		std::string get_realname( void ) const { return m_realname; }$/;"	f	class:Client	typeref:typename:std::string
 get_reg_steps	Includes/Client.hpp	/^		int			get_reg_steps( void ) const { return m_reg_steps; }$/;"	f	class:Client	typeref:typename:int
 get_registered	Includes/Client.hpp	/^		bool		get_registered( void ) const { return m_registered; }$/;"	f	class:Client	typeref:typename:bool
+get_servername	Includes/Client.hpp	/^		std::string get_servername( void ) const { return m_servername; }$/;"	f	class:Client	typeref:typename:std::string
+get_topic	Includes/Channel.hpp	/^		std::string	get_topic() { return m_topic; }$/;"	f	class:Channel	typeref:typename:std::string
 get_user	Includes/Client.hpp	/^		std::string get_user( void ) const { return m_user; }$/;"	f	class:Client	typeref:typename:std::string
 initializer_list	.vscode/settings.json	/^		"initializer_list": "cpp",$/;"	s	object:files.associations
 invite	srcs/Client.cpp	/^bool Client::invite(std::string message)$/;"	f	class:Client	typeref:typename:bool
@@ -118,30 +172,38 @@ iostream	.vscode/settings.json	/^		"iostream": "cpp",$/;"	s	object:files.associa
 istream	.vscode/settings.json	/^		"istream": "cpp",$/;"	s	object:files.associations
 iterator	.vscode/settings.json	/^		"iterator": "cpp",$/;"	s	object:files.associations
 join	srcs/Client.cpp	/^bool Client::join(std::string channel)$/;"	f	class:Client	typeref:typename:bool
-join_channel	srcs/Channel.cpp	/^void	Channel::join_channel(Client client)$/;"	f	class:Channel	typeref:typename:void
+join_channel	srcs/Channel.cpp	/^void	Channel::join_channel(Client client, std::string parameters)$/;"	f	class:Channel	typeref:typename:void
 leave_channel	srcs/Channel.cpp	/^void	Channel::leave_channel(Client client)$/;"	f	class:Channel	typeref:typename:void
 limits	.vscode/settings.json	/^		"limits": "cpp",$/;"	s	object:files.associations
 m_addr	Includes/server.hpp	/^		struct sockaddr_in m_addr;$/;"	m	class:Server	typeref:struct:sockaddr_in
+m_bans	Includes/Channel.hpp	/^		std::vector<std::string>	m_bans;$/;"	m	class:Channel	typeref:typename:std::vector<std::string>
 m_channels	Includes/server.hpp	/^		std::map<std::string, Channel*> m_channels;$/;"	m	class:Server	typeref:typename:std::map<std::string,Channel * >
 m_clientAddr	Includes/Client.hpp	/^		struct sockaddr_in m_clientAddr;$/;"	m	class:Client	typeref:struct:sockaddr_in
 m_clientSocket	Includes/Client.hpp	/^		int			m_clientSocket;$/;"	m	class:Client	typeref:typename:int
-m_clients	Includes/Channel.hpp	/^		std::vector<Client> m_clients;$/;"	m	class:Channel	typeref:typename:std::vector<Client>
+m_clients	Includes/Channel.hpp	/^		std::vector<Client>			m_clients;$/;"	m	class:Channel	typeref:typename:std::vector<Client>
 m_clients	Includes/server.hpp	/^		std::map<int, Client*> m_clients;$/;"	m	class:Server	typeref:typename:std::map<int,Client * >
 m_cmds	Includes/Client.hpp	/^		std::map<std::string, bool (Client::*)(std::string)> m_cmds;$/;"	m	class:Client	typeref:typename:std::map<std::string,bool (Client::*)(std::string)>
 m_commands	Includes/server.hpp	/^		std::set<std::string> m_commands;$/;"	m	class:Server	typeref:typename:std::set<std::string>
 m_connected	Includes/Client.hpp	/^		bool		m_connected;$/;"	m	class:Client	typeref:typename:bool
 m_hostname	Includes/Client.hpp	/^		std::string m_hostname;$/;"	m	class:Client	typeref:typename:std::string
+m_invites	Includes/Channel.hpp	/^		std::set<Client>	m_invites;$/;"	m	class:Channel	typeref:typename:std::set<Client>
+m_key	Includes/Channel.hpp	/^		std::string 		m_key;$/;"	m	class:Channel	typeref:typename:std::string
+m_limit	Includes/Channel.hpp	/^		int					m_limit;$/;"	m	class:Channel	typeref:typename:int
+m_mode_funcs	Includes/Channel.hpp	/^		std::map<char, void (Channel::*)(Client, std::string, bool)> m_mode_funcs;$/;"	m	class:Channel	typeref:typename:std::map<char,void (Channel::*)(Client,std::string,bool)>
 m_modes	Includes/Channel.hpp	/^		std::map<char, int> m_modes;$/;"	m	class:Channel	typeref:typename:std::map<char,int>
-m_name	Includes/Channel.hpp	/^		std::string m_name;$/;"	m	class:Channel	typeref:typename:std::string
+m_name	Includes/Channel.hpp	/^		std::string			m_name;$/;"	m	class:Channel	typeref:typename:std::string
 m_nick	Includes/Client.hpp	/^		std::string m_nick;$/;"	m	class:Client	typeref:typename:std::string
+m_ops	Includes/Channel.hpp	/^		std::set<Client>	m_ops;$/;"	m	class:Channel	typeref:typename:std::set<Client>
 m_port	Includes/server.hpp	/^		int			m_port;$/;"	m	class:Server	typeref:typename:int
 m_psw	Includes/server.hpp	/^		std::string m_psw;$/;"	m	class:Server	typeref:typename:std::string
 m_realname	Includes/Client.hpp	/^		std::string m_realname;$/;"	m	class:Client	typeref:typename:std::string
 m_reg_steps	Includes/Client.hpp	/^		int	m_reg_steps;$/;"	m	class:Client	typeref:typename:int
 m_registered	Includes/Client.hpp	/^		bool		m_registered;$/;"	m	class:Client	typeref:typename:bool
+m_server	Includes/Channel.hpp	/^		Server				*m_server;$/;"	m	class:Channel	typeref:typename:Server *
 m_server	Includes/Client.hpp	/^		Server		*m_server;$/;"	m	class:Client	typeref:typename:Server *
 m_servername	Includes/Client.hpp	/^		std::string m_servername;$/;"	m	class:Client	typeref:typename:std::string
 m_socket	Includes/server.hpp	/^		int			m_socket;$/;"	m	class:Server	typeref:typename:int
+m_topic	Includes/Channel.hpp	/^		std::string 		m_topic;$/;"	m	class:Channel	typeref:typename:std::string
 m_user	Includes/Client.hpp	/^		std::string m_user;$/;"	m	class:Client	typeref:typename:std::string
 main	client.cpp	/^int main() {$/;"	f	typeref:typename:int
 main	srcs/main.cpp	/^int main(int ac, char **av)$/;"	f	typeref:typename:int
@@ -149,13 +211,21 @@ map	.vscode/settings.json	/^		"map": "cpp",$/;"	s	object:files.associations
 memory	.vscode/settings.json	/^		"memory": "cpp",$/;"	s	object:files.associations
 memory_resource	.vscode/settings.json	/^		"memory_resource": "cpp",$/;"	s	object:files.associations
 mode	srcs/Client.cpp	/^bool Client::mode(std::string message)$/;"	f	class:Client	typeref:typename:bool
+modify_invite	srcs/Channel.cpp	/^void	Channel::modify_invite(Client client, std::string parameters, bool what)$/;"	f	class:Channel	typeref:typename:void
+modify_key_mode	srcs/Channel.cpp	/^void	Channel::modify_key_mode(Client client, std::string parameters, bool what)$/;"	f	class:Channel	typeref:typename:void
+modify_limit	srcs/Channel.cpp	/^void	Channel::modify_limit(Client client, std::string parameters, bool what)$/;"	f	class:Channel	typeref:typename:void
 modify_mode	srcs/Channel.cpp	/^bool	Channel::modify_mode(std::vector<std::string> command, Client client)$/;"	f	class:Channel	typeref:typename:bool
+modify_op	srcs/Channel.cpp	/^void	Channel::modify_op(Client client, std::string parameters, bool what)$/;"	f	class:Channel	typeref:typename:void
+modify_topic_mode	srcs/Channel.cpp	/^void	Channel::modify_topic_mode(Client client, std::string parameters, bool what)$/;"	f	class:Channel	typeref:typename:void
 new	.vscode/settings.json	/^		"new": "cpp",$/;"	s	object:files.associations
 nick	srcs/Client.cpp	/^bool Client::nick(std::string new_nick)$/;"	f	class:Client	typeref:typename:bool
 numeric	.vscode/settings.json	/^		"numeric": "cpp",$/;"	s	object:files.associations
+operator !=	Includes/Client.hpp	/^		bool	operator!=(Client const &src) const { return !(*this == src); }$/;"	f	class:Client	typeref:typename:bool
+operator <	Includes/Client.hpp	/^		bool	operator<(Client const &src) const { return (m_clientSocket < src.get_clientSocket()); }$/;"	f	class:Client	typeref:typename:bool
 operator <<	srcs/Client.cpp	/^std::ostream &operator<<(std::ostream &out, Client const &src)$/;"	f	typeref:typename:std::ostream &
 operator =	srcs/Client.cpp	/^Client& Client::operator=(Client const &src)$/;"	f	class:Client	typeref:typename:Client &
-operator ==	Includes/Client.hpp	/^		bool	operator==(Client const &src) const { return m_clientSocket == src.m_clientSocket; }$/;"	f	class:Client	typeref:typename:bool
+operator ==	Includes/Client.hpp	/^		bool	operator==(Client const &src) const { return (m_clientSocket == src.get_clientSocket()); /;"	f	class:Client	typeref:typename:bool
+operator >	Includes/Client.hpp	/^		bool	operator>(Client const &src) const { return (m_clientSocket > src.get_clientSocket()); }$/;"	f	class:Client	typeref:typename:bool
 optional	.vscode/settings.json	/^		"optional": "cpp",$/;"	s	object:files.associations
 ostream	.vscode/settings.json	/^		"ostream": "cpp",$/;"	s	object:files.associations
 parse_cmds	srcs/Client.cpp	/^void Client::parse_cmds(std::string cmd)$/;"	f	class:Client	typeref:typename:void
@@ -172,16 +242,26 @@ read_from_client	srcs/server.cpp	/^void Server::read_from_client(int client)$/;"
 register_client	srcs/server.cpp	/^void Server::register_client(int client)$/;"	f	class:Server	typeref:typename:void
 remove_client	srcs/Channel.cpp	/^void	Channel::remove_client(Client client)$/;"	f	class:Channel	typeref:typename:void
 send_message	srcs/Channel.cpp	/^bool	Channel::send_message(Client sender, std::string message)$/;"	f	class:Channel	typeref:typename:bool
+send_message	srcs/Channel.cpp	/^bool	Channel::send_message(std::string message)$/;"	f	class:Channel	typeref:typename:bool
+send_message	srcs/Client.cpp	/^bool Client::send_message(Client receiver, std::string message)$/;"	f	class:Client	typeref:typename:bool
 send_message	srcs/Client.cpp	/^bool Client::send_message(std::string message)$/;"	f	class:Client	typeref:typename:bool
 server_fd	Includes/server.hpp	/^		struct pollfd server_fd;$/;"	m	class:Server	typeref:struct:pollfd
 set	.vscode/settings.json	/^		"set": "cpp",$/;"	s	object:files.associations
+set_bans	Includes/Channel.hpp	/^		void	set_bans(std::vector<std::string> bans) { m_bans = bans; }$/;"	f	class:Channel	typeref:typename:void
 set_connected	Includes/Client.hpp	/^		void		set_connected(bool conn) { m_connected = conn; }$/;"	f	class:Client	typeref:typename:void
-set_hostname	Includes/Client.hpp	/^		void		set_hostname(std::string hostname) { m_hostname = hostname; std::cout << "hostname: " <</;"	f	class:Client	typeref:typename:void
+set_hostname	Includes/Client.hpp	/^		void		set_hostname(std::string hostname) { m_hostname = hostname; }$/;"	f	class:Client	typeref:typename:void
+set_invites	Includes/Channel.hpp	/^		void	set_invites(std::set<Client> invites) { m_invites = invites; }$/;"	f	class:Channel	typeref:typename:void
+set_key	Includes/Channel.hpp	/^		void	set_key(std::string key) { m_key = key; }$/;"	f	class:Channel	typeref:typename:void
+set_limit	Includes/Channel.hpp	/^		void	set_limit(int limit) { m_limit = limit; }$/;"	f	class:Channel	typeref:typename:void
+set_modes	Includes/Channel.hpp	/^		void	set_modes(std::map<char, int> modes) { m_modes = modes; }$/;"	f	class:Channel	typeref:typename:void
+set_name	Includes/Channel.hpp	/^		void	set_name(std::string name) { m_name = name; }$/;"	f	class:Channel	typeref:typename:void
 set_nick	Includes/Client.hpp	/^		void		set_nick(std::string nick) { m_nick = nick; }$/;"	f	class:Client	typeref:typename:void
-set_realname	Includes/Client.hpp	/^		void		set_realname(std::string realname) { m_realname = realname; std::cout << "realname: " <</;"	f	class:Client	typeref:typename:void
+set_ops	Includes/Channel.hpp	/^		void	set_ops(std::set<Client> ops) { m_ops = ops; }$/;"	f	class:Channel	typeref:typename:void
+set_realname	Includes/Client.hpp	/^		void		set_realname(std::string realname) { m_realname = realname; }$/;"	f	class:Client	typeref:typename:void
 set_reg	Includes/Client.hpp	/^		void		set_reg(int step) { m_reg_steps = step; }$/;"	f	class:Client	typeref:typename:void
 set_registered	Includes/Client.hpp	/^		void		set_registered(bool reg) { m_registered = reg; }$/;"	f	class:Client	typeref:typename:void
-set_servername	Includes/Client.hpp	/^		void		set_servername(std::string servername) { m_servername = servername; std::cout << "server/;"	f	class:Client	typeref:typename:void
+set_servername	Includes/Client.hpp	/^		void		set_servername(std::string servername) { m_servername = servername; }$/;"	f	class:Client	typeref:typename:void
+set_topic	Includes/Channel.hpp	/^		void	set_topic(std::string topic) { m_topic = topic; }$/;"	f	class:Channel	typeref:typename:void
 set_user	Includes/Client.hpp	/^		void		set_user(std::string user) { m_user = user; }$/;"	f	class:Client	typeref:typename:void
 split	utils/string_utils.cpp	/^std::vector<std::string> split(std::string str, std::string token)$/;"	f	typeref:typename:std::vector<std::string>
 sstream	.vscode/settings.json	/^		"sstream": "cpp",$/;"	s	object:files.associations

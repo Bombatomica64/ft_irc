@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 18:31:16 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 18:30:47 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,12 @@ Server::~Server()
 {
 	close(m_socket);
 	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
-	{
 		delete it->second;
-	}
 	m_clients.clear();
 	m_commands.clear();
 	client_fds.clear();
+	for (std::map<std::string, Channel *>::iterator it = m_channels.begin(); it != m_channels.end(); ++it)
+		delete it->second;
 	m_channels.clear();
 }
 
@@ -295,6 +295,40 @@ void	Server::parse_cmds(int client, std::string cmd)
 	if (!cmd.empty() && m_clients.find(client) != m_clients.end())
 		m_clients[client]->parse_cmds(cmd);
 }
+
+void Server::write_to_client(int client, std::string msg)
+{
+	send(client, msg.c_str(), msg.size(), 0); // possibly add MSG_NOSIGNAL with errno TODO
+}
+
+Client*		Server::get_client_by_nick(std::string nick)
+{
+	for (std::map<int, Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	{
+		if (it->second->get_nick() == nick)
+			return it->second;
+	}
+	return NULL;
+}
+
+Channel*	Server::get_channel(std::string name)
+{
+	if (m_channels.find(name) != m_channels.end())
+		return m_channels[name];
+	return NULL;
+}
+
+void	Server::add_channel(std::string name)
+{
+	if (m_channels.find(name) == m_channels.end())
+		m_channels[name] = new Channel(name, this);
+}
+
+void	Server::add_channel(std::string name, std::map<char, int> modes)
+{
+	if (m_channels.find(name) == m_channels.end())
+		m_channels[name] = new Channel(name, this, modes);
+}
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
 // {
@@ -319,25 +353,3 @@ void	Server::parse_cmds(int client, std::string cmd)
 // 	write_to_client(client, "You must send a password first");
 // 	close(client);
 // }
-
-void Server::write_to_client(int client, std::string msg)
-{
-	send(client, msg.c_str(), msg.size(), 0); // possibly add MSG_NOSIGNAL with errno TODO
-}
-
-Client*		Server::get_client_by_nick(std::string nick)
-{
-	for (std::map<int, Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
-	{
-		if (it->second->get_nick() == nick)
-			return it->second;
-	}
-	return NULL;
-}
-
-Channel*	Server::get_channel(std::string name)
-{
-	if (m_channels.find(name) != m_channels.end())
-		return m_channels[name];
-	return NULL;
-}
