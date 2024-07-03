@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 11:32:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 15:49:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ Client& Client::operator=(Client const &src)
 	m_server = src.m_server;
 	return *this;
 }
+
+// bool Client::operator==(Client &src) const
+// {
+// 	return (m_clientSocket == src.get_clientSocket());
+// }
 
 Client::~Client()
 {

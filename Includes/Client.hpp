@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 15:22:41 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 16:01:38 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-# include <server.hpp>
+# include "server.hpp"
 
 class Server;
 
@@ -37,7 +37,10 @@ class Client
 		Client() {}
 		Client(Client const &src);
 		Client &operator=(Client const &src);
-		bool	operator==(Client const &src) const { return m_clientSocket == src.m_clientSocket; }
+		bool	operator==(Client const &src) const { return (m_clientSocket == src.get_clientSocket()); }
+		bool	operator!=(Client const &src) const { return !(*this == src); }
+		bool	operator<(Client const &src) const { return (m_clientSocket < src.get_clientSocket()); }
+		bool	operator>(Client const &src) const { return (m_clientSocket > src.get_clientSocket()); }
 		Client(int clientSocket, struct sockaddr_in clientAddr, Server *server);
 		~Client();
 		bool	send_message(std::string message);

@@ -6,11 +6,11 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 12:45:59 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 16:04:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <server.hpp>
+#include <Channel.hpp>
 
 Channel::Channel(std::string name)
 {
@@ -183,7 +183,7 @@ void	Channel::modify_limit(Client client, std::string parameters, bool what)
 	{
 		try
 		{
-			m_modes['l'] = std::stoi(parameters);
+			m_modes['l'] = std::strtol(parameters, NULL, 10);
 			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +l " + parameters + "\r\n");
 		}
 		catch(const std::exception& e)
@@ -206,7 +206,8 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	bool is_mod = m_ops.find(client) != m_ops.end();
 	if (what && is_mod)
 	{
-		std::vector<Client>::iterator it = std::find(m_clients.begin(), m_clients.end(), parameters);
+		Client* to_add = m_server->get_client_by_nick(parameters);
+		std::vector<Client>::iterator it = std::find(m_clients.begin(), m_clients.end(), *to_add);
 		if (it != m_clients.end() && m_ops.size() < 3)
 		{
 			m_ops.insert(*it);

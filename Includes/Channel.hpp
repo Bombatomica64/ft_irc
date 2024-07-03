@@ -6,17 +6,16 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 11:20:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 16:01:02 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-# include <Client.hpp>
+# include "Client.hpp"
 # include <string>
 
-class Client;
 
 class Channel
 {
@@ -71,9 +70,9 @@ class Channel
 		void	set_invites(std::set<Client> invites) { m_invites = invites; }
 		void	set_ops(std::set<Client> ops) { m_ops = ops; }
 		void	set_modes(std::map<char, int> modes) { m_modes = modes; }
-		void	add_ban(std::string ban) { m_bans.push_back(ban); }
-		void	add_invite(Client invite) { m_invites.insert(invite); }
-		void	add_op(Client op) { m_ops.insert(op); }
+		void	add_ban(std::string ban) { m_bans.push_back(ban); (void)ban; }
+		void	add_invite(Client invite) { m_invites.insert(invite); (void)invite;}
+		void	add_op(Client op) { m_ops.insert(op); (void)op; }
 };
 
 #endif

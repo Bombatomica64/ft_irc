@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 17:24:51 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 16:02:11 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 # define SERVER_HPP
 
 # include <main.hpp>
+# include <Client.hpp>
 # include <Channel.hpp>
 
-class Channel;
 class Client;
+class Channel;
 
 class Server
 {
