@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 18:26:01 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 12:45:59 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,86 @@ void	Channel::modify_key_mode(Client client, std::string parameters, bool what)
 	{
 		m_modes['k'] = 0;
 		m_key = "";
+	}
+	else
+	{
+		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+	}
+}
+
+void	Channel::modify_topic_mode(Client client, std::string parameters, bool what)
+{
+	(void)parameters;
+	bool is_mod = m_ops.find(client) != m_ops.end();
+	if (what && is_mod)
+	{
+		m_modes['t'] = 1;
+		this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
+	}
+	else if (!what && is_mod)
+	{
+		m_modes['t'] = 0;
+		m_topic = "";
+	}
+	else
+	{
+		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+	}
+}
+
+void	Channel::modify_limit(Client client, std::string parameters, bool what)
+{
+	bool is_mod = m_ops.find(client) != m_ops.end();
+	if (what && is_mod)
+	{
+		try
+		{
+			m_modes['l'] = std::stoi(parameters);
+			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +l " + parameters + "\r\n");
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << "Invalid limit" << std::endl; // TODO send error message
+		}
+	}
+	else if (!what && is_mod)
+	{
+		m_modes['l'] = 0;
+	}
+	else
+	{
+		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+	}
+}
+
+void	Channel::modify_op(Client client, std::string parameters, bool what)
+{
+	bool is_mod = m_ops.find(client) != m_ops.end();
+	if (what && is_mod)
+	{
+		std::vector<Client>::iterator it = std::find(m_clients.begin(), m_clients.end(), parameters);
+		if (it != m_clients.end() && m_ops.size() < 3)
+		{
+			m_ops.insert(*it);
+			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + parameters + "\r\n");
+		}
+		else if (m_ops.size() >= 3)
+		{
+			std::cerr << "Too many operators" << std::endl; // TODO send error message
+		}
+		else
+		{
+			std::cerr << "Client not found" << std::endl; // TODO send error message
+		}
+	}
+	else if (!what && is_mod)
+	{
+		std::vector<Client>::iterator it = std::find(m_clients.begin(), m_clients.end(), parameters);
+		if (it != m_clients.end())
+		{
+			m_ops.erase(*it);
+			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
+		}
 	}
 	else
 	{

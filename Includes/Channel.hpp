@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 18:17:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 11:20:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CHANNEL_HPP
 
 # include <Client.hpp>
+# include <string>
 
 class Client;
 
@@ -45,11 +46,34 @@ class Channel
 		void	join_channel(Client client, std::string parameters);
 		void	leave_channel(Client client);
 		bool	modify_mode(std::vector<std::string> command, Client client);
-		void	modify_invite(Client client, std::string parameters, bool what);
-		void	modify_topic_mode(Client client, std::string parameters, bool what);
-		void	modify_key_mode(Client client, std::string parameters, bool what);
 		void	modify_op(Client client, std::string parameters, bool what);
 		void	modify_limit(Client client, std::string parameters, bool what);
+		void	modify_invite(Client client, std::string parameters, bool what);
+		void	modify_key_mode(Client client, std::string parameters, bool what);
+		void	modify_topic_mode(Client client, std::string parameters, bool what);
+
+		// accessors
+		public:
+		void	set_name(std::string name) { m_name = name; }
+		std::string	get_name() { return m_name; }
+		std::vector<Client>	get_clients() { return m_clients; }
+		std::string	get_topic() { return m_topic; }
+		std::string	get_key() { return m_key; }
+		int	get_limit() { return m_limit; }
+		std::vector<std::string>	get_bans() { return m_bans; }
+		std::set<Client>	get_invites() { return m_invites; }
+		std::set<Client>	get_ops() { return m_ops; }
+		std::map<char, int>	get_modes() { return m_modes; }
+		void	set_topic(std::string topic) { m_topic = topic; }
+		void	set_key(std::string key) { m_key = key; }
+		void	set_limit(int limit) { m_limit = limit; }
+		void	set_bans(std::vector<std::string> bans) { m_bans = bans; }
+		void	set_invites(std::set<Client> invites) { m_invites = invites; }
+		void	set_ops(std::set<Client> ops) { m_ops = ops; }
+		void	set_modes(std::map<char, int> modes) { m_modes = modes; }
+		void	add_ban(std::string ban) { m_bans.push_back(ban); }
+		void	add_invite(Client invite) { m_invites.insert(invite); }
+		void	add_op(Client op) { m_ops.insert(op); }
 };
 
 #endif

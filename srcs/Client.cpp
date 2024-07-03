@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/02 18:11:59 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/03 11:32:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,8 +188,10 @@ bool Client::join(std::string channel)
 			m_server->add_channel(*it);
 			chan = m_server->get_channel(*it);
 			chan->add_client(*this);
+			chan->add_op(*this);
 		}
-		return true;
+		if (it == split_channel.end())
+			return true;
 	}
 	// TODO handle error
 	return false;
