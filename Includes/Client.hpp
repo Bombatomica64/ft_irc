@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 12:55:36 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 18:36:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Client
 		Client(Client const &src);
 		Client &operator=(Client const &src);
 		bool	operator==(std::string const &src) const { return (m_nick == src); }
+		bool	operator==(Client* const &src) const { return (m_nick == src->get_nick()); }
 		bool	operator==(Client const &src) const { return (m_clientSocket == src.get_clientSocket()); }
 		bool	operator!=(Client const &src) const { return !(*this == src); }
 		bool	operator<(Client const &src) const { return (m_clientSocket < src.get_clientSocket()); }
@@ -60,8 +61,8 @@ class Client
 		// bool	oper(std::string user);
 		// bool	kick(std::string message);
 		// bool	topic(std::string message);
-
-
+		static bool	is_me( Client* me, Client* other) { return (me->get_nick() == other->get_nick()); }
+		static bool	is_me( Client* me, std::string other) { return (me->get_nick() == other); }
 	//accessors
 	public:
 		std::string get_nick( void ) const { return m_nick; }
@@ -85,3 +86,10 @@ class Client
 
 std::ostream &operator<<(std::ostream &out, Client const &src);
 
+inline std::ostream &operator<<(std::ostream &out, std::vector<Client*> clients) {
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		out << " ["<<(*it)->get_nick() << "] ";
+	}
+	return out;
+}

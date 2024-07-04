@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 16:29:06 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/04 18:36:04 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,11 @@ Server::~Server()
 {
 	close(m_socket);
 	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
-		delete it->second;
+		{
+			it->second->send_message("Server shutting down");
+			close(it->first);
+			delete it->second;
+		}
 	m_clients.clear();
 	m_commands.clear();
 	client_fds.clear();
@@ -200,17 +204,18 @@ void Server::register_client(int client)
 	char temp[BUFFER_SIZE];
 	int ret;
 
-	while ((ret = recv(client, temp, BUFFER_SIZE, 0)) > 0)
-	{
-		msg.append(temp, ret);
-		if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
-			break;
-	}
+	// while ((ret = recv(client, temp, BUFFER_SIZE, 0)) > 0)
+	// {
+	// 	msg.append(temp, ret);
+	// 	if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
+	// 		break;
+	// }
+	ret = recv(client, temp, BUFFER_SIZE, 0);
+	msg.append(temp, ret);
 	std::cerr << ret << std::endl;
 	if (ret == -1)
 	{
-		std::cout << "Error: mannagia a cristo" << std::endl;
-		strerror(errno);
+		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
 	}
 	if (msg.empty())
 	{
@@ -298,6 +303,7 @@ void Server::register_client(int client)
 void Server::write_to_client(int client, std::string msg)
 {
 	send(client, msg.c_str(), msg.size(), 0); // possibly add MSG_NOSIGNAL with errno TODO
+	send(client, "\r\n", 2, 0);
 }
 
 
@@ -370,12 +376,12 @@ bool	Server::privmsg(int client, std::string message)
 			// send to channel
 		case '#':
 		case '&':
-			if (!this->get_channel(*it)->send_message(*m_clients[client], to_send))
+			if (!this->get_channel(*it)->send_message(to_send))
 				return false;
 			break;
 		default:
 			// send to user
-			if (!this->get_client_by_nick(*it)->send_message(to_send))
+			if (!this->get_client_by_nick(*it)->send_message(*m_clients[client], to_send))
 				return false;
 			break;
 		}
@@ -401,8 +407,13 @@ bool	Server::join(int client, std::string channel)
 		// TODO handle error
 		return false;
 	}
-	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_msg.end(); it++)
+	for (std::vector<std::string>::iterator it = split_channel.begin(); ; it++)
 	{
+		if (it == split_channel.end())
+		{
+			std::cout << GREEN << m_channels << RESET << std::endl;
+			return true;
+		}
 		std::string name = *it;
 		Channel *chan = this->get_channel(name);
 		if (!chan)
@@ -411,12 +422,11 @@ bool	Server::join(int client, std::string channel)
 			this->add_channel(name);
 			chan = m_channels[name];
 			chan->add_client(*m_clients[client]);
+			m_clients[client]->send_message("JOIN " + name);
 			chan->add_op(*m_clients[client]);
 		}
 		else if (chan)
-			chan->join_channel(*m_clients[client]);
-		if (it == split_channel.end())
-			return true;
+			chan->join_channel(m_clients[client]);
 	}
 	// TODO handle error
 	return false;
@@ -435,7 +445,7 @@ bool	Server::part(int client, std::string channels)
 	{
 		Channel *chan = this->get_channel(*it);
 		if (chan)
-			chan->leave_channel(*m_clients[client]);
+			chan->remove_client(*m_clients[client]);
 		else
 		{
 			// TODO handle error

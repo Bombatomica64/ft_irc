@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 16:00:11 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/04 18:35:40 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,5 @@ class Server
 		};
 };
 
-inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v) {
-	for (std::vector<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)
-		o << *it << std::endl;
-	return o;
-}
+
+

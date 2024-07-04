@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 12:55:39 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 17:57:54 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ Client& Client::operator=(Client const &src)
 
 Client::~Client()
 {
-	close(m_clientSocket);
+	std::cout << "printf(%s), Client " << m_nick << " disconnected" << std::endl;
+	
 }
 
 std::ostream &operator<<(std::ostream &out, Client const &src)
