@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 13:06:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 16:29:06 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ Server::~Server()
 		delete it->second;
 	m_channels.clear();
 }
+
 
 void Server::bind_socket(void)
 {
@@ -171,7 +172,6 @@ void Server::read_from_client(int client)
 		throw Server::ClientException();
 		return;
 	}
-	// parse_msg(client, buffer, ret);
 	if (ret == 0)
 	{
 		close(client);
@@ -180,6 +180,7 @@ void Server::read_from_client(int client)
 
 	std::string msg(buffer, ret);
 	std::vector<std::string> split_msg = split(msg, " ");
+	parse_cmds(client, msg.substr(0, msg.find("\r\n")));
 	// if (m_commands.find(split_msg[0]) == m_commands.end())
 	// {
 	// 	write_to_client(client, "Unknown command");
@@ -190,7 +191,7 @@ void Server::read_from_client(int client)
 	{
 		throw std::runtime_error("close");
 	}
-	std::cout << BLUE << *m_clients[client] << " " << msg << RESET << std::endl;
+	std::cout << BLUE << " " << msg << RESET << std::endl;
 }
 
 void Server::register_client(int client)
@@ -206,17 +207,17 @@ void Server::register_client(int client)
 			break;
 	}
 	std::cerr << ret << std::endl;
+	if (ret == -1)
+	{
+		std::cout << "Error: mannagia a cristo" << std::endl;
+		strerror(errno);
+	}
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
 		throw Server::ClientException();
 		return;
 	}
-	/*if (ret == -1)
-	{
-		std::cout << "Error: mannagia a cristo" << std::endl;
-		return;
-	}*/
 	std::cout << RED "Received: " << msg << RESET << std::endl; // TODO remove
 	std::vector<std::string> split_msg = split(msg, " ");
 	switch (m_clients[client]->get_reg_steps())
@@ -335,15 +336,17 @@ void	Server::add_channel(std::string name, std::map<char, int> modes)
 void	Server::parse_cmds(int client, std::string cmd)
 {
 	std::vector<std::string> split_cmd = split(cmd, " ");
+	std::cout <<"split_cmd: |" << split_cmd << "|" << std::endl;
 	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
 	{
-		if (!(this->*m_cmds[split_cmd[0]])(client, cmd))
+		bool ret = (this->*(m_cmds[split_cmd[0]]))(client, cmd);
+		if (!ret)
 			m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
 	}
 	else if (m_clients[client]->parse_cmds(cmd) == false)
-		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
+		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
 	else
-		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
+		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
 	// TODO error sending
 }
 
@@ -359,6 +362,7 @@ bool	Server::privmsg(int client, std::string message)
 	std::string to_send = msg.substr(msg.find(" :") + 2);
 	std::string target_str = msg.substr(0, msg.find(" :"));
 	std::vector<std::string> split_targets = split(target_str, ",");
+	std::cout << "to_send: " << to_send << std::endl;
 	for (std::vector<std::string>::iterator it = split_targets.begin(); it != split_targets.end(); it++)
 	{
 		switch ((*it)[0])
@@ -384,7 +388,14 @@ bool	Server::join(int client, std::string channel)
 	std::vector<std::string> split_msg = split(channel, " ");
 	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	std::vector<std::string> split_key;
-	int i = 0;
+	if (split_msg.size() > 2)
+		split_key = split(split_msg[2], ",");
+	else
+		for (size_t i = 0; i < split_channel.size(); i++)
+			split_key.push_back("");
+	// int i = 0;
+	std::cout << "split_channel: " << split_channel << std::endl;
+	std::cout << "split_key: " << split_key << std::endl;
 	if (split_msg.size() < 2)
 	{
 		// TODO handle error
@@ -392,16 +403,18 @@ bool	Server::join(int client, std::string channel)
 	}
 	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_msg.end(); it++)
 	{
-		Channel *chan = this->get_channel(*it);
-		if (chan)
-			chan->join_channel(*m_clients[client], split_key[i++]);
-		else
+		std::string name = *it;
+		Channel *chan = this->get_channel(name);
+		if (!chan)
 		{
-			this->add_channel(*it);
-			chan = this->get_channel(*it);
+			std::cout << "creating channel: |" << *it <<"|\n\n\n\n\n\n" << std::endl;
+			this->add_channel(name);
+			chan = m_channels[name];
 			chan->add_client(*m_clients[client]);
 			chan->add_op(*m_clients[client]);
 		}
+		else if (chan)
+			chan->join_channel(*m_clients[client]);
 		if (it == split_channel.end())
 			return true;
 	}

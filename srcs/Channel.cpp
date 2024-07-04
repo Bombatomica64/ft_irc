@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 12:53:37 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 16:09:01 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,27 @@ void	Channel::join_channel(Client client, std::string parameters)
 		return;
 	}
 	m_clients.push_back(client);
+}
+
+void	Channel::join_channel(Client client)
+{
+	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
+	{
+		// TODO send error message
+		return;
+	}
+	// if (m_modes['k'] && m_key != "")
+	// {
+	// 	// TODO send error message
+	// 	return;
+	// }
+	if (m_modes['i'] && m_invites.find(client) == m_invites.end())
+	{
+		// TODO send error message
+		return;
+	}
+	m_clients.push_back(client);
+
 }
 
 void	Channel::leave_channel(Client client)
