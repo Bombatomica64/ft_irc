@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 18:30:47 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 13:06:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@ void Server::get_cmds()
 	m_commands.insert("MODE");
 	m_commands.insert("INVITE");
 	m_commands.insert("OPER");
+	m_cmds["PRIVMSG"] = &Server::privmsg;
+	m_cmds["JOIN"] = &Server::join;
+	m_cmds["PART"] = &Server::part;
+	m_cmds["MODE"] = &Server::mode;
+	m_cmds["INVITE"] = &Server::invite;
 }
 
 void Server::create_socket(void)
@@ -126,7 +131,7 @@ void Server::accept_connection()
 					client_fd.fd = client_socket;
 					client_fd.events = POLLIN;
 					client_fds.push_back(client_fd);
-					m_clients[client_socket] = new Client(client_socket, client_addr, this);
+					m_clients[client_socket] = new Client(client_socket, client_addr);
 				}
 				else
 				{
@@ -212,19 +217,19 @@ void Server::register_client(int client)
 		std::cout << "Error: mannagia a cristo" << std::endl;
 		return;
 	}*/
-	std::cerr << RED "Received: " << msg << RESET << std::endl; // TODO remove
+	std::cout << RED "Received: " << msg << RESET << std::endl; // TODO remove
 	std::vector<std::string> split_msg = split(msg, " ");
 	switch (m_clients[client]->get_reg_steps())
 	{
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1] == m_psw && split_msg.size() == 2)
+			if (split_msg[1].substr(0, split_msg[1].size() - 1) == m_psw && split_msg.size() == 2)
 				m_clients[client]->set_reg(1);
 			else
 			{
 				write_to_client(client, "Wrong password");
-				
+				std::cerr << BRIGHT_MAGENTA"|" << split_msg[1] <<"|" RESET << std::endl;
 			}
 		}
 		else
@@ -289,17 +294,11 @@ void Server::register_client(int client)
 		break;
 	}
 }
-
-void	Server::parse_cmds(int client, std::string cmd)
-{
-	if (!cmd.empty() && m_clients.find(client) != m_clients.end())
-		m_clients[client]->parse_cmds(cmd);
-}
-
 void Server::write_to_client(int client, std::string msg)
 {
 	send(client, msg.c_str(), msg.size(), 0); // possibly add MSG_NOSIGNAL with errno TODO
 }
+
 
 Client*		Server::get_client_by_nick(std::string nick)
 {
@@ -318,17 +317,156 @@ Channel*	Server::get_channel(std::string name)
 	return NULL;
 }
 
+
 void	Server::add_channel(std::string name)
 {
 	if (m_channels.find(name) == m_channels.end())
 		m_channels[name] = new Channel(name, this);
 }
 
+
 void	Server::add_channel(std::string name, std::map<char, int> modes)
 {
 	if (m_channels.find(name) == m_channels.end())
 		m_channels[name] = new Channel(name, this, modes);
 }
+
+
+void	Server::parse_cmds(int client, std::string cmd)
+{
+	std::vector<std::string> split_cmd = split(cmd, " ");
+	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
+	{
+		if (!(this->*m_cmds[split_cmd[0]])(client, cmd))
+			m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
+	}
+	else if (m_clients[client]->parse_cmds(cmd) == false)
+		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
+	else
+		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
+	// TODO error sending
+}
+
+bool	Server::privmsg(int client, std::string message)
+{
+	size_t start = message.find("PRIVMSG");
+	if (start == std::string::npos)
+	{
+		// handle error
+		return false;
+	}
+	std::string msg = message.substr(start + strlen("PRIVMSG "));
+	std::string to_send = msg.substr(msg.find(" :") + 2);
+	std::string target_str = msg.substr(0, msg.find(" :"));
+	std::vector<std::string> split_targets = split(target_str, ",");
+	for (std::vector<std::string>::iterator it = split_targets.begin(); it != split_targets.end(); it++)
+	{
+		switch ((*it)[0])
+		{
+			// send to channel
+		case '#':
+		case '&':
+			if (!this->get_channel(*it)->send_message(*m_clients[client], to_send))
+				return false;
+			break;
+		default:
+			// send to user
+			if (!this->get_client_by_nick(*it)->send_message(to_send))
+				return false;
+			break;
+		}
+	}
+	return true;
+}
+
+bool	Server::join(int client, std::string channel)
+{
+	std::vector<std::string> split_msg = split(channel, " ");
+	std::vector<std::string> split_channel = split(split_msg[1], ",");
+	std::vector<std::string> split_key;
+	int i = 0;
+	if (split_msg.size() < 2)
+	{
+		// TODO handle error
+		return false;
+	}
+	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_msg.end(); it++)
+	{
+		Channel *chan = this->get_channel(*it);
+		if (chan)
+			chan->join_channel(*m_clients[client], split_key[i++]);
+		else
+		{
+			this->add_channel(*it);
+			chan = this->get_channel(*it);
+			chan->add_client(*m_clients[client]);
+			chan->add_op(*m_clients[client]);
+		}
+		if (it == split_channel.end())
+			return true;
+	}
+	// TODO handle error
+	return false;
+}
+
+bool	Server::part(int client, std::string channels)
+{
+	std::vector<std::string> split_msg = split(channels, " ");
+	std::vector<std::string> split_channel = split(split_msg[1], ",");
+	if (split_msg.size() < 2)
+	{
+		// TODO handle error
+		return false;
+	}
+	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
+	{
+		Channel *chan = this->get_channel(*it);
+		if (chan)
+			chan->leave_channel(*m_clients[client]);
+		else
+		{
+			// TODO handle error
+			return false;
+		}
+	}
+	return true;
+}
+
+bool	Server::mode(int client, std::string message)
+{
+	std::vector<std::string> l_command;
+	l_command.push_back(message.substr(message.find("MODE") + strlen("MODE"))); // "MODE"
+	message = message.substr(message.find("MODE") + strlen("MODE"));
+	l_command.push_back(message.substr(message.find(" ") + 1)); // "channel"
+	message = message.substr(message.find(" ") + 1);
+	l_command.push_back(message.substr(message.find(" ") + 1)); // "operation"
+	message = message.substr(message.find(" ") + 1);
+	if (message.find(" ") != std::string::npos)
+		l_command.push_back(message.substr(message.find(" ") + 1)); // "arguments"
+	if (this->get_channel(l_command[1])->modify_mode(l_command, *m_clients[client]))
+		return true;
+	// TODO handle error
+	return false;
+}
+
+bool	Server::invite(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	Channel *chan = this->get_channel(split_msg[2]);
+	if (!chan->is_client_in(m_clients[client]))
+	{
+		// TODO handle error
+		return false;
+	}
+	if (split_msg.size() == 3)
+	{
+		this->get_channel(split_msg[2])->add_client(*this->get_client_by_nick(split_msg[1]));
+		return true;
+	}
+	// TODO handle error
+	return false;
+}
+
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
 // {
