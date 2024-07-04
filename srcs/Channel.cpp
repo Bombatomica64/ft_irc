@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 18:30:21 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 12:53:37 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,14 @@ Channel::Channel(std::string name, Server *server) : m_server(server)
 	m_mode_funcs['l'] = &Channel::modify_limit;
 }
 
-Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : m_server(server) , m_modes(modes)
+Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : m_server(server)
 {
 	m_name = name;
-	m_modes['i'] = 0;
-	m_modes['t'] = 0;
-	m_modes['k'] = 0;
-	m_modes['o'] = 0;
-	m_modes['l'] = 0;
+	m_modes['i'] = modes['i'];
+	m_modes['t'] = modes['t'];
+	m_modes['k'] = modes['k'];
+	m_modes['o'] = modes['o'];
+	m_modes['l'] = modes['l'];
 	m_mode_funcs['i'] = &Channel::modify_invite;
 	m_mode_funcs['t'] = &Channel::modify_topic_mode;
 	m_mode_funcs['k'] = &Channel::modify_key_mode;
@@ -56,6 +56,23 @@ void	Channel::remove_client(Client client)
 	std::vector<Client>::iterator it = std::find(m_clients.begin(), m_clients.end(), client);
 	if (it != m_clients.end())
 		m_clients.erase(it);
+}
+
+bool	Channel::is_client_in(Client client) const
+{
+	std::vector<Client>::const_iterator it = std::find(m_clients.begin(), m_clients.end(), client);
+	if (it != m_clients.end())
+		return true;
+	return false;
+}
+
+bool	Channel::is_client_in(Client* client) const 
+{
+	std::vector<Client>::const_iterator it = std::find(m_clients.begin(), m_clients.end(), *client);
+	if (it != m_clients.end())
+		return true;
+	return false;
+
 }
 
 bool	Channel::send_message(std::string message)
@@ -83,7 +100,7 @@ bool	Channel::send_message(Client sender, std::string message)
 
 void	Channel::join_channel(Client client, std::string parameters)
 {
-	if (m_modes['l'] && m_clients.size() >= m_modes['l'])
+	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
 	{
 		// TODO send error message
 		return;
@@ -139,6 +156,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 
 void	Channel::modify_invite(Client client, std::string parameters, bool what)
 {
+	(void)parameters;
 	bool is_mod = m_ops.find(client) != m_ops.end();
 	if (what && is_mod)
 		m_modes['i'] = 1;

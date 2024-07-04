@@ -6,16 +6,13 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 16:01:38 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 12:55:36 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_HPP
-# define CLIENT_HPP
+# pragma once
 
-# include "server.hpp"
-
-class Server;
+# include <main.hpp>
 
 class Client
 {
@@ -31,20 +28,24 @@ class Client
 		std::string m_realname;
 		std::string m_hostname;
 		std::string m_servername;
-		Server		*m_server;
 
 	public:
 		Client() {}
 		Client(Client const &src);
 		Client &operator=(Client const &src);
+		bool	operator==(std::string const &src) const { return (m_nick == src); }
 		bool	operator==(Client const &src) const { return (m_clientSocket == src.get_clientSocket()); }
 		bool	operator!=(Client const &src) const { return !(*this == src); }
 		bool	operator<(Client const &src) const { return (m_clientSocket < src.get_clientSocket()); }
 		bool	operator>(Client const &src) const { return (m_clientSocket > src.get_clientSocket()); }
-		Client(int clientSocket, struct sockaddr_in clientAddr, Server *server);
+		Client(int clientSocket, struct sockaddr_in clientAddr);
 		~Client();
 		bool	send_message(std::string message);
 		bool	send_message(Client receiver, std::string message);
+		bool	parse_cmds(std::string cmd);
+		bool	quit(std::string message);
+		bool	nick(std::string new_nick);
+		bool	ping(std::string message);
 		/*
 		void	receive_message( void );
 		void	connect_to_channel( void );
@@ -56,17 +57,8 @@ class Client
 		bool	notice(std::string message);
 		idk what to do with these functions yet
 		*/
-		void	parse_cmds(std::string cmd);
-		bool	quit(std::string message);
-		bool	join(std::string channel);
-		bool	part(std::string channels);
-		bool	privmsg(std::string message);
-		bool	nick(std::string new_nick);
 		// bool	oper(std::string user);
-		bool	mode(std::string message);
-		bool	invite(std::string message);
 		// bool	kick(std::string message);
-		bool	ping(std::string message);
 		// bool	topic(std::string message);
 
 
@@ -93,4 +85,3 @@ class Client
 
 std::ostream &operator<<(std::ostream &out, Client const &src);
 
-#endif

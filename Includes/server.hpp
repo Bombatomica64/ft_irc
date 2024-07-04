@@ -6,12 +6,11 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/03 16:02:11 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/04 10:30:49 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-# define SERVER_HPP
+# pragma once
 
 # include <main.hpp>
 # include <Client.hpp>
@@ -23,11 +22,12 @@ class Channel;
 class Server
 {
 	private:
-		std::string m_psw;
-		std::vector<struct pollfd> client_fds;
-		struct pollfd server_fd;
-		std::map<int, Client*> m_clients;
+		std::string					m_psw;
+		std::vector<struct pollfd>	client_fds;
+		struct pollfd 				server_fd;
+		std::map<int, Client*>		m_clients;
 		std::map<std::string, Channel*> m_channels;
+		std::map<std::string, bool (Server::*)(int, std::string)> m_cmds;
 
 	protected :
 		std::set<std::string> m_commands;
@@ -64,6 +64,11 @@ class Server
 		void	register_client(int client);
 		void	parse_cmds(int client, std::string cmd);
 		Client*	get_client_by_nick(std::string nick);
+		bool	privmsg(int client, std::string cmd);
+		bool	join(int client, std::string cmd);
+		bool	part(int client, std::string cmd);
+		bool	mode(int client, std::string cmd);
+		bool	invite(int client, std::string cmd);
 
 	public:
 		class clientSocketException : public std::exception
@@ -88,5 +93,3 @@ class Server
 			}
 		};
 };
-
-#endif
