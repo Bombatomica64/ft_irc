@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 10:47:43 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 15:51:54 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -416,18 +416,16 @@ bool	Server::join(int client, std::string channel)
 			return true;
 		}
 		std::string name = *it;
-		Channel *chan = this->get_channel(name);
-		if (!chan)
+		if (m_channels.find(name) == m_channels.end())
 		{
 			std::cout << "creating channel: |" << *it <<"|\n\n\n\n\n\n" << std::endl;
-			this->add_channel(name);
-			chan = m_channels[name];
-			chan->add_client(*m_clients[client]);
-			m_clients[client]->send_message("JOIN " + name);
-			chan->add_op(*m_clients[client]);
+			add_channel(name);
+			m_channels[name]->add_client(*m_clients[client]);
+			m_channels[name]->send_message("USER :" + name + " has joined the channel\n");
+			m_channels[name]->add_op(*m_clients[client]);
 		}
-		else if (chan)
-			chan->join_channel(*m_clients[client]);
+		else
+			m_channels[name]->join_channel(*m_clients[client], split_key[0]);
 	}
 	// TODO handle error
 	return false;

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 15:23:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 15:41:22 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ class Server;
 class Channel
 {
 	private:
-		std::map<std::string ,Client>		m_clients;
+		std::map<std::string ,Client>	m_clients;
 		std::map<char, int> m_modes;
 		std::map<char, void (Channel::*)(Client, std::string, bool)> m_mode_funcs;
 		std::vector<std::string>	m_bans;

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 15:24:12 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 15:52:11 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ Channel::~Channel()
 		m_clients.erase(it);
 	}
 	m_clients.clear();
+	std::cout << "Channel " << m_name << " destroyed" << std::endl;
 }
 
 void	Channel::add_client(Client& client)
@@ -72,9 +73,6 @@ bool	Channel::is_client_in(Client client) const
 
 bool	Channel::send_message(std::string message)
 {
-	std::cout << "channel size: " << m_clients.size() << std::endl;
-	std::cout << "first client: " << m_clients[0] << std::endl;
-	std::cout << "Message sent to " << m_clients << message << std::endl;
 	for (std::map<std::string, Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
 		it->second.send_message(message);
