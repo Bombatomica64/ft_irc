@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 18:39:52 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 10:59:50 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,77 +44,59 @@ Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : 
 
 Channel::~Channel()
 {
-	for (std::vector<Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	for (std::map<std::string,Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
-		delete *it;
+		m_clients.erase(it);
 	}
 	m_clients.clear();
 }
 
-void	Channel::add_client(Client client)
+void	Channel::add_client(Client& client)
 {
-	m_clients.push_back(new Client(client));
+	m_clients[client.get_nick()] = client;
+	std::cout << "Current channel" << m_clients << std::endl;
 }
 
 void	Channel::remove_client(Client client)
 {
-	std::vector<Client*>::iterator it = m_clients.begin();
-	while (it != m_clients.end() && *it != &client)
-		++it;
-	if (it != m_clients.end())
-	{
-		delete *it;
-		m_clients.erase(it);
-	}
+	if (m_clients.find(client.get_nick()) != m_clients.end())
+		m_clients.erase(client.get_nick());
 }
 
 bool	Channel::is_client_in(Client client) const
 {
-	std::vector<Client*>::const_iterator it = m_clients.begin();
-	while (it != m_clients.end() && *it != &client)
-		++it;
-	if (it != m_clients.end())
+	if (m_clients.find(client.get_nick()) != m_clients.end())
 		return true;
 	return false;
-}
-
-bool	Channel::is_client_in(Client* client) const 
-{
-	std::vector<Client*>::const_iterator it = m_clients.begin();
-	while (it != m_clients.end() && *it != client)
-		++it;
-	if (it != m_clients.end())
-		return true;
-	return false;
-
 }
 
 bool	Channel::send_message(std::string message)
 {
+	std::cout << "channel size: " << m_clients.size() << std::endl;
 	std::cout << "first client: " << m_clients[0] << std::endl;
 	std::cout << "Message sent to " << m_clients << message << std::endl;
-	for (std::vector<Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	for (std::map<std::string, Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
-		(*it)->send_message(message);
-		std::cout << "Message sent to " << (*it)->get_nick() << message << std::endl;
+		it->second.send_message(message);
+		std::cout << "Message sent to " << it->second.get_nick() << message << std::endl;
 	}
 	return true;
 }
 
 bool	Channel::send_message(Client sender, std::string message)
 {
-	for (std::vector<Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	for (std::map<std::string, Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
-		if (*it && (*it)->get_clientSocket() != sender.get_clientSocket())
+		if (it->second != sender)
 		{
-			sender.send_message(**it, message);
-			std::cout << "Message sent to " << (*it)->get_nick() << message << std::endl;
+			sender.send_message(it->second, message);
+			std::cout << "Message sent to " << it->second.get_nick() << message << std::endl;
 		}
 	}
 	return true;
 }
 
-void	Channel::join_channel(Client* client, std::string parameters)
+void	Channel::join_channel(Client client, std::string parameters)
 {
 	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
 	{
@@ -126,15 +108,15 @@ void	Channel::join_channel(Client* client, std::string parameters)
 		// TODO send error message
 		return;
 	}
-	if (m_modes['i'] && m_invites.find(*client) == m_invites.end())
+	if (m_modes['i'] && m_invites.find(client) == m_invites.end())
 	{
 		// TODO send error message
 		return;
 	}
-	this->add_client(*client);
+	this->add_client(client);
 }
 
-void	Channel::join_channel(Client *client)
+void	Channel::join_channel(Client client)
 {
 	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
 	{
@@ -146,18 +128,18 @@ void	Channel::join_channel(Client *client)
 	// 	// TODO send error message
 	// 	return;
 	// }
-	if (m_modes['i'] && m_invites.find(*client) == m_invites.end())
+	if (m_modes['i'] && m_invites.find(client) == m_invites.end())
 	{
 		// TODO send error message
 		return;
 	}
-	m_clients.push_back(client);
+	this->add_client(client);
 
 }
 
 // void	Channel::leave_channel(Client client)
 // {
-// 	std::vector<Client*>::iterator it =m_clients.begin(), m_clients.end(), client);
+// 	std::vector<Client>::iterator it =m_clients.begin(), m_clients.end(), client);
 // 	if (it != m_clients.end())
 // 		m_clients.erase(it);
 // }
@@ -276,8 +258,8 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	bool is_mod = m_ops.find(client) != m_ops.end();
 	if (what && is_mod)
 	{
-		Client* to_add = m_server->get_client_by_nick(parameters);
-		std::vector<Client*>::iterator it = m_clients.begin();
+		Client to_add = m_server->get_client_by_nick(parameters);
+		std::vector<Client>::iterator it = m_clients.begin();
 		while (it != m_clients.end() && *it != to_add)
 			++it;
 		if (it != m_clients.end() && m_ops.size() < 3)
@@ -296,7 +278,7 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	}
 	else if (!what && is_mod)
 	{
-		std::vector<Client*>::iterator it = m_clients.begin();
+		std::vector<Client>::iterator it = m_clients.begin();
 		while (it != m_clients.end() && (*it)->get_nick() != parameters)
 			++it;
 		if (it != m_clients.end())

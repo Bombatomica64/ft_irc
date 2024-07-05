@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 18:36:04 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 10:47:43 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,7 @@ void Server::register_client(int client)
 	// }
 	ret = recv(client, temp, BUFFER_SIZE, 0);
 	msg.append(temp, ret);
+	// msg.erase(msg.find("\r\n"));
 	std::cerr << ret << std::endl;
 	if (ret == -1)
 	{
@@ -248,7 +249,7 @@ void Server::register_client(int client)
 		{
 			if (split_msg.size() == 2)
 			{
-				m_clients[client]->set_nick(split_msg[1]);
+				m_clients[client]->set_nick(split_msg[1].substr(0, split_msg[1].size() - 1));
 				m_clients[client]->set_reg(2);
 			}
 			else
@@ -426,7 +427,7 @@ bool	Server::join(int client, std::string channel)
 			chan->add_op(*m_clients[client]);
 		}
 		else if (chan)
-			chan->join_channel(m_clients[client]);
+			chan->join_channel(*m_clients[client]);
 	}
 	// TODO handle error
 	return false;
@@ -476,7 +477,7 @@ bool	Server::invite(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
 	Channel *chan = this->get_channel(split_msg[2]);
-	if (!chan->is_client_in(m_clients[client]))
+	if (!chan->is_client_in(*m_clients[client]))
 	{
 		// TODO handle error
 		return false;

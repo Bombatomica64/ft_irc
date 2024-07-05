@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 18:36:45 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 11:18:00 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,4 +92,12 @@ inline std::ostream &operator<<(std::ostream &out, std::vector<Client*> clients)
 		out << " ["<<(*it)->get_nick() << "] ";
 	}
 	return out;
+}
+
+inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Client> const &v) {
+	for (std::map<std::string, Client>::const_iterator it = v.begin(); it != v.end(); ++it)
+		o << it->first;
+
+	o << std::endl;
+	return o;
 }
