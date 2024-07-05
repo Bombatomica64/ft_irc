@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 15:52:11 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 16:16:38 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Channel::Channel(std::string name, Server *server) : m_server(server)
 {
+	m_clients = new std::map<std::string, Client>();
 	m_name = name;
 	m_modes['i'] = 0;
 	m_modes['t'] = 0;
@@ -29,6 +30,7 @@ Channel::Channel(std::string name, Server *server) : m_server(server)
 
 Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : m_server(server)
 {
+	m_clients = new std::map<std::string, Client>();
 	m_name = name;
 	m_modes['i'] = modes['i'];
 	m_modes['t'] = modes['t'];
@@ -44,36 +46,42 @@ Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : 
 
 Channel::~Channel()
 {
-	for (std::map<std::string,Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	for (std::map<std::string,Client>::iterator it = m_clients->begin(); it != m_clients->end(); ++it)
 	{
-		m_clients.erase(it);
+		m_clients->erase(it);
 	}
-	m_clients.clear();
+	m_clients->clear();
 	std::cout << "Channel " << m_name << " destroyed" << std::endl;
 }
 
 void	Channel::add_client(Client& client)
 {
-	m_clients[client.get_nick()] = client;
+	m_clients->insert(std::pair<std::string, Client>(client.get_nick(), client));
+	std::cout << "Current channel" << m_clients << std::endl;
+}
+
+void	Channel::add_client(Client* client)
+{
+	m_clients->insert(std::pair<std::string, Client>(client->get_nick(), *client));
 	std::cout << "Current channel" << m_clients << std::endl;
 }
 
 void	Channel::remove_client(Client client)
 {
-	if (m_clients.find(client.get_nick()) != m_clients.end())
-		m_clients.erase(client.get_nick());
+	if (m_clients->find(client.get_nick()) != m_clients->end())
+		m_clients->erase(client.get_nick());
 }
 
 bool	Channel::is_client_in(Client client) const
 {
-	if (m_clients.find(client.get_nick()) != m_clients.end())
+	if (m_clients->find(client.get_nick()) != m_clients->end())
 		return true;
 	return false;
 }
 
 bool	Channel::send_message(std::string message)
 {
-	for (std::map<std::string, Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	for (std::map<std::string, Client>::iterator it = m_clients->begin(); it != m_clients->end(); ++it)
 	{
 		it->second.send_message(message);
 		std::cout << "Message sent to " << it->second.get_nick() << message << std::endl;
@@ -83,7 +91,7 @@ bool	Channel::send_message(std::string message)
 
 bool	Channel::send_message(Client sender, std::string message)
 {
-	for (std::map<std::string, Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+	for (std::map<std::string, Client>::iterator it = m_clients->begin(); it != m_clients->end(); ++it)
 	{
 		if (it->second != sender)
 		{
@@ -96,7 +104,7 @@ bool	Channel::send_message(Client sender, std::string message)
 
 void	Channel::join_channel(Client client, std::string parameters)
 {
-	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
+	if (m_modes['l'] && m_clients->size() >= static_cast<size_t>(m_modes['l']))
 	{
 		// TODO send error message
 		return;
@@ -116,7 +124,7 @@ void	Channel::join_channel(Client client, std::string parameters)
 
 void	Channel::join_channel(Client client)
 {
-	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
+	if (m_modes['l'] && m_clients->size() >= static_cast<size_t>(m_modes['l']))
 	{
 		// TODO send error message
 		return;
@@ -257,7 +265,7 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	if (what && is_mod)
 	{
 		Client *to_add = m_server->get_client_by_nick(parameters);
-		if (m_clients.find(to_add->get_nick()) != m_clients.end())
+		if (m_clients->find(to_add->get_nick()) != m_clients->end())
 		{
 			m_ops.insert(*to_add);
 			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + parameters + "\r\n");

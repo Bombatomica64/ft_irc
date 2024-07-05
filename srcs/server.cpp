@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 15:51:54 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 16:07:56 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -420,7 +420,7 @@ bool	Server::join(int client, std::string channel)
 		{
 			std::cout << "creating channel: |" << *it <<"|\n\n\n\n\n\n" << std::endl;
 			add_channel(name);
-			m_channels[name]->add_client(*m_clients[client]);
+			m_channels[name]->add_client(m_clients[client]);
 			m_channels[name]->send_message("USER :" + name + " has joined the channel\n");
 			m_channels[name]->add_op(*m_clients[client]);
 		}
