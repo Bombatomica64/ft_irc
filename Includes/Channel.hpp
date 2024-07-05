@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 11:18:03 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 15:23:10 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ class Channel
 		void	add_ban(std::string ban) { m_bans.push_back(ban); }
 		void	add_invite(Client invite) { m_invites.insert(invite);}
 		void	add_op(Client op) { m_ops.insert(op); }
-		bool	is_client_in(Client client) const;
 		bool	is_client_in(Client client) const;
 };
 

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 10:59:50 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/05 15:24:12 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,13 +258,10 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	bool is_mod = m_ops.find(client) != m_ops.end();
 	if (what && is_mod)
 	{
-		Client to_add = m_server->get_client_by_nick(parameters);
-		std::vector<Client>::iterator it = m_clients.begin();
-		while (it != m_clients.end() && *it != to_add)
-			++it;
-		if (it != m_clients.end() && m_ops.size() < 3)
+		Client *to_add = m_server->get_client_by_nick(parameters);
+		if (m_clients.find(to_add->get_nick()) != m_clients.end())
 		{
-			m_ops.insert(**it);
+			m_ops.insert(*to_add);
 			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + parameters + "\r\n");
 		}
 		else if (m_ops.size() >= 3)
@@ -278,12 +275,9 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	}
 	else if (!what && is_mod)
 	{
-		std::vector<Client>::iterator it = m_clients.begin();
-		while (it != m_clients.end() && (*it)->get_nick() != parameters)
-			++it;
-		if (it != m_clients.end())
+		if (m_ops.find(client) != m_ops.end())
 		{
-			m_ops.erase(**it);
+			m_ops.erase(client);
 			this->send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
 		}
 	}
