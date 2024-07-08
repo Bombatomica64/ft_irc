@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 16:11:06 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 11:10:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ class Server;
 class Channel
 {
 	private:
-		std::map<std::string, Client>	*m_clients;
+		std::set<std::string> m_clients;
 		std::map<char, int> m_modes;
 		std::map<char, void (Channel::*)(Client, std::string, bool)> m_mode_funcs;
 		std::vector<std::string>	m_bans;
@@ -38,13 +38,10 @@ class Channel
 		Channel(std::string name, Server *server);
 		Channel(std::string name, Server *server,std::map<char, int> modes);
 		~Channel();
-		void	add_client(Client& client);
 		void	add_client(Client* client);
 		void	remove_client(Client client);
-		bool	send_message(Client sender, std::string message);
-		bool	send_message(std::string message);
-		void	join_channel(Client client);
-		void	join_channel(Client client, std::string parameters);
+		void	join_channel(Client *client);
+		void	join_channel(Client *client, std::string parameters);
 		bool	modify_mode(std::vector<std::string> command, Client client);
 		void	modify_op(Client client, std::string parameters, bool what);
 		void	modify_limit(Client client, std::string parameters, bool what);
@@ -56,7 +53,7 @@ class Channel
 		public:
 		void	set_name(std::string name) { m_name = name; }
 		std::string	get_name() { return m_name; }
-		std::map<std::string, Client>*	get_clients() { return m_clients; }
+		std::set<std::string>	get_clients() { return m_clients; }
 		std::string	get_topic() { return m_topic; }
 		std::string	get_key() { return m_key; }
 		int	get_limit() { return m_limit; }
@@ -74,7 +71,7 @@ class Channel
 		void	add_ban(std::string ban) { m_bans.push_back(ban); }
 		void	add_invite(Client invite) { m_invites.insert(invite);}
 		void	add_op(Client op) { m_ops.insert(op); }
-		bool	is_client_in(Client client) const;
+		bool	is_client_in(Client *client) const;
 };
 
 inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Channel*> const &v) {

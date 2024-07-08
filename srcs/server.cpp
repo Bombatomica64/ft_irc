@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 16:07:56 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 12:24:27 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -377,7 +377,7 @@ bool	Server::privmsg(int client, std::string message)
 			// send to channel
 		case '#':
 		case '&':
-			if (!this->get_channel(*it)->send_message(to_send))
+			if (!this->send_msg_to_channel(client, *it, to_send)) //-->below
 				return false;
 			break;
 		default:
@@ -390,6 +390,33 @@ bool	Server::privmsg(int client, std::string message)
 	return true;
 }
 
+bool	Server::send_msg_to_channel(int client, std::string channel, std::string msg)
+{
+	Channel *chan = this->get_channel(channel);
+	if (!chan)
+	{
+		// TODO handle error
+		return false;
+	}
+	std::set<std::string> clients = chan->get_clients();
+	if (client != -1 && !chan->is_client_in(m_clients[client]))
+	{
+		// TODO handle error
+		return false;
+	}
+	if (client != -1)
+		clients.erase(m_clients[client]->get_nick());
+	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (!this->get_client_by_nick(*it)->send_message(*m_clients[client], msg))
+			return false;
+	}
+	return true;
+	// TODO handle error
+	return false;
+}
+
+
 bool	Server::join(int client, std::string channel)
 {
 	std::vector<std::string> split_msg = split(channel, " ");
@@ -398,9 +425,8 @@ bool	Server::join(int client, std::string channel)
 	if (split_msg.size() > 2)
 		split_key = split(split_msg[2], ",");
 	else
-		for (size_t i = 0; i < split_channel.size(); i++)
+		for (size_t j = 0; j < split_channel.size(); j++)
 			split_key.push_back("");
-	// int i = 0;
 	std::cout << "split_channel: " << split_channel << std::endl;
 	std::cout << "split_key: " << split_key << std::endl;
 	if (split_msg.size() < 2)
@@ -408,6 +434,7 @@ bool	Server::join(int client, std::string channel)
 		// TODO handle error
 		return false;
 	}
+	int i = 0;
 	for (std::vector<std::string>::iterator it = split_channel.begin(); ; it++)
 	{
 		if (it == split_channel.end())
@@ -421,11 +448,11 @@ bool	Server::join(int client, std::string channel)
 			std::cout << "creating channel: |" << *it <<"|\n\n\n\n\n\n" << std::endl;
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]);
-			m_channels[name]->send_message("USER :" + name + " has joined the channel\n");
+			send_msg_to_channel(-1, name, "USER :" + name + " has joined the channel\n");
 			m_channels[name]->add_op(*m_clients[client]);
 		}
 		else
-			m_channels[name]->join_channel(*m_clients[client], split_key[0]);
+			m_channels[name]->join_channel(m_clients[client], split_key[i++]);
 	}
 	// TODO handle error
 	return false;
@@ -474,15 +501,16 @@ bool	Server::mode(int client, std::string message)
 bool	Server::invite(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
-	Channel *chan = this->get_channel(split_msg[2]);
-	if (!chan->is_client_in(*m_clients[client]))
+	Channel *chan = get_channel(split_msg[2]);
+	if (chan && chan->is_client_in(m_clients[client]))
 	{
 		// TODO handle error
 		return false;
 	}
-	if (split_msg.size() == 3)
+	else if (chan && split_msg.size() == 3)
 	{
-		this->get_channel(split_msg[2])->add_client(*this->get_client_by_nick(split_msg[1]));
+		chan->add_invite(*m_clients[client]);
+		send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick()); // TODO check if this is correct
 		return true;
 	}
 	// TODO handle error

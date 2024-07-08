@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 11:18:00 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 12:13:55 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Client
 		Client(Client const &src);
 		Client &operator=(Client const &src);
 		bool	operator==(std::string const &src) const { return (m_nick == src); }
-		bool	operator==(Client* const &src) const { return (m_nick == src->get_nick()); }
+		bool	operator==(Client* const src) const { return (m_nick == src->get_nick()); }
 		bool	operator==(Client const &src) const { return (m_clientSocket == src.get_clientSocket()); }
 		bool	operator!=(Client const &src) const { return !(*this == src); }
 		bool	operator<(Client const &src) const { return (m_clientSocket < src.get_clientSocket()); }
@@ -94,10 +94,16 @@ inline std::ostream &operator<<(std::ostream &out, std::vector<Client*> clients)
 	return out;
 }
 
-inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Client> const &v) {
-	for (std::map<std::string, Client>::const_iterator it = v.begin(); it != v.end(); ++it)
+inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Client*> const &v) {
+	for (std::map<std::string, Client*>::const_iterator it = v.begin(); it != v.end(); ++it)
 		o << it->first;
 
 	o << std::endl;
+	return o;
+}
+
+inline std::ostream &operator<<(std::ostream &o, std::set<std::string> const &v) {
+	for (std::set<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)
+		o << *it << std::endl;
 	return o;
 }

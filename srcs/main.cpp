@@ -6,17 +6,19 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 17:15:23 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 10:30:24 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <server.hpp>
 
 void	handle_signal(int sig)
-	{
-		(void)sig;
-		throw std::runtime_error("Closing server...");
-	}
+{
+	(void)sig;
+	throw std::runtime_error("Closing server...");
+}
+
+
 int main(int ac, char **av)
 {
 	if (ac != 3)
