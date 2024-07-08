@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 16:30:22 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/08 16:05:13 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 std::vector<std::string> split(std::string str, std::string token)
 {
 	std::vector<std::string> result;
+	str = trimString(str);
 	while (str.size())
 	{
 		std::size_t index = str.find(token);
@@ -30,4 +31,13 @@ std::vector<std::string> split(std::string str, std::string token)
 		}
 	}
 	return result;
+}
+
+std::string trimString(std::string nick)
+{
+	std::string result = nick;
+    result.erase(std::remove(result.begin(), result.end(), '\r'), result.end());
+    result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
+    //result.erase(std::remove(result.begin(), result.end(), ' '), result.end());
+    return result;
 }

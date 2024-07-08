@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 12:24:27 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 16:51:49 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ void Server::read_from_client(int client)
 
 	std::string msg(buffer, ret);
 	std::vector<std::string> split_msg = split(msg, " ");
-	parse_cmds(client, msg.substr(0, msg.find("\r\n")));
+	parse_cmds(client, trimString(msg));
 	// if (m_commands.find(split_msg[0]) == m_commands.end())
 	// {
 	// 	write_to_client(client, "Unknown command");
@@ -231,7 +231,7 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1].substr(0, split_msg[1].size() - 1) == m_psw && split_msg.size() == 2)
+			if (split_msg[1] == m_psw && split_msg.size() == 2)
 				m_clients[client]->set_reg(1);
 			else
 			{
@@ -249,7 +249,7 @@ void Server::register_client(int client)
 		{
 			if (split_msg.size() == 2)
 			{
-				m_clients[client]->set_nick(split_msg[1].substr(0, split_msg[1].size() - 1));
+				m_clients[client]->set_nick(split_msg[1]);
 				m_clients[client]->set_reg(2);
 			}
 			else
@@ -348,7 +348,7 @@ void	Server::parse_cmds(int client, std::string cmd)
 	{
 		bool ret = (this->*(m_cmds[split_cmd[0]]))(client, cmd);
 		if (!ret)
-			m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
+			m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command"); //??????
 	}
 	else if (m_clients[client]->parse_cmds(cmd) == false)
 		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
@@ -369,7 +369,6 @@ bool	Server::privmsg(int client, std::string message)
 	std::string to_send = msg.substr(msg.find(" :") + 2);
 	std::string target_str = msg.substr(0, msg.find(" :"));
 	std::vector<std::string> split_targets = split(target_str, ",");
-	std::cout << "to_send: " << to_send << std::endl;
 	for (std::vector<std::string>::iterator it = split_targets.begin(); it != split_targets.end(); it++)
 	{
 		switch ((*it)[0])
@@ -377,12 +376,13 @@ bool	Server::privmsg(int client, std::string message)
 			// send to channel
 		case '#':
 		case '&':
+			*it = (*it).substr(1);
 			if (!this->send_msg_to_channel(client, *it, to_send)) //-->below
 				return false;
 			break;
 		default:
 			// send to user
-			if (!this->get_client_by_nick(*it)->send_message(*m_clients[client], to_send))
+			if (!this->get_client_by_nick(*it)->send_message(to_send))
 				return false;
 			break;
 		}
@@ -395,22 +395,33 @@ bool	Server::send_msg_to_channel(int client, std::string channel, std::string ms
 	Channel *chan = this->get_channel(channel);
 	if (!chan)
 	{
+		std::cout << "channel not found" << std::endl;
 		// TODO handle error
 		return false;
 	}
 	std::set<std::string> clients = chan->get_clients();
-	if (client != -1 && !chan->is_client_in(m_clients[client]))
+	if (client == -1)
 	{
+		for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
+		{
+			if (!this->get_client_by_nick(*it)->send_message(msg))
+				std::cout << "error sending message to " << *it << std::endl;
+		}
+		return true;
+	}
+	if (!chan->is_client_in(m_clients[client]))
+	{
+		std::cout << "client not in channel" << std::endl;
 		// TODO handle error
 		return false;
 	}
-	if (client != -1)
-		clients.erase(m_clients[client]->get_nick());
+	clients.erase(m_clients[client]->get_nick());
 	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
 	{
-		if (!this->get_client_by_nick(*it)->send_message(*m_clients[client], msg))
-			return false;
+			if (!this->get_client_by_nick(*it)->send_message(msg))
+				return false;
 	}
+
 	return true;
 	// TODO handle error
 	return false;
@@ -445,10 +456,10 @@ bool	Server::join(int client, std::string channel)
 		std::string name = *it;
 		if (m_channels.find(name) == m_channels.end())
 		{
-			std::cout << "creating channel: |" << *it <<"|\n\n\n\n\n\n" << std::endl;
+			std::cout << "creating channel: |" << *it <<"|" << std::endl;
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]);
-			send_msg_to_channel(-1, name, "USER :" + name + " has joined the channel\n");
+			send_msg_to_channel(-1, name, "USER :" + m_clients[client]->get_nick() + " has joined the channel\n");
 			m_channels[name]->add_op(*m_clients[client]);
 		}
 		else

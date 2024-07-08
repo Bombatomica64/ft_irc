@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/04 18:37:00 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 16:04:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # include <set>
 # include <string>
 # include <algorithm>
-# include <colours.h>
+# include <colours.hpp>
 # include <errno.h>
 # include <cstring>
 # include <csignal>
@@ -35,7 +35,8 @@
 
 void	check_input(char *host, char *port);
 
-std::vector<std::string> split(std::string str, std::string token);
+std::vector<std::string>	split(std::string str, std::string token);
+std::string 				trimString(std::string nick);
 
 inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v) {
 	for (std::vector<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)

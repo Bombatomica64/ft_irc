@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 12:13:55 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 16:03:19 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Client*> 
 
 inline std::ostream &operator<<(std::ostream &o, std::set<std::string> const &v) {
 	for (std::set<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)
-		o << *it << std::endl;
+		o <<"["<< *it <<"]";
+		
+	o << std::endl;
 	return o;
 }
