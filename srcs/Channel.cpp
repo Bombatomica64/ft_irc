@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 12:13:23 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 11:53:04 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,31 @@ Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : 
 	m_mode_funcs['l'] = &Channel::modify_limit;
 }
 
+Channel::Channel(Channel const &src)
+{
+	*this = src;
+}
+
+Channel& Channel::operator=(Channel const &src)
+{
+	m_clients = src.m_clients;
+	m_modes = src.m_modes;
+	m_mode_funcs = src.m_mode_funcs;
+	m_bans = src.m_bans;
+	m_invites = src.m_invites;
+	m_ops = src.m_ops;
+	m_name = src.m_name;
+	m_topic = src.m_topic;
+	m_limit = src.m_limit;
+	m_key = src.m_key;
+	m_server = src.m_server;
+	return *this;
+}
+
 Channel::~Channel()
 {
 	m_clients.clear();
+	m_mode_funcs.clear();
 	std::cout << "Channel " << m_name << " destroyed" << std::endl;
 }
 
@@ -129,13 +151,19 @@ void	Channel::join_channel(Client *client)
 // }
 bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 {
-	switch (command[2][0])
+	int i = 0;
+	std::cout << "command[2] = " << command[2] << std::endl;
+	std::cout << "the modes are: " << m_mode_funcs << std::endl;
+	while (command[2][i] != '\0' && command[2][i] != ' ' && command[2][i] != '\r')
+	{
+	switch (command[2][i])
 	{
 		case '+':
-			for(std::string::iterator it = command[2].begin(); it != command[2].end(); ++it)
+		if (command[2].size() > 1)
+			for(std::string::iterator it = command[2].begin() + 1; it != command[2].end(); ++it)
 			{
 				if (m_mode_funcs.find(*it) != m_mode_funcs.end())
-					(this->*m_mode_funcs[*it])(client, command[3], true);
+					(this->*m_mode_funcs[*it])(client, command[2].substr(command[2].find(" ")), true);
 				else
 				{
 					std::cerr << "Unknown mode: " << *it << std::endl; // TODO send error message
@@ -143,7 +171,8 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 				}
 			}
 		case '-':
-			for(std::string::iterator it = command[2].begin(); it != command[2].end(); ++it)
+		if (command[2].size() > 1)
+			for(std::string::iterator it = command[2].begin() + 1; it != command[2].end(); ++it)
 			{
 				if (m_mode_funcs.find(*it) != m_mode_funcs.end())
 					(this->*m_mode_funcs[*it])(client, command[3], false);
@@ -153,6 +182,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 					return false;
 				}
 			}
+	}
 	}
 	return true;
 }

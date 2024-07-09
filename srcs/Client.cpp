@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/05 16:05:19 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 18:24:05 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_registered = false;
 	m_connected = false;
 	m_reg_steps = 0;
-	m_cmds["QUIT"] = &Client::quit;
 	m_cmds["NICK"] = &Client::nick;
 	// m_cmds["OPER"] = &Client::oper;
 	// m_cmds["KICK"] = &Client::kick;
@@ -105,24 +104,24 @@ bool	Client::parse_cmds(std::string cmd)
 		return false;
 	// TODO error sending
 }
-
-bool Client::quit(std::string message)
-{
-	std::vector<std::string> split_msg = split(message, " ");
-	if (split_msg.size() == 1)
-	{
-		send_message(m_nick);
-	}
-	else
-	{
-		std::string msg;
-		for (size_t i = 1; i < split_msg.size(); i++)
-			msg += split_msg[i] + " ";
-		send_message(msg);
-	}
-	close(m_clientSocket);
-	return true;
-}
+// moved to server
+// bool Client::quit(std::string message)
+// {
+// 	std::vector<std::string> split_msg = split(message, " ");
+// 	if (split_msg.size() == 1)
+// 	{
+// 		send_message(m_nick);
+// 	}
+// 	else
+// 	{
+// 		std::string msg;
+// 		for (size_t i = 1; i < split_msg.size(); i++)
+// 			msg += split_msg[i] + " ";
+// 		send_message(msg);
+// 	}
+// 	close(m_clientSocket);
+// 	return true;
+// }
 // moved to server
 // bool Client::privmsg(std::string message)
 // {

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 11:18:43 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/08 18:00:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ class Server
 		bool	join(int client, std::string cmd);
 		bool	part(int client, std::string cmd);
 		bool	mode(int client, std::string cmd);
+		bool	quit(int client, std::string cmd);
 		bool	invite(int client, std::string cmd);
 
 	public:

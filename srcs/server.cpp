@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 16:51:49 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 11:59:39 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void Server::get_cmds()
 	m_cmds["PART"] = &Server::part;
 	m_cmds["MODE"] = &Server::mode;
 	m_cmds["INVITE"] = &Server::invite;
+	m_cmds["QUIT"] = &Server::quit;
 }
 
 void Server::create_socket(void)
@@ -498,13 +499,28 @@ bool	Server::mode(int client, std::string message)
 	l_command.push_back(message.substr(message.find("MODE") + strlen("MODE"))); // "MODE"
 	message = message.substr(message.find("MODE") + strlen("MODE"));
 	l_command.push_back(message.substr(message.find(" ") + 1)); // "channel"
+	size_t pos = l_command[1].find(" ");
+	if (pos != std::string::npos)
+		l_command[1] = l_command[1].substr(0, pos);
 	message = message.substr(message.find(" ") + 1);
 	l_command.push_back(message.substr(message.find(" ") + 1)); // "operation"
+	pos = l_command[2].find(" ");
+	if (pos != std::string::npos)
+		l_command[2] = l_command[2].substr(0, pos);
 	message = message.substr(message.find(" ") + 1);
 	if (message.find(" ") != std::string::npos)
 		l_command.push_back(message.substr(message.find(" ") + 1)); // "arguments"
-	if (this->get_channel(l_command[1])->modify_mode(l_command, *m_clients[client]))
-		return true;
+	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << m_channels << std::endl;
+	std::cout << "l_command[1] = |" << l_command[1] << "|" << std::endl;
+	if (m_channels.find(l_command[1]) == m_channels.end())
+	{
+		// TODO
+		// std::cout << "channel not found" << std::endl;
+		return false;
+	}
+	bool ret;
+	ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]); 
 	// TODO handle error
 	return false;
 }
@@ -528,6 +544,26 @@ bool	Server::invite(int client, std::string message)
 	return false;
 }
 
+bool	Server::quit(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 1)
+	{
+		m_clients[client]->send_message("QUIT :Leaving");
+	}
+	else
+	{
+		m_clients[client]->send_message("QUIT :" + message.substr(message.find(" :") + 2));
+	}
+	for (std::map<std::string, Channel*>::iterator it = m_channels.begin(); it != m_channels.end(); it++)
+	{
+		if (it->second->is_client_in(m_clients[client]))
+			it->second->remove_client(*m_clients[client]);
+	}
+	close(client);
+	m_clients.erase(client);
+	return true;
+}
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
 // {

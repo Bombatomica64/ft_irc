@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 11:10:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 11:12:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ class Channel
 		std::string 		m_key;
 		Server				*m_server;
 		Channel() {}
-		Channel(Channel const &src);
-		Channel &operator=(Channel const &src);
 
 	public:
+		Channel(Channel const &src);
+		Channel &operator=(Channel const &src);
 		Channel(std::string name, Server *server);
 		Channel(std::string name, Server *server,std::map<char, int> modes);
 		~Channel();
@@ -61,6 +61,7 @@ class Channel
 		std::set<Client>	get_invites() { return m_invites; }
 		std::set<Client>	get_ops() { return m_ops; }
 		std::map<char, int>	get_modes() { return m_modes; }
+		std::map<char, void (Channel::*)(Client, std::string, bool)>	get_mode_funcs() { return m_mode_funcs; }
 		void	set_topic(std::string topic) { m_topic = topic; }
 		void	set_key(std::string key) { m_key = key; }
 		void	set_limit(int limit) { m_limit = limit; }
@@ -76,7 +77,15 @@ class Channel
 
 inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Channel*> const &v) {
 	for (std::map<std::string, Channel*>::const_iterator it = v.begin(); it != v.end(); ++it)
-		o << it->first;
+		o << "Channel: "<<it->first << " Clients: " << it->second->get_clients() << std::endl;
+
+	o << std::endl;
+	return o;
+}
+
+inline std::ostream &operator<<(std::ostream &o, std::map<char, void (Channel::*)(Client, std::string, bool)> const &v) {
+	for (std::map<char, void (Channel::*)(Client, std::string, bool)>::const_iterator it = v.begin(); it != v.end(); ++it)
+		o << "\""<<it->first << "\" ";
 
 	o << std::endl;
 	return o;
