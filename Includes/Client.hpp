@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 18:18:05 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 17:50:07 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class Client
 		std::map<std::string, bool (Client::*)(std::string)> m_cmds;
 		bool		m_registered;
 		bool		m_connected;
+		bool		m_away;
+		std::string m_away_msg;
 		std::string m_realname;
 		std::string m_hostname;
 		std::string m_servername;
@@ -47,11 +49,11 @@ class Client
 		// bool	quit(std::string message);
 		bool	nick(std::string new_nick);
 		bool	ping(std::string message);
+		bool	away(std::string message);
 		/*
 		void	receive_message( void );
 		void	connect_to_channel( void );
 		bool	list(std::string message);
-		bool	away(std::string message);
 		bool	admin(std::string message);
 		bool	summon(std::string message);
 		bool	users(std::string message);
@@ -70,10 +72,12 @@ class Client
 		std::string get_realname( void ) const { return m_realname; }
 		std::string get_hostname( void ) const { return m_hostname; }
 		std::string get_servername( void ) const { return m_servername; }
+		std::string get_away_msg( void ) const { return m_away_msg; }
 		int			get_clientSocket( void ) const { return m_clientSocket; }
 		int			get_reg_steps( void ) const { return m_reg_steps; }
 		bool		get_registered( void ) const { return m_registered; }
 		bool		get_connected( void ) const { return m_connected; }
+		bool		is_away( void ) const { return m_away; }
 		void		set_reg(int step) { m_reg_steps = step; }
 		void		set_nick(std::string nick) { m_nick = nick; }
 		void		set_user(std::string user) { m_user = user; }

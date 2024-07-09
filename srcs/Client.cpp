@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 18:24:05 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 17:52:04 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	// m_cmds["OPER"] = &Client::oper;
 	// m_cmds["KICK"] = &Client::kick;
 	m_cmds["PING"] = &Client::ping;
+	m_cmds["AWAY"] = &Client::away;
 	// m_cmds["TOPIC"] = &Client::topic;
 }
 
@@ -82,6 +83,13 @@ bool Client::send_message(std::string message)
 
 bool Client::send_message(Client receiver, std::string message)
 {
+	std::string return_msg;
+	if (receiver.is_away())
+	{
+		return_msg = "AWAY " + receiver.get_away_msg() + " : " + message;
+		this->send_message(return_msg);
+		return true;
+	}
 	if (send(receiver.get_clientSocket(), message.c_str(), message.size(), 0) == -1)
 	{
 		std::cerr << "Error: send failed" << std::endl; // TODO handle error
@@ -104,6 +112,51 @@ bool	Client::parse_cmds(std::string cmd)
 		return false;
 	// TODO error sending
 }
+
+
+bool Client::ping(std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 2 && send_message("PONG " + split_msg[1]))
+		return true;
+	// TODO handle error
+	return false;
+}
+
+
+bool Client::nick(std::string new_nick)
+{
+	std::vector<std::string> split_msg = split(new_nick, " ");
+	if (split_msg.size() == 2)
+	{
+		m_nick = split_msg[1];
+		return true;
+	}
+	// TODO handle error
+	return false;
+}
+
+bool	Client::away(std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 1)
+	{
+		// TODO handle error
+		return false;
+	}
+	else
+	{
+		std::string msg;
+		for (size_t i = 1; i < split_msg.size(); i++)
+			msg += split_msg[i] + " ";
+		m_away = true;
+		m_away_msg = msg;
+		return true;
+	}
+	// TODO handle error
+	return false;
+}
+
 // moved to server
 // bool Client::quit(std::string message)
 // {
@@ -155,17 +208,6 @@ bool	Client::parse_cmds(std::string cmd)
 // 	return true;
 // }
 
-bool Client::nick(std::string new_nick)
-{
-	std::vector<std::string> split_msg = split(new_nick, " ");
-	if (split_msg.size() == 2)
-	{
-		m_nick = split_msg[1];
-		return true;
-	}
-	// TODO handle error
-	return false;
-}
 // moved to server
 // bool Client::join(std::string channel)
 // {
@@ -220,14 +262,6 @@ bool Client::nick(std::string new_nick)
 // 	return true;
 // }
 
-bool Client::ping(std::string message)
-{
-	std::vector<std::string> split_msg = split(message, " ");
-	if (split_msg.size() == 2 && send_message("PONG " + split_msg[1]))
-		return true;
-	// TODO handle error
-	return false;
-}
 // moved to server
 // bool Client::mode(std::string message)
 // {

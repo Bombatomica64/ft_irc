@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 11:59:39 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 18:22:53 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ void Server::get_cmds()
 	m_cmds["PART"] = &Server::part;
 	m_cmds["MODE"] = &Server::mode;
 	m_cmds["INVITE"] = &Server::invite;
+	m_cmds["TOPIC"] = &Server::topic;
+	m_cmds["KICK"] = &Server::kick;
 	m_cmds["QUIT"] = &Server::quit;
 }
 
@@ -563,6 +565,25 @@ bool	Server::quit(int client, std::string message)
 	close(client);
 	m_clients.erase(client);
 	return true;
+}
+
+bool	Server::topic(int client, std::string params)
+{
+	std::vector<std::string> split_msg = split(params, " ");
+	if (m_channels.find(&split_msg[1][1]) == m_channels.end())
+	{
+		// TODO handle error
+		return false;
+	}
+	if (split_msg.size() == 2)
+	{
+		m_channels[&split_msg[1][1]]->send_topic(*m_clients[client]);
+	}
+	else
+	{
+		m_channels[&split_msg[1][1]]->modify_topic_mode(*m_clients[client], split_msg[2], false);
+		m_channels[&split_msg[1][1]]->send_topic(*m_clients[client]);
+	}
 }
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)

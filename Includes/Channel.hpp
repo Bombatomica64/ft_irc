@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 11:12:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 18:13:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ class Channel
 		void	modify_invite(Client client, std::string parameters, bool what);
 		void	modify_key_mode(Client client, std::string parameters, bool what);
 		void	modify_topic_mode(Client client, std::string parameters, bool what);
+		// bool	topic(Client client, std::string parameters);
+		void	send_topic(Client client);
 
 		// accessors
 		public:

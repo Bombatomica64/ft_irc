@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 11:53:04 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/09 18:22:47 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,17 +224,25 @@ void	Channel::modify_key_mode(Client client, std::string parameters, bool what)
 
 void	Channel::modify_topic_mode(Client client, std::string parameters, bool what)
 {
-	(void)parameters;
 	bool is_mod = m_ops.find(client) != m_ops.end();
 	if (what && is_mod)
 	{
 		m_modes['t'] = 1;
-		client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
+		if (parameters.find(" ") != std::string::npos)
+			m_topic = parameters.substr(parameters.find(" ") + 1);
+		// client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
+		send_topic(client);
 	}
 	else if (!what && is_mod)
 	{
 		m_modes['t'] = 0;
-		m_topic = "";
+		if (parameters.find(" ") != std::string::npos)
+			m_topic = parameters.substr(parameters.find(" ") + 1);
+	}
+	else if (m_modes['t'] == 0)
+	{
+		if (parameters.find(" ") != std::string::npos)
+			m_topic = parameters.substr(parameters.find(" ") + 1);
 	}
 	else
 	{
@@ -299,4 +307,9 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	{
 		std::cerr << "You are not an operator" << std::endl; // TODO send error message
 	}
+}
+
+void	Channel::send_topic(Client client)
+{
+	client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
 }
