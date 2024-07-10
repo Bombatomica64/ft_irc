@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 17:02:22 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 18:16:46 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void Server::get_cmds()
 	m_cmds["MODE"] = &Server::mode;
 	m_cmds["INVITE"] = &Server::invite;
 	m_cmds["TOPIC"] = &Server::topic;
-	m_cmds["KICK"] = &Server::kick;
+	//m_cmds["KICK"] = &Server::kick;
 	m_cmds["QUIT"] = &Server::quit;
 	m_cmds["NAMES"] = &Server::names;
 }
@@ -154,7 +154,9 @@ void Server::accept_connection()
 					catch (const std::exception &e)
 					{
 						std::cerr << e.what() << std::endl;
+						m_clients.erase(client_fds[i].fd);
 						close(client_fds[i].fd);
+						client_fds.erase(client_fds.begin() + i);
 						std::string msg(e.what());
 						if (msg == "close")
 							throw std::runtime_error("close");
@@ -187,6 +189,8 @@ void Server::read_from_client(int client)
 	}
 
 	std::string msg(buffer, ret);
+	if (msg == "\n")
+		return;
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
 	// if (m_commands.find(split_msg[0]) == m_commands.end())
@@ -204,7 +208,7 @@ void Server::read_from_client(int client)
 
 void Server::register_client(int client)
 {
-	std::string msg;
+
 	char temp[BUFFER_SIZE];
 	int ret;
 
@@ -215,13 +219,13 @@ void Server::register_client(int client)
 	// 		break;
 	// }
 	ret = recv(client, temp, BUFFER_SIZE, 0);
-	msg.append(temp, ret);
 	// msg.erase(msg.find("\r\n"));
 	std::cerr << ret << std::endl;
 	if (ret == -1)
 	{
-		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
+		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 	}
+	std::string msg(temp, ret);
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
@@ -229,6 +233,11 @@ void Server::register_client(int client)
 		return;
 	}
 	std::cout << RED "Received: " << msg << RESET << std::endl; // TODO remove
+	if (msg == "\n")
+	{
+		write_to_client(client, "You must send a password first");
+		return;
+	}
 	std::vector<std::string> split_msg = split(msg, " ");
 	switch (m_clients[client]->get_reg_steps())
 	{
@@ -631,7 +640,7 @@ bool	Server::names(int client, std::string params)
 			send_msg_to_channel(client, split_msg[1], message);
 		return true;
 	}
-	
+	return false;
 }
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
