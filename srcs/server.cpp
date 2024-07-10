@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 11:29:25 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 17:02:22 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -571,20 +571,29 @@ bool	Server::quit(int client, std::string message)
 bool	Server::topic(int client, std::string params)
 {
 	std::vector<std::string> split_msg = split(params, " ");
-	if (m_channels.find(&split_msg[1][1]) == m_channels.end())
+	if (split_msg[1].size() > 0)
+		split_msg[1] = split_msg[1].substr(1, split_msg[1].size());
+	Channel *chan = get_channel(split_msg[1]);
+	if (!chan)
+	{
+		// TODO handle error
+		return false;
+	}
+	if (chan->is_client_in(m_clients[client]) == false)
 	{
 		// TODO handle error
 		return false;
 	}
 	if (split_msg.size() == 2)
 	{
-		m_channels[&split_msg[1][1]]->send_topic(*m_clients[client]);
+		chan->send_topic(*m_clients[client]);
 	}
 	else
 	{
-		m_channels[&split_msg[1][1]]->modify_topic_mode(*m_clients[client], split_msg[2], false);
-		m_channels[&split_msg[1][1]]->send_topic(*m_clients[client]);
+		chan->modify_topic_mode(*m_clients[client], split_msg[2], false);
+		chan->send_topic(*m_clients[client]);
 	}
+	return true;
 }
 
 bool	Server::names(int client, std::string params)

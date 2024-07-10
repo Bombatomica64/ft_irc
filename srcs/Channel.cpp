@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 11:55:53 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 16:58:22 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,11 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	}
 }
 
-void	Channel::send_topic(Client client)
+bool	Channel::send_topic(Client client)
 {
-	client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
+	if (m_topic.empty())
+		return(client.send_message(this->get_name() + " :No topic is set"));
+	else
+		return(client.send_message(this->get_name() + " :" + m_topic));
+	
 }

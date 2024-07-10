@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 17:52:04 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 16:57:35 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ std::ostream &operator<<(std::ostream &out, Client const &src)
 
 bool Client::send_message(std::string message)
 {
+	message += "\r\n";
 	if (send(m_clientSocket, message.c_str(), message.size(), 0) == -1)
 	{
 		std::cerr << "Error: send failed" << std::endl; // TODO handle error
