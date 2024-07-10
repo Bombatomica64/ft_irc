@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 18:22:47 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 10:41:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,8 @@ void	Channel::join_channel(Client *client, std::string parameters)
 		return;
 	}
 	this->add_client(client);
+	this->send_topic(*client);
+	this->
 }
 
 void	Channel::join_channel(Client *client)

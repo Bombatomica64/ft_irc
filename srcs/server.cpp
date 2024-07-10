@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 18:22:53 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 11:29:25 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void Server::get_cmds()
 	m_cmds["TOPIC"] = &Server::topic;
 	m_cmds["KICK"] = &Server::kick;
 	m_cmds["QUIT"] = &Server::quit;
+	m_cmds["NAMES"] = &Server::names;
 }
 
 void Server::create_socket(void)
@@ -462,7 +463,7 @@ bool	Server::join(int client, std::string channel)
 			std::cout << "creating channel: |" << *it <<"|" << std::endl;
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]);
-			send_msg_to_channel(-1, name, "USER :" + m_clients[client]->get_nick() + " has joined the channel\n");
+			send_msg_to_channel(-1, name, "USER :" + m_clients[client]->get_nick() + " has joined the channel");
 			m_channels[name]->add_op(*m_clients[client]);
 		}
 		else
@@ -584,6 +585,44 @@ bool	Server::topic(int client, std::string params)
 		m_channels[&split_msg[1][1]]->modify_topic_mode(*m_clients[client], split_msg[2], false);
 		m_channels[&split_msg[1][1]]->send_topic(*m_clients[client]);
 	}
+}
+
+bool	Server::names(int client, std::string params)
+{
+	std::vector<std::string> split_msg = split(params, " ");
+	if (split_msg.size() == 1)
+	{
+		// TODO handle error
+		return false;
+	}
+	std::vector<std::string> split_channels = split(split_msg[1], ",");
+	std::string message = "";
+	for (std::vector<std::string>::iterator it = split_channels.begin(); it != split_channels.end(); it++)
+	{
+		Channel *chan = get_channel(*it);
+		if (chan)
+		{
+			std::set<std::string> clients = chan->get_clients();
+			message += chan->get_name() + " :";
+			for(std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
+			{
+				if (chan->get_ops().find(*it) != chan->get_ops().end())
+					message += "@" + *it + " ";
+				else
+					message += *it + " ";
+			}
+			message += "\n";
+		}
+	}
+	if (!message.empty())
+	{
+		if (client != -1)
+			m_clients[client]->send_message(message);
+		else
+			send_msg_to_channel(client, split_msg[1], message);
+		return true;
+	}
+	
 }
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
