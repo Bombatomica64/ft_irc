@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 10:41:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 11:55:53 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,14 +114,14 @@ void	Channel::join_channel(Client *client, std::string parameters)
 		// TODO send error message
 		return;
 	}
-	if (m_modes['i'] && m_invites.find(*client) == m_invites.end())
+	if (m_modes['i'] && m_invites.find(client->get_nick()) == m_invites.end())
 	{
 		// TODO send error message
 		return;
 	}
 	this->add_client(client);
 	this->send_topic(*client);
-	this->
+	this->m_server->names(client->get_clientSocket(), "NAMES " + m_name);
 }
 
 void	Channel::join_channel(Client *client)
@@ -136,7 +136,7 @@ void	Channel::join_channel(Client *client)
 	// 	// TODO send error message
 	// 	return;
 	// }
-	if (m_modes['i'] && m_invites.find(*client) == m_invites.end())
+	if (m_modes['i'] && m_invites.find(client->get_nick()) == m_invites.end())
 	{
 		// TODO send error message
 		return;
@@ -192,7 +192,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 void	Channel::modify_invite(Client client, std::string parameters, bool what)
 {
 	(void)parameters;
-	bool is_mod = m_ops.find(client) != m_ops.end();
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 		m_modes['i'] = 1;
 	else if (!what && is_mod)
@@ -206,7 +206,7 @@ void	Channel::modify_invite(Client client, std::string parameters, bool what)
 
 void	Channel::modify_key_mode(Client client, std::string parameters, bool what)
 {
-	bool is_mod = m_ops.find(client) != m_ops.end();
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 	{
 		m_modes['k'] = 1;
@@ -226,7 +226,7 @@ void	Channel::modify_key_mode(Client client, std::string parameters, bool what)
 
 void	Channel::modify_topic_mode(Client client, std::string parameters, bool what)
 {
-	bool is_mod = m_ops.find(client) != m_ops.end();
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 	{
 		m_modes['t'] = 1;
@@ -254,7 +254,7 @@ void	Channel::modify_topic_mode(Client client, std::string parameters, bool what
 
 void	Channel::modify_limit(Client client, std::string parameters, bool what)
 {
-	bool is_mod = m_ops.find(client) != m_ops.end();
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 	{
 		try
@@ -279,13 +279,13 @@ void	Channel::modify_limit(Client client, std::string parameters, bool what)
 
 void	Channel::modify_op(Client client, std::string parameters, bool what)
 {
-	bool is_mod = m_ops.find(client) != m_ops.end();
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 	{
 		Client *to_add = m_server->get_client_by_nick(parameters);
 		if (m_clients.find(to_add->get_nick()) != m_clients.end())
 		{
-			m_ops.insert(*to_add);
+			m_ops.insert(to_add->get_nick());
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + parameters + "\r\n");
 		}
 		else if (m_ops.size() >= 3)
@@ -299,9 +299,9 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	}
 	else if (!what && is_mod)
 	{
-		if (m_ops.find(client) != m_ops.end())
+		if (m_ops.find(client.get_nick()) != m_ops.end())
 		{
-			m_ops.erase(client);
+			m_ops.erase(client.get_nick());
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
 		}
 	}
