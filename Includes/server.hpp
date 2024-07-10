@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 10:48:51 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/10 18:26:55 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ class Server
 		bool	topic(int client, std::string cmd);
 		bool	kick(int client, std::string cmd);
 		bool	names(int client, std::string cmd);
+		bool	pass(int client, std::string cmd);
 
 	public:
 		class clientSocketException : public std::exception

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 18:16:46 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/10 18:36:28 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void Server::get_cmds()
 	//m_cmds["KICK"] = &Server::kick;
 	m_cmds["QUIT"] = &Server::quit;
 	m_cmds["NAMES"] = &Server::names;
+	m_cmds["PASS"] = &Server::pass;
 }
 
 void Server::create_socket(void)
@@ -244,8 +245,12 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1] == m_psw && split_msg.size() == 2)
+			if (split_msg[1] == m_psw && split_msg.size() >= 2)
 				m_clients[client]->set_reg(1);
+			else if (split_msg.size() == 1)
+			{
+				write_to_client(client, ":irc 461 PASS :Not enough parameters");
+			}
 			else
 			{
 				write_to_client(client, "Wrong password");
@@ -641,6 +646,14 @@ bool	Server::names(int client, std::string params)
 		return true;
 	}
 	return false;
+}
+
+bool	Server::pass(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() >= 1)
+		write_to_client(client, ":You may not reregister");
+	return true;
 }
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)

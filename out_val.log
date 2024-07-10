@@ -631,3 +631,7 @@ basic_string::substr: __pos (which is 18446744073709551615) > this->size() (whic
 ==1025063==  Address 0x8 is not stack'd, malloc'd or (recently) free'd
 ==1025063== 
 ==1025063== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+ERR_NONICKNAMEGIVEN
+ERR_ERRONEUSNICKNAME
+ERR_NICKNAMEINUSE
+ERR_NICKCOLLISION
