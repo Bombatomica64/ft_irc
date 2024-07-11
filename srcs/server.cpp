@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/11 11:16:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/11 18:44:41 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@ Server::Server(char *port, char *psw)
 	m_port = std::strtold(port, NULL);
 	m_psw = psw;
 	create_socket();
+	
+	time_t now = time(0);
+	struct tm tstruct;
+    char buf[80];
+    tstruct = *localtime(&now);
+	strftime(buf, sizeof(buf), "%a, %d %b %Y at %H:%M:%S", &tstruct);
+	m_date = buf;
 }
 
 void Server::get_cmds()
@@ -318,6 +325,18 @@ void Server::register_client(int client)
 				m_clients[client]->set_reg(3);
 				m_clients[client]->set_connected(true);
 				m_clients[client]->set_registered(true);
+
+				m_clients[client]->send_message(":irc 001 " + m_clients[client]->get_nick() + " :Welcome to the Jungle Network, " + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname());
+				m_clients[client]->send_message(":irc 002 " + m_clients[client]->get_nick() + " :Your host is " + m_clients[client]->get_servername() + ", running version 4.2");
+				m_clients[client]->send_message(":irc 003 " + m_clients[client]->get_nick() + " :This server was created " + m_date );
+				m_clients[client]->send_message(":irc 004 " + m_clients[client]->get_nick() + " " + m_clients[client]->get_servername() + " 4.2 uMode:none cMode:+i,+t,+k,+o");
+				m_clients[client]->send_message(":irc 375 " + m_clients[client]->get_nick() + " :- Welcome to the Jungle");
+				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- ");
+				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- try not to break anything");
+				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- ");
+				m_clients[client]->send_message(":irc 376 " + m_clients[client]->get_nick() + " :- End of MOTD command");
+				
+				
 			}
 			else
 				write_to_client(client, "You must send a username first");
@@ -669,7 +688,9 @@ bool	Server::pass(int client, std::string message)
 
 bool	Server::user(int client, std::string message)
 {
+	(void)message;
 	write_to_client(client, ":irc 462 :You may not reregister");
+	return true;
 }
 
 // std::cout << "Received: " << msg << std::endl;

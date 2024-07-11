@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/11 10:25:22 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/11 18:08:16 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include <main.hpp>
 # include <Client.hpp>
 # include <Channel.hpp>
+# include <ctime>
 
 class Client;
 class Channel;
@@ -28,6 +29,7 @@ class Server
 		std::map<int, Client*>		m_clients;
 		std::map<std::string, Channel*> m_channels;
 		std::map<std::string, bool (Server::*)(int, std::string)> m_cmds;
+		std::string					m_date;
 
 	protected :
 		std::set<std::string> m_commands;
