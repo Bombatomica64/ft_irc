@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 18:36:28 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/11 11:16:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void Server::get_cmds()
 	m_cmds["QUIT"] = &Server::quit;
 	m_cmds["NAMES"] = &Server::names;
 	m_cmds["PASS"] = &Server::pass;
+	m_cmds["USER"] = &Server::user;
 }
 
 void Server::create_socket(void)
@@ -249,17 +250,17 @@ void Server::register_client(int client)
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
 			{
-				write_to_client(client, ":irc 461 PASS :Not enough parameters");
+				write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS
 			}
 			else
 			{
 				write_to_client(client, "Wrong password");
-				std::cerr << BRIGHT_MAGENTA"|" << split_msg[1] <<"|" RESET << std::endl;
+				// std::cerr << BRIGHT_MAGENTA"|" << split_msg[1] <<"|" RESET << std::endl;
 			}
 		}
 		else
 		{
-			write_to_client(client, "You must send a password first");
+			write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS
 		}
 		break;
 	case 1:
@@ -267,11 +268,21 @@ void Server::register_client(int client)
 		{
 			if (split_msg.size() == 2)
 			{
+				if (get_client_by_nick(split_msg[1]))
+				{
+					write_to_client(client,":irc 433" + split_msg[1] + ":Nickname already in use"); //ERR_NICKNAMEINUSE
+					break;
+				}
+				if (split_msg[1].find(":@#&") != std::string::npos)
+				{
+					write_to_client(client, ":irc 432" + split_msg[1] + ":Erroneous nickname"); //ERR_ERRONEUSNICKNAME
+					break;
+				}
 				m_clients[client]->set_nick(split_msg[1]);
 				m_clients[client]->set_reg(2);
 			}
 			else
-				write_to_client(client, "You must send a nickname first");
+				write_to_client(client, ":irc 461 NICK :No nickname given"); //ERR_NONICKNAMEGIVEN
 		}
 		else
 			write_to_client(client, "You must send a nickname first");
@@ -652,9 +663,15 @@ bool	Server::pass(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() >= 1)
-		write_to_client(client, ":You may not reregister");
+		write_to_client(client, ":irc 462 :You may not reregister");
 	return true;
 }
+
+bool	Server::user(int client, std::string message)
+{
+	write_to_client(client, ":irc 462 :You may not reregister");
+}
+
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
 // {
