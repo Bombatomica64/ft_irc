@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/11 18:44:41 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/12 11:29:44 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,7 +275,7 @@ void Server::register_client(int client)
 		{
 			if (split_msg.size() == 2)
 			{
-				if (get_client_by_nick(split_msg[1]))
+				if (get_client_by_nick(split_msg[1]) || split_msg[1].find("[bot]") || split_msg[1] == "coucou")
 				{
 					write_to_client(client,":irc 433" + split_msg[1] + ":Nickname already in use"); //ERR_NICKNAMEINUSE
 					break;
@@ -429,6 +429,8 @@ bool	Server::privmsg(int client, std::string message)
 				return false;
 			break;
 		default:
+			if (*it == "coucou[bot]" || *it == "coucou")
+				m_coucou.parse_message(*m_clients[client], to_send);
 			// send to user
 			if (!this->get_client_by_nick(*it)->send_message(to_send))
 				return false;

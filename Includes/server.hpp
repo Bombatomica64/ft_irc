@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/11 18:08:16 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/12 11:28:10 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include <main.hpp>
 # include <Client.hpp>
 # include <Channel.hpp>
+# include <cuocuo.hpp>
 # include <ctime>
 
 class Client;
@@ -30,6 +31,7 @@ class Server
 		std::map<std::string, Channel*> m_channels;
 		std::map<std::string, bool (Server::*)(int, std::string)> m_cmds;
 		std::string					m_date;
+		Coucou						m_coucou;
 
 	protected :
 		std::set<std::string> m_commands;

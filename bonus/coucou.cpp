@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 10:33:34 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/12 12:17:29 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,29 +52,92 @@ void	Coucou::parse_message(Client client, std::string message)
 	{
 		m_relations[client.get_nick()] = NORMAL;
 	}
+	if ( words[1] == "DOMAIN")
+	{
+		domain_expansion(client, message);
+	}
+	else if (words[1] == "RELATION")
+	{
+		print_relations(client);
+	}
 	switch (m_relations[client.get_nick()])
 	{
 		case HAPPY:
-			if (std::find(m_angry_words.begin(), m_angry_words.end(), words[0]) != m_angry_words.end())
-			{
-				change_relation(client.get_nick());
-			}
+			
 			break;
 		case ANGRY:
-			if (std::find(m_happy_words.begin(), m_happy_words.end(), words[0]) != m_happy_words.end())
-			{
-				change_relation(client.get_nick());
-			}
+			
 			break;
 		case NORMAL:
-			if (std::find(m_angry_words.begin(), m_angry_words.end(), words[0]) != m_angry_words.end())
-			{
-				change_relation(client.get_nick());
-			}
-			else if (std::find(m_happy_words.begin(), m_happy_words.end(), words[0]) != m_happy_words.end())
-			{
-				change_relation(client.get_nick());
-			}
+			
 			break;
+	}
+}
+
+void	Coucou::domain_expansion(Client client, std::string msg)
+{
+	std::vector<std::string> words = split(msg, " ");
+	std::string response;
+	if (m_relations[client.get_nick()] == HAPPY)
+	{
+		std::fstream file("docs/meme", std::ios::in);
+		std::getline(file, response, '\0');
+		response.insert(0, "Through heaven and earth i alone am the honored one");
+	}
+	else if (m_relations[client.get_nick()] == ANGRY)
+	{
+		std::fstream file("docs/A_resp", std::ios::in);
+		std::getline(file, response, '\0');
+		response.insert(0, "DOMAIN EXPANSION:  \n");
+		response.append("ENGLISH OR SPANISH?\n");
+	}
+	else
+	{
+		std::fstream file("docs/Nah_id_win", std::ios::in);
+		std::getline(file, response, '\0');
+	}
+	send_message(client, response);
+}
+
+void	Coucou::send_message(Client client, std::string message)
+{
+	message.insert(0, ":" + this->get_name(client) + "!" + client.get_nick()  );
+	client.send_message(message);
+}
+
+void	Coucou::print_relations(Client client)
+{
+	std::string response;
+	std::map<std::string, relation>::iterator it = m_relations.begin();
+	while (it != m_relations.end())
+	{
+		response += it->first + " is ";
+		if (it->second == HAPPY)
+			response += "happy with them\n";
+		else if (it->second == ANGRY)
+			response += "angry with them\n";
+		else
+			response += "normal with them\n";
+		it++;
+	}
+	send_message(client, response);
+}
+
+std::string Coucou::get_name(Client client) const
+{
+	relation rel = m_relations.at(client.get_nick());
+	switch (rel)
+	{
+	case HAPPY:
+		return m_happy_name;
+	case ANGRY:
+		return m_angry_name;
+	case NORMAL:
+		return m_name;
+		break;	
+	default:
+		return m_name;
+		std::cout << "????????????????" << std::endl;
+		break;
 	}
 }
