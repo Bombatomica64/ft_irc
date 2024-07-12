@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/12 11:29:44 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/12 13:11:20 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,7 +275,7 @@ void Server::register_client(int client)
 		{
 			if (split_msg.size() == 2)
 			{
-				if (get_client_by_nick(split_msg[1]) || split_msg[1].find("[bot]") || split_msg[1] == "coucou")
+				if (get_client_by_nick(split_msg[1]) != NULL || split_msg[1].find("[bot]") != std::string::npos || split_msg[1] == "coucou")
 				{
 					write_to_client(client,":irc 433" + split_msg[1] + ":Nickname already in use"); //ERR_NICKNAMEINUSE
 					break;
@@ -684,7 +684,7 @@ bool	Server::pass(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() >= 1)
-		write_to_client(client, ":irc 462 :You may not reregister");
+		write_to_client(client, ":irc 462" + m_clients[client]->get_nick() + " :You may not reregister");
 	return true;
 }
 

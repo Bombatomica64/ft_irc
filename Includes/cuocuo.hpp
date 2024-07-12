@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cuocuo.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:26:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/12 11:26:33 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/12 12:51:42 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ typedef enum e_relation
 class Coucou
 {
 	private:
-		std::map<std::string, relation> m_relations;
 		std::string m_name;
 		std::string m_angry_name;
 		std::string m_happy_name;

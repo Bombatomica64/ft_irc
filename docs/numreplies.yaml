@@ -228,7 +228,7 @@ ERROR_REPLIES:
       
   462:
     name: ERR_ALREADYREGISTRED
-    reply: :You may not reregister
+    reply: <client> :You may not reregister
     desc: >
       Returned by the server to any link which tries to change part of
       the registered details (such as password or user details from

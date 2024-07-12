@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
+#    By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/07/02 12:37:03 by lmicheli         ###   ########.fr        #
+#    Updated: 2024/07/12 12:52:38 by mruggier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,8 @@ SRCS =	srcs/main.cpp \
 		srcs/parse.cpp \
 		srcs/server.cpp \
 		srcs/Client.cpp  \
-		srcs/Channel.cpp
+		srcs/Channel.cpp \
+		bonus/coucou.cpp \
 
 UTILS = utils/string_utils.cpp
 

@@ -50,6 +50,7 @@
 		"map": "cpp",
 		"set": "cpp",
 		"cstring": "cpp",
-		"csignal": "cpp"
+		"csignal": "cpp",
+		"ctime": "cpp"
 	}
 }
