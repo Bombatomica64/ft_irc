@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/12 13:11:20 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/15 18:29:32 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,12 +396,12 @@ void	Server::parse_cmds(int client, std::string cmd)
 	{
 		bool ret = (this->*(m_cmds[split_cmd[0]]))(client, cmd);
 		if (!ret)
-			m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command"); //??????
+			m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command"); //??????
 	}
 	else if (m_clients[client]->parse_cmds(cmd) == false)
-		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
+		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
 	else
-		m_clients[client]->send_message("421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
+		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
 	// TODO error sending
 }
 
@@ -424,7 +424,7 @@ bool	Server::privmsg(int client, std::string message)
 			// send to channel
 		case '#':
 		case '&':
-			*it = (*it).substr(1);
+			// *it = (*it).substr(1);
 			if (!this->send_msg_to_channel(client, *it, to_send)) //-->below
 				return false;
 			break;
@@ -659,8 +659,10 @@ bool	Server::names(int client, std::string params)
 		{
 			std::set<std::string> clients = chan->get_clients();
 			message += chan->get_name() + " :";
-			for(std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
+			std::cout << "clients: " << chan->get_ops() << std::endl;
+			for(std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
 			{
+				m_clients[client]->send_message("cazzo " + *it + "\n");
 				if (chan->get_ops().find(*it) != chan->get_ops().end())
 					message += "@" + *it + " ";
 				else
