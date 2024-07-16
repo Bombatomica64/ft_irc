@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/11 15:22:14 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/15 16:25:12 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,14 +109,19 @@ void	Channel::join_channel(Client *client, std::string parameters)
 		client->send_message(":irc 471 " + client->get_nick() + " " + m_name + " :Cannot join channel (+l)");
 		return;
 	}
-	if (m_modes['k'] && parameters != m_key)
-	{
-		client->send_message(":irc 475 " + client->get_nick() + " " + m_name + " :Cannot join channel (+k)");
-		return;
-	}
 	if (m_modes['i'] && m_invites.find(client->get_nick()) == m_invites.end())
 	{
 		// TODO send error message
+		return;
+	}
+	if (m_bans.find(client->get_nick()) != m_bans.end())
+	{
+		// TODO send error message
+		return;
+	}
+	if (m_modes['k'] && parameters != m_key)
+	{
+		client->send_message(":irc 475 " + client->get_nick() + " " + m_name + " :Cannot join channel (+k)");
 		return;
 	}
 	this->add_client(client);

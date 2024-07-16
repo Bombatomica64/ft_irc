@@ -22,7 +22,7 @@ class Channel
 		std::set<std::string> m_clients;
 		std::map<char, int> m_modes;
 		std::map<char, void (Channel::*)(Client, std::string, bool)> m_mode_funcs;
-		std::vector<std::string>	m_bans;
+		std::set<std::string>	m_bans;
 		std::set<std::string>	m_invites;
 		std::set<std::string>	m_ops;
 		std::string			m_name;
@@ -59,7 +59,7 @@ class Channel
 		std::string	get_topic() { return m_topic; }
 		std::string	get_key() { return m_key; }
 		int	get_limit() { return m_limit; }
-		std::vector<std::string>	get_bans() { return m_bans; }
+		std::set<std::string>	get_bans() { return m_bans; }
 		std::set<std::string>	get_invites() { return m_invites; }
 		const std::set<std::string>&	get_ops() const { return m_ops; }
 		std::map<char, int>	get_modes() { return m_modes; }
@@ -67,9 +67,9 @@ class Channel
 		void	set_topic(std::string topic) { m_topic = topic; }
 		void	set_key(std::string key) { m_key = key; }
 		void	set_limit(int limit) { m_limit = limit; }
-		void	set_bans(std::vector<std::string> bans) { m_bans = bans; }
+		void	set_bans(std::set<std::string> bans) { m_bans = bans; }
 		void	set_modes(std::map<char, int> modes) { m_modes = modes; }
-		void	add_ban(std::string ban) { m_bans.push_back(ban); }
+		void	add_ban(std::string ban) { m_bans.insert(ban); }
 		void	add_invite(Client invite) { m_invites.insert(invite.get_nick());}
 		void	add_op(Client op) { m_ops.insert(op.get_nick()); }
 		bool	is_client_in(Client *client) const;
