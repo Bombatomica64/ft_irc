@@ -19,3 +19,9 @@ jobs:
 
       - name: non-op IRC client
         run: "nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2>logs/out_client_err2.log &"
+
+      - name: wait for IRC to start
+        run: "sleep 5"
+      - name: kill IRC
+        run: "killall ircserv"
+	
