@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/16 18:06:48 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/17 17:00:51 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -495,6 +495,18 @@ bool	Server::join(int client, std::string channel)
 		// TODO handle error
 		return false;
 	}
+	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
+	{
+		//se non c'e' un # all'inizio del nome del canale, dai errore
+		if ((*it)[0] != '#' && (*it)[0] != '&')
+		{
+			// TODO handle error
+			return false;
+		}
+	}
+
+
+	
 	int i = 0;
 	for (std::vector<std::string>::iterator it = split_channel.begin(); ; it++)
 	{
