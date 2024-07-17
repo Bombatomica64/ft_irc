@@ -12,15 +12,28 @@ jobs:
         run: sudo apt-get update && sudo apt-get install netcat && make re
 
       - name: Run IRC
-        run: "./ircserv 8000 2 > logs/out.log 2>logs/out_err.log &"
+        # Diagnostic command to check if ircserv started
+        run: |
+          ./ircserv 8000 2 > logs/out.log 2>logs/out_err.log &
+          ps aux | grep ircserv
 
       - name: op IRC client
-        run: "nc localhost 8000 < tests/test.txt > logs/out_client.log 2>logs/out_client_err.log &" 
+        run: "nc localhost 8000 < tests/test.txt > logs/out_client.log 2>logs/out_client_err.log &"
 
       - name: non-op IRC client
         run: "nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2>logs/out_client_err2.log &"
 
       - name: wait for IRC to start
-        run: "sleep 5"
+        run: "sleep 10" # Increased sleep time
+
+      - name: List log files
+        run: "ls -l logs/"
+
+      - name: kill IRC
+        run: "killall ircserv"
+
+      - name: List log files
+        run: "ls -l logs/"
+
       - name: kill IRC
         run: "killall ircserv"
