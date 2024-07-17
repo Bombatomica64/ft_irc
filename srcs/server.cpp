@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
 /*   Updated: 2024/07/16 18:06:48 by mruggier         ###   ########.fr       */
@@ -568,10 +568,9 @@ bool	Server::mode(int client, std::string message)
 		// std::cout << "channel not found" << std::endl;
 		return false;
 	}
-	bool ret;
-	ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]); 
+	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]); 
 	// TODO handle error
-	return false;
+	return ret;
 }
 
 bool	Server::invite(int client, std::string message)

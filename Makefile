@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+         #
+#    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/07/12 12:52:38 by mruggier         ###   ########.fr        #
+#    Updated: 2024/07/17 13:06:32 by lmicheli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRC = $(SRCS) $(UTILS)
 
 INC = -I Includes
 
-CC = clang++ -std=c++98 -Wall -Wextra -Werror -g
+CC = clang++ -Wall -Wextra -Werror -std=c++98 -g
 
 OBJS = $(SRCS:.cpp=.o)
 
