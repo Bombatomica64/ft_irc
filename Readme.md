@@ -14,3 +14,6 @@
   - kick/invite/topic
   - mode
     - I , T , K , O
+Reply prototype
+
+<sender-prefix> <numeric>  <receiver-nick> <message> <CRLF>

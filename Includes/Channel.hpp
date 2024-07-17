@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/15 16:21:40 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/16 17:53:07 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class Channel
 		int	get_limit() { return m_limit; }
 		std::set<std::string>	get_bans() { return m_bans; }
 		std::set<std::string>	get_invites() { return m_invites; }
-		std::set<std::string>	get_ops() { return m_ops; }
+		const std::set<std::string>&	get_ops() const { return m_ops; }
 		std::map<char, int>	get_modes() { return m_modes; }
 		std::map<char, void (Channel::*)(Client, std::string, bool)>	get_mode_funcs() { return m_mode_funcs; }
 		void	set_topic(std::string topic) { m_topic = topic; }
