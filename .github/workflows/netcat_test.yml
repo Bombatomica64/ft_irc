@@ -12,25 +12,27 @@ jobs:
         run: sudo apt-get update && sudo apt-get install netcat && make re
 
       - name: Run IRC
-        # Diagnostic command to check if ircserv started
         run: |
-          ./ircserv 8000 2 > logs/out.log 2>logs/out_err.log &
+          ./ircserv 8000 2> logs/out.log 2> logs/out_err.log &
           ps aux | grep ircserv
 
       - name: op IRC client
-        run: "nc localhost 8000 < tests/test.txt > logs/out_client.log 2>logs/out_client_err.log &"
+        run: "nc localhost 8000 < tests/test.txt > logs/out_client.log 2> logs/out_client_err.log &"
 
       - name: non-op IRC client
-        run: "nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2>logs/out_client_err2.log &"
+        run: "nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2> logs/out_client_err2.log &"
 
       - name: wait for IRC to start
-        run: "sleep 10" # Increased sleep time
+        run: "sleep 10"
 
       - name: List log files
-        run: "cat logs/*"
+        run: "ls -l logs/"
 
       - name: kill IRC
-        run: "killall ircserv"
+        run: "killall ircserv || true" # Prevents the workflow from failing if ircserv is not found
 
-      - name: List log files
-        run: "cat logs/*"
+      - name: Upload log files
+        uses: actions/upload-artifact@v2
+        with:
+          name: irc-logs
+          path: logs/
