@@ -1,0 +1,26 @@
+name: IRC tests
+
+on : [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+     - uses: actions/checkout@v2
+     - name: Install dependencies
+       run: sudo apt-get update && sudo apt-get install netcat && make re
+
+
+     - name: Run IRC
+       run: ./ircserv 8000 2 > logs/out.log 2>logs/out_err.log &
+
+     - name: op IRC client
+       run: nc localhost 8000 < tests/test.txt > logs/out_client.log 2>logs/out_client_err.log
+
+     - name:  non-op IRC client
+       run: nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2>logs/out_client_err2.log
+
+
+
+	
