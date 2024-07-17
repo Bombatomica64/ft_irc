@@ -25,8 +25,8 @@ jobs:
       - name: wait for IRC to start
         run: "sleep 10"
 
-      - name: List log files
-        run: "ls -l logs/"
+      - name: Cat log files
+        run: "cat logs/*"
 
       - name: kill IRC
         run: "killall ircserv || true" # Prevents the workflow from failing if ircserv is not found

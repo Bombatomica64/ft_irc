@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/16 18:06:48 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/17 16:41:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -559,9 +559,6 @@ bool	Server::mode(int client, std::string message)
 	message = message.substr(message.find(" ") + 1);
 	if (message.find(" ") != std::string::npos)
 		l_command.push_back(message.substr(message.find(" ") + 1)); // "arguments"
-	std::cout << "------------------------------------------------" << std::endl;
-	std::cout << m_channels << std::endl;
-	std::cout << "l_command[1] = |" << l_command[1] << "|" << std::endl;
 	if (m_channels.find(l_command[1]) == m_channels.end())
 	{
 		// TODO
