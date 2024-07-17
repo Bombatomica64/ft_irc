@@ -24,4 +24,3 @@ jobs:
         run: "sleep 5"
       - name: kill IRC
         run: "killall ircserv"
-	
