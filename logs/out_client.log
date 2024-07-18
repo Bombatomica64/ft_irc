@@ -1,0 +1,9 @@
+:irc 001 testuser :Welcome to the Jungle Network, testuser!testuser@0
+:irc 002 testuser :Your host is *, running version 4.2
+:irc 003 testuser :This server was created Thu, 18 Jul 2024 at 08:36:34
+:irc 004 testuser * 4.2 uMode:none cMode:+i,+t,+k,+o
+:irc 375 testuser :- Welcome to the Jungle
+:irc 372 testuser :- 
+:irc 372 testuser :- try not to break anything
+:irc 372 testuser :- 
+:irc 376 testuser :- End of MOTD command

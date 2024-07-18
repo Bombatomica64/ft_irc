@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/18 10:32:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/18 11:20:19 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,25 +184,36 @@ void Server::read_from_client(int client)
 		register_client(client);
 		return;
 	}
-	char buffer[BUFFER_SIZE] = {0};
-	int ret = recv(client, buffer, BUFFER_SIZE, 0);
-	if (ret == -1)
-	{
-		throw Server::ClientException();
-		return;
-	}
-	if (ret == 0)
-	{
-		close(client);
-		return;
-	}
-
+	char buffer[3] = {0};
+	// int ret = recv(client, buffer, BUFFER_SIZE, 0);
+	// if (ret == -1)
+	// {
+	// 	throw Server::ClientException();
+	// 	return;
+	// }
+	// if (ret == 0)
+	// {
+	// 	close(client);
+	// 	return;
+	// }
+	int ret;
 	std::string msg = "";
 	while ((ret = recv(client, buffer, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
 	{
 		msg.append(buffer, ret);
 		if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
 			break;
+	}
+	std::cerr << ret << std::endl;
+	if (ret == -1)
+	{
+		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+	}
+	if (msg.empty())
+	{
+		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+		throw Server::ClientException();
+		return;
 	}
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
