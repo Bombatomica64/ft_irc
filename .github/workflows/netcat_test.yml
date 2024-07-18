@@ -13,7 +13,7 @@ jobs:
 
       - name: Run IRC
         run: |
-          ./ircserv 8000 2> logs/out.log 2> logs/out_err.log &
+          ./ircserv 8000 2 >logs/out.log 2> logs/out_err.log &
           ps aux | grep ircserv
 
       - name: op IRC client
