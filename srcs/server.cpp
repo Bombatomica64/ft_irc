@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/17 17:00:51 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/18 10:32:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,9 +197,13 @@ void Server::read_from_client(int client)
 		return;
 	}
 
-	std::string msg(buffer, ret);
-	if (msg == "\n")
-		return;
+	std::string msg = "";
+	while ((ret = recv(client, buffer, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
+	{
+		msg.append(buffer, ret);
+		if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
+			break;
+	}
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
 	// if (m_commands.find(split_msg[0]) == m_commands.end())
@@ -218,23 +222,23 @@ void Server::read_from_client(int client)
 void Server::register_client(int client)
 {
 
-	char temp[BUFFER_SIZE];
+	char temp[2] = {0};
 	int ret;
 
-	// while ((ret = recv(client, temp, BUFFER_SIZE, 0)) > 0)
-	// {
-	// 	msg.append(temp, ret);
-	// 	if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
-	// 		break;
-	// }
-	ret = recv(client, temp, BUFFER_SIZE, 0);
+	std::string msg = "";
+	while ((ret = recv(client, temp, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
+	{
+		msg.append(temp, ret);
+		if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
+			break;
+	}
+	// ret = recv(client, temp, BUFFER_SIZE, 0);
 	// msg.erase(msg.find("\r\n"));
 	std::cerr << ret << std::endl;
 	if (ret == -1)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 	}
-	std::string msg(temp, ret);
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
