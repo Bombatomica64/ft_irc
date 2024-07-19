@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/18 17:45:55 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/18 18:43:05 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,10 @@ void	Channel::join_channel(Client *client, std::string parameters)
 		return;
 	}
 	this->add_client(client);
+	//
+	//client->send_message("MODE " + this->get_name() + "+oi");
+	//std::map<char, int> m_modes; inserire al posto di oi
+	
 	this->send_topic(*client);
 	this->m_server->names(client->get_clientSocket(), "NAMES " + m_name);
 }
