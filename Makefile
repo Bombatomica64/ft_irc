@@ -6,7 +6,7 @@
 #    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/07/17 13:06:32 by lmicheli         ###   ########.fr        #
+#    Updated: 2024/07/19 12:20:44 by lmicheli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,10 @@ SRCS =	srcs/main.cpp \
 		srcs/parse.cpp \
 		srcs/server.cpp \
 		srcs/Client.cpp  \
-		srcs/Channel.cpp \
-		bonus/coucou.cpp \
+		srcs/Channel.cpp  \
+		srcs/Hashing.cpp   \
+		bonus/coucou.cpp    \
+
 
 UTILS = utils/string_utils.cpp
 
@@ -27,12 +29,14 @@ INC = -I Includes
 
 CC = clang++ -Wall -Wextra -Werror -std=c++98 -g
 
+CRYPTO = -lssl -lcrypto
+
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(NAME)
 
 $(NAME):
-	$(CC) $(INC) $(SRC) -o $(NAME)
+	$(CC) $(INC) $(SRC) -o $(NAME) $(CRYPTO)
 
 clean:
 	rm -f $(OBJS)

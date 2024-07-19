@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/17 17:00:51 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/19 12:49:13 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ Server::Server(char *port, char *psw)
 	get_cmds();
 	check_input(port, psw);
 	m_port = std::strtold(port, NULL);
-	m_psw = psw;
+	m_salt = generate_salt(16);
+	m_hash = hash_password(psw, m_salt);
 	create_socket();
 	
 	time_t now = time(0);
@@ -177,6 +178,17 @@ void Server::accept_connection()
 	}
 }
 
+	// int ret = recv(client, buffer, BUFFER_SIZE, 0);
+	// if (ret == -1)
+	// {
+	// 	throw Server::ClientException();
+	// 	return;
+	// }
+	// if (ret == 0)
+	// {
+	// 	close(client);
+	// 	return;
+	// }
 void Server::read_from_client(int client)
 {
 	if (m_clients[client]->get_registered() == false || m_clients[client]->get_connected() == false)
@@ -184,22 +196,31 @@ void Server::read_from_client(int client)
 		register_client(client);
 		return;
 	}
-	char buffer[BUFFER_SIZE] = {0};
-	int ret = recv(client, buffer, BUFFER_SIZE, 0);
-	if (ret == -1)
+	char temp[2] = {0};
+	int ret;
+	int total_ret = 0;
+
+	std::string msg = "";
+	while ((ret = recv(client, temp, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
 	{
+		total_ret += ret;
+		if (msg.find("\r\n") != std::string::npos || ret == -1) // check docs for \r\n
+			break ;
+		
+		msg.append(temp, ret);
+	}
+	std::cerr << total_ret << std::endl;
+	if (total_ret == -1)
+	{
+		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+	}
+	if (msg.empty())
+	{
+		std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
 		throw Server::ClientException();
 		return;
 	}
-	if (ret == 0)
-	{
-		close(client);
-		return;
-	}
-
-	std::string msg(buffer, ret);
-	if (msg == "\n")
-		return;
+	std::cout << RED "Received: " << msg.substr(0, msg.size() - 1) << RESET << std::endl; 
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
 	// if (m_commands.find(split_msg[0]) == m_commands.end())
@@ -218,30 +239,31 @@ void Server::read_from_client(int client)
 void Server::register_client(int client)
 {
 
-	char temp[BUFFER_SIZE];
+	char temp[2] = {0};
 	int ret;
+	int total_ret = 0;
 
-	// while ((ret = recv(client, temp, BUFFER_SIZE, 0)) > 0)
-	// {
-	// 	msg.append(temp, ret);
-	// 	if (msg.find("\r\n") != std::string::npos) // check docs for \r\n
-	// 		break;
-	// }
-	ret = recv(client, temp, BUFFER_SIZE, 0);
-	// msg.erase(msg.find("\r\n"));
-	std::cerr << ret << std::endl;
-	if (ret == -1)
+	std::string msg = "";
+	while ((ret = recv(client, temp, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
+	{
+		total_ret += ret;
+		if (msg.find("\r\n") != std::string::npos || ret == -1) // check docs for \r\n
+			break ;
+		
+		msg.append(temp, ret);
+	}
+	std::cerr << total_ret << std::endl;
+	if (total_ret == -1)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 	}
-	std::string msg(temp, ret);
 	if (msg.empty())
 	{
-		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+		std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
 		throw Server::ClientException();
 		return;
 	}
-	std::cout << RED "Received: " << msg << RESET << std::endl; // TODO remove
+	std::cout << RED "Received: " << msg.substr(0, msg.size() - 1) << RESET << std::endl; // TODO remove
 	if (msg == "\n")
 	{
 		write_to_client(client, "You must send a password first");
@@ -253,7 +275,7 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1] == m_psw && split_msg.size() >= 2)
+			if (verify_password(split_msg[1], m_hash, m_salt) && split_msg.size() >= 2)
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
 			{

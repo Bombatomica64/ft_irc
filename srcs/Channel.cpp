@@ -165,6 +165,11 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 	int i = 0;
 	std::cout << "command[2] = " << command[2] << std::endl;
 	std::cout << "the modes are: " << m_mode_funcs << std::endl;
+	if (command.size() > 4)
+	{
+		std::cerr << "Too many arguments" << std::endl; // TODO send error message
+		return false;
+	}
 	while (command[2][i] != '\0' && command[2][i] != ' ' && command[2][i] != '\r')
 	{
 	switch (command[2][i])
@@ -174,7 +179,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 			for(std::string::iterator it = command[2].begin() + 1; it != command[2].end(); ++it)
 			{
 				if (m_mode_funcs.find(*it) != m_mode_funcs.end())
-					(this->*m_mode_funcs[*it])(client, command[2].substr(command[2].find(" ")), true);
+					(this->*m_mode_funcs[*it])(client, command[3], true);
 				else
 				{
 					std::cerr << "Unknown mode: " << *it << std::endl; // TODO send error message

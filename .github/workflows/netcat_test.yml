@@ -7,13 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install netcat && make re
 
       - name: Run IRC
         run: |
-          ./ircserv 8000 2> logs/out.log 2> logs/out_err.log &
+          ./ircserv 8000 2 >logs/out.log 2> logs/out_err.log &
           ps aux | grep ircserv
 
       - name: op IRC client
@@ -32,7 +32,7 @@ jobs:
         run: "killall ircserv || true" # Prevents the workflow from failing if ircserv is not found
 
       - name: Upload log files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: irc-logs
           path: logs/
