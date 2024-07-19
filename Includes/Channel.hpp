@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/16 17:53:07 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/19 17:03:08 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Channel
 		void	modify_topic_mode(Client client, std::string parameters, bool what);
 		// bool	topic(Client client, std::string parameters);
 		bool	send_topic(Client client);
+		void	send_modes(Client client);
 
 		// accessors
 		public:

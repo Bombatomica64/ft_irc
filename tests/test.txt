@@ -3,4 +3,7 @@ NICK testuser
 USER testuser 0 * :Test User
 JOIN #testchannel
 PRIVMSG #testchannel :Hello, IRC
+MODE #testchannel
+MODE #testchannel +l 12
+MODE #testchannel
 QUIT

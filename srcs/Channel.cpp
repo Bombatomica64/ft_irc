@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/18 18:43:05 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/19 18:05:54 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,7 @@ void	Channel::join_channel(Client *client, std::string parameters)
 		return;
 	}
 	this->add_client(client);
-	//
-	//client->send_message("MODE " + this->get_name() + "+oi");
-	//std::map<char, int> m_modes; inserire al posto di oi
-	
+	this->send_modes(*client);
 	this->send_topic(*client);
 	this->m_server->names(client->get_clientSocket(), "NAMES " + m_name);
 }
@@ -170,6 +167,17 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 		std::cerr << "Too many arguments" << std::endl; // TODO send error message
 		return false;
 	}
+	std::cout << "command[3] = " << command[3] << std::endl;
+	if (command.size() == 4 && command[3].empty())
+	{
+		if (command[2] != "#chan")
+		{
+			std::cerr << "Invalid channel name" << std::endl; // TODO send error message
+			return false;
+		}
+		send_modes(client);
+		return true;
+	}
 	while (command[2][i] != '\0' && command[2][i] != ' ' && command[2][i] != '\r')
 	{
 	switch (command[2][i])
@@ -186,6 +194,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 					return false;
 				}
 			}
+		break;
 		case '-':
 		if (command[2].size() > 1)
 			for(std::string::iterator it = command[2].begin() + 1; it != command[2].end(); ++it)
@@ -198,7 +207,9 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 					return false;
 				}
 			}
+		break;
 	}
+	i++;
 	}
 	return true;
 }
@@ -323,6 +334,26 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	{
 		std::cerr << "You are not an operator" << std::endl; // TODO send error message
 	}
+}
+
+void	Channel::send_modes(Client client)
+{
+	std::string start = ":irc 324 " + client.get_nick() + " " + this->get_name();
+	std::string modes = " +";
+	for (std::map<char, int>::iterator it = m_modes.begin(); it != m_modes.end(); ++it)
+	{
+		if (it->second != 0)
+		{
+			modes += it->first;
+		}
+	}
+	if (m_modes['l'])
+		modes += " " + NumberToString(m_modes['l']);
+	if (m_modes['k'])
+		modes += " " + m_key;
+	if (modes == " +")
+		modes = " none";
+	client.send_message(start + modes);
 }
 
 bool	Channel::send_topic(Client client) // TODO  proper topic sending

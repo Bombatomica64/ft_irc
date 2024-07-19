@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 15:30:43 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/19 17:23:23 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,8 @@ void Server::read_from_client(int client)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 	}
+	if (total_ret == 0)
+		return;
 	if (msg.empty())
 	{
 		std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;

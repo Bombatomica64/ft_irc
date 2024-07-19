@@ -3,58 +3,65 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 12:18:11 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/19 16:52:47 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAIN_HPP
-# define MAIN_HPP
+#define MAIN_HPP
 
-# include <iostream>
-# include <arpa/inet.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include <sys/socket.h>
-# include <cstdlib>
-# include <poll.h>
-# include <vector>
-# include <netinet/in.h> 
-# include <map>
-# include <set>
-# include <string>
-# include <algorithm>
-# include <colours.hpp>
-# include <errno.h>
-# include <cstring>
-# include <csignal>
-# include <fstream>
-# include <openssl/sha.h>
-# include <string>
-# include <iostream>
-# include <sstream>
-# include <iomanip>
-# include <cstdlib>
-# include <ctime>
+#include <iostream>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <cstdlib>
+#include <poll.h>
+#include <vector>
+#include <netinet/in.h>
+#include <map>
+#include <set>
+#include <string>
+#include <algorithm>
+#include <colours.hpp>
+#include <errno.h>
+#include <cstring>
+#include <csignal>
+#include <fstream>
+#include <openssl/sha.h>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <cstdlib>
+#include <ctime>
 
-# define BUFFER_SIZE 2048
+#define BUFFER_SIZE 2048
 
-void	check_input(char *host, char *port);
+template <typename T>
+std::string NumberToString(T Number)
+{
+	std::ostringstream ss;
+	ss << Number;
+	return ss.str();
+}
 
-std::vector<std::string>	split(std::string str, std::string token);
-std::string 				trimString(std::string nick);
-std::string 				generate_salt(size_t length);
-std::string 				hash_password(const std::string& password, const std::string& salt);
-bool 						verify_password(const std::string& entered_password, const std::string& stored_hash, const std::string& salt);
+void check_input(char *host, char *port);
 
+std::vector<std::string> split(std::string str, std::string token);
+std::string trimString(std::string nick);
+std::string generate_salt(size_t length);
+std::string hash_password(const std::string &password, const std::string &salt);
+bool verify_password(const std::string &entered_password, const std::string &stored_hash, const std::string &salt);
 
-inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v) {
+inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v)
+{
 	for (std::vector<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)
 		o << *it << std::endl;
 	return o;
 }
-
 
 #endif
