@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/12 11:28:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/18 18:35:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ class Channel;
 class Server
 {
 	private:
-		std::string					m_psw;
+		std::string					m_salt;
+		std::string					m_hash;
 		std::vector<struct pollfd>	client_fds;
 		struct pollfd 				server_fd;
 		std::map<int, Client*>		m_clients;

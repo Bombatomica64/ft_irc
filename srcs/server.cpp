@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/18 12:41:47 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/19 12:49:13 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ Server::Server(char *port, char *psw)
 	get_cmds();
 	check_input(port, psw);
 	m_port = std::strtold(port, NULL);
-	m_psw = psw;
+	m_salt = generate_salt(16);
+	m_hash = hash_password(psw, m_salt);
 	create_socket();
 	
 	time_t now = time(0);
@@ -274,7 +275,7 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1] == m_psw && split_msg.size() >= 2)
+			if (verify_password(split_msg[1], m_hash, m_salt) && split_msg.size() >= 2)
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
 			{
