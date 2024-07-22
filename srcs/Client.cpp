@@ -120,8 +120,7 @@ bool Client::ping(std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() == 2 && send_message("PONG " + split_msg[1]))
 		return true;
-	// TODO handle error
-	return false;
+	return true;
 }
 
 

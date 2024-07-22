@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 18:05:54 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/22 17:32:16 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,8 @@ void	Channel::remove_client(Client client)
 
 bool	Channel::is_client_in(Client *client) const
 {
+	if (!client)
+		return false;
 	if (m_clients.find(client->get_nick()) != m_clients.end())
 		return true;
 	return false;
@@ -363,4 +365,11 @@ bool	Channel::send_topic(Client client) // TODO  proper topic sending
 	else
 		return(client.send_message(this->get_name() + " :" + m_topic));
 	
+}
+
+bool	Channel::is_op(Client *client) const
+{
+	if (m_ops.find(client->get_nick()) != m_ops.end())
+		return true;
+	return false;
 }

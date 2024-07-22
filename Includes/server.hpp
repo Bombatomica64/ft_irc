@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 16:23:34 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/22 18:06:14 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ class Server
 		bool	names(int client, std::string cmd);
 		bool	pass(int client, std::string cmd);
 		bool	user(int client, std::string cmd);
+		bool	cap(int client, std::string cmd);
+
 
 	public:
 		class clientSocketException : public std::exception
