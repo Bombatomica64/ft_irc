@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 17:23:23 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/22 18:17:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,12 @@ void Server::get_cmds()
 	m_cmds["MODE"] = &Server::mode;
 	m_cmds["INVITE"] = &Server::invite;
 	m_cmds["TOPIC"] = &Server::topic;
-	//m_cmds["KICK"] = &Server::kick;
+	m_cmds["KICK"] = &Server::kick;
 	m_cmds["QUIT"] = &Server::quit;
 	m_cmds["NAMES"] = &Server::names;
 	m_cmds["PASS"] = &Server::pass;
 	m_cmds["USER"] = &Server::user;
+	m_cmds["CAP"] = &Server::cap;
 }
 
 void Server::create_socket(void)
@@ -736,7 +737,62 @@ bool	Server::user(int client, std::string message)
 	write_to_client(client, ":irc 462 :You may not reregister");
 	return true;
 }
+bool	Server::kick(int client, std::string message)
+{
+	std::string kick_msg = "";
+	if (message.find(":") != std::string::npos)
+	{
+		kick_msg = message.substr(message.find(":") + 1);
+		message = message.substr(0, message.find(":"));
+	}
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 3)
+	{
+		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " KICK :Not enough parameters");
+		return true;
+	}
+	Channel *chan = get_channel(split_msg[1]);
+	if (!chan)
+	{
+		write_to_client(client, ":irc 403 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such channel");
+		return true;
+	}
+	if (!chan->is_client_in(m_clients[client]))
+	{
+		write_to_client(client, ":irc 442 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not on that channel");
+		return true;
+	}
+	if(!chan->is_op(m_clients[client]))
+	{
+		write_to_client(client, ":irc 482 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not channel operator");
+		return true;
+	}
+	if (!chan->is_client_in(get_client_by_nick(split_msg[2])))
+	{
+		if (get_client_by_nick(split_msg[2]) == NULL)
+			write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :No such nick/channel");
+		else
+			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + split_msg[2] + " " + split_msg[1] + " :They aren't on that channel");
+		return true;
+	}
+	chan->remove_client(*get_client_by_nick(split_msg[2]));
+	chan->add_ban(split_msg[2]);
+	write_to_client(get_client_by_nick(split_msg[1])->get_clientSocket(),":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
+	send_msg_to_channel(-1, split_msg[1], "KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
+	return true;
+}
 
+bool	Server::cap(int client, std::string message)
+{
+	(void)client;
+	if (message.find("LS 302") != std::string::npos)
+	{
+		write_to_client(client, "CAP * LS :multi-prefix");
+	}
+	return true;
+}
+// write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS
+ 
 // std::cout << "Received: " << msg << std::endl;
 // if (msg.find("PASS") != std::string::npos)
 // {

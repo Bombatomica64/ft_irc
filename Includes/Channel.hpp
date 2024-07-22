@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 17:03:08 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/22 17:29:38 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ class Channel
 		void	add_invite(Client invite) { m_invites.insert(invite.get_nick());}
 		void	add_op(Client op) { m_ops.insert(op.get_nick()); }
 		bool	is_client_in(Client *client) const;
+		bool	is_op(Client *client) const;
 };
 
 inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Channel*> const &v) {

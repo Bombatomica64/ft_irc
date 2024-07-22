@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/10 18:31:20 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/22 18:12:44 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,7 @@ bool Client::ping(std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() == 2 && send_message("PONG " + split_msg[1]))
 		return true;
-	// TODO handle error
-	return false;
+	return true;
 }
 
 
