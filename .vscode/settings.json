@@ -51,6 +51,8 @@
 		"set": "cpp",
 		"cstring": "cpp",
 		"csignal": "cpp",
-		"ctime": "cpp"
+		"ctime": "cpp",
+		"iomanip": "cpp",
+		"cinttypes": "cpp"
 	}
 }

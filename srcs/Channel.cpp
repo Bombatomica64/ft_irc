@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/22 17:32:16 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 17:45:15 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,9 @@ Channel::~Channel()
 	std::cout << "Channel " << m_name << " destroyed" << std::endl;
 }
 
-void	Channel::add_client(Client* client)
+void	Channel::add_client(std::string client)
 {
-	m_clients.insert(client->get_nick());
+	m_clients.insert(client);
 	std::cout << "Current channel" << m_clients << std::endl;
 }
 
@@ -104,32 +104,32 @@ bool	Channel::is_client_in(Client *client) const
 // 	return true;
 // }
 
-void	Channel::join_channel(Client *client, std::string parameters)
+void	Channel::join_channel(Client& client, std::string parameters)
 {
 	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
 	{
-		client->send_message(":irc 471 " + client->get_nick() + " " + m_name + " :Cannot join channel (+l)");
+		client.send_message(":irc 471 " + client.get_nick() + " " + m_name + " :Cannot join channel (+l)");
 		return;
 	}
-	if (m_modes['i'] && m_invites.find(client->get_nick()) == m_invites.end())
+	if (m_modes['i'] && m_invites.find(client.get_nick()) == m_invites.end())
 	{
 		// TODO send error message
 		return;
 	}
-	if (m_bans.find(client->get_nick()) != m_bans.end())
+	if (m_bans.find(client.get_nick()) != m_bans.end())
 	{
 		// TODO send error message
 		return;
 	}
 	if (m_modes['k'] && parameters != m_key)
 	{
-		client->send_message(":irc 475 " + client->get_nick() + " " + m_name + " :Cannot join channel (+k)");
+		client.send_message(":irc 475 " + client.get_nick() + " " + m_name + " :Cannot join channel (+k)");
 		return;
 	}
-	this->add_client(client);
-	this->send_modes(*client);
-	this->send_topic(*client);
-	this->m_server->names(client->get_clientSocket(), "NAMES " + m_name);
+	this->add_client(client.get_nick());
+	this->send_modes(client);
+	this->send_topic(client);
+	this->m_server->names(client.get_clientSocket(), "NAMES " + m_name);
 }
 
 void	Channel::join_channel(Client *client)
@@ -149,7 +149,7 @@ void	Channel::join_channel(Client *client)
 		// TODO send error message
 		return;
 	}
-	this->add_client(client);
+	this->add_client(client->get_nick());
 
 }
 

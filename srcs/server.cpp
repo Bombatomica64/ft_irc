@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 12:51:49 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:02:02 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ void Server::bind_socket(void)
 void Server::accept_connection()
 {
 	int ret = 0;
+	int optval = 1;
 	struct sockaddr_in client_addr = {};
 	socklen_t client_addr_size;
 	int client_socket;
@@ -140,6 +141,7 @@ void Server::accept_connection()
 					client_addr_size = sizeof(client_addr);
 					client_socket = accept(m_socket,
 										   (struct sockaddr *)&client_addr, &client_addr_size);
+					setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 					if (client_socket == -1)
 					{
 						std::cerr << "Error: accept failed" << std::endl;
@@ -235,16 +237,15 @@ void Server::read_from_client(int client)
 	// 	return;
 	// }
 	// parse_cmds(client, msg);
-	if (msg == "QUIT") // temporary
+	/*if (msg == "QUIT") // temporary
 	{
 		throw std::runtime_error("close");
-	}
+	}*/
 	std::cout << BLUE << " " << msg << RESET << std::endl;
 }
 
 void Server::register_client(int client)
 {
-
 	char temp[2] = {0};
 	int ret;
 	int total_ret = 0;
@@ -266,7 +267,7 @@ void Server::register_client(int client)
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
-		throw Server::ClientException();
+		//throw Server::ClientException();
 		return;
 	}
 	std::cout << RED "Received: " << msg.substr(0, msg.size() - 1) << RESET << std::endl; // TODO remove
@@ -286,7 +287,7 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1][0] == ':')
+			if (split_msg.size() > 1 && split_msg[1].find(":") == 0)
 				split_msg[1].erase(0, 1);
 			if (verify_password(split_msg[1], m_hash, m_salt) && split_msg.size() >= 2)
 				m_clients[client]->set_reg(1);
@@ -312,12 +313,12 @@ void Server::register_client(int client)
 			{
 				if (get_client_by_nick(split_msg[1]) != NULL || split_msg[1].find("[bot]") != std::string::npos || split_msg[1] == "coucou")
 				{
-					write_to_client(client,":irc 433" + split_msg[1] + ":Nickname already in use"); //ERR_NICKNAMEINUSE
+					write_to_client(client,":irc 433 " + split_msg[1] + " :Nickname already in use"); //ERR_NICKNAMEINUSE
 					break;
 				}
 				if (split_msg[1].find(":@#&") != std::string::npos)
 				{
-					write_to_client(client, ":irc 432" + split_msg[1] + ":Erroneous nickname"); //ERR_ERRONEUSNICKNAME
+					write_to_client(client, ":irc 432 " + split_msg[1] + " :Erroneous nickname"); //ERR_ERRONEUSNICKNAME
 					break;
 				}
 				m_clients[client]->set_nick(split_msg[1]);
@@ -553,12 +554,12 @@ bool	Server::join(int client, std::string channel)
 		{
 			std::cout << "creating channel: |" << *it <<"|" << std::endl;
 			add_channel(name);
-			m_channels[name]->add_client(m_clients[client]);
+			m_channels[name]->add_client(m_clients[client]->get_nick());
 			send_msg_to_channel(-1, name, "USER :" + m_clients[client]->get_nick() + " has joined the channel");
-			m_channels[name]->add_op(*m_clients[client]);
+			m_channels[name]->add_op(m_clients[client]->get_nick());
 		}
 		else
-			m_channels[name]->join_channel(m_clients[client], split_key[i++]);
+			m_channels[name]->join_channel(*m_clients[client], split_key[i++]);
 	}
 	// TODO handle error
 	return false;
@@ -628,7 +629,7 @@ bool	Server::invite(int client, std::string message)
 	}
 	else if (chan && split_msg.size() == 3)
 	{
-		chan->add_invite(*m_clients[client]);
+		chan->add_invite(m_clients[client]->get_nick());
 		send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick()); // TODO check if this is correct
 		return true;
 	}
@@ -652,7 +653,6 @@ bool	Server::quit(int client, std::string message)
 		if (it->second->is_client_in(m_clients[client]))
 			it->second->remove_client(*m_clients[client]);
 	}
-	close(client);
 	m_clients.erase(client);
 	return true;
 }
