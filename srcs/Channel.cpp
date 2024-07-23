@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 17:45:15 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:25:57 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,15 @@ void	Channel::add_client(std::string client)
 	std::cout << "Current channel" << m_clients << std::endl;
 }
 
-void	Channel::remove_client(Client client)
+void	Channel::remove_client(std::string client)
 {
-	if (m_clients.find(client.get_nick()) != m_clients.end())
-		m_clients.erase(client.get_nick());
+	if (m_clients.find(client) != m_clients.end())
+		m_clients.erase(client);
 }
 
-bool	Channel::is_client_in(Client *client) const
+bool	Channel::is_client_in(std::string client) const
 {
-	if (!client)
-		return false;
-	if (m_clients.find(client->get_nick()) != m_clients.end())
+	if (m_clients.find(client) != m_clients.end())
 		return true;
 	return false;
 }
@@ -367,9 +365,9 @@ bool	Channel::send_topic(Client client) // TODO  proper topic sending
 	
 }
 
-bool	Channel::is_op(Client *client) const
+bool	Channel::is_op(std::string client) const
 {
-	if (m_ops.find(client->get_nick()) != m_ops.end())
+	if (m_ops.find(client) != m_ops.end())
 		return true;
 	return false;
 }

@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 17:47:05 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:25:23 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Channel
 		Channel(std::string name, Server *server,std::map<char, int> modes);
 		~Channel();
 		void	add_client(std::string client);
-		void	remove_client(Client client);
+		void	remove_client(std::string client);
 		void	join_channel(Client *client);
 		void	join_channel(Client& client, std::string parameters);
 		bool	modify_mode(std::vector<std::string> command, Client client);
@@ -73,8 +73,8 @@ class Channel
 		void	add_ban(std::string ban) { m_bans.insert(ban); }
 		void	add_invite(std::string invite) { m_invites.insert(invite);}
 		void	add_op(std::string op) { m_ops.insert(op); }
-		bool	is_client_in(Client *client) const;
-		bool	is_op(Client *client) const;
+		bool	is_client_in(std::string client) const;
+		bool	is_op(std::string client) const;
 };
 
 inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Channel*> const &v) {
