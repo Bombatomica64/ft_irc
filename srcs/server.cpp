@@ -237,10 +237,10 @@ void Server::read_from_client(int client)
 	// 	return;
 	// }
 	// parse_cmds(client, msg);
-	/*if (msg == "QUIT") // temporary
-	{
-		throw std::runtime_error("close");
-	}*/
+	// if (msg == "QUIT") // temporary
+	// {
+	// 	throw std::runtime_error("close");
+	// }
 	std::cout << BLUE << " " << msg << RESET << std::endl;
 }
 
@@ -806,22 +806,16 @@ bool Server::cap(int client, std::string message)
     else if (message.find("REQ") != std::string::npos)
     {
         // Extract the requested capabilities from the message
-        std::string requested_caps = message.substr(message.find("REQ :")); // Adjust index as needed
-        // Check if all requested capabilities are supported
-        std::string supported_caps = "multi-prefix away-notify";
-        if (requested_caps == supported_caps)
-        {
-            // Acknowledge the requested capabilities
-            write_to_client(client, "CAP * ACK :" + requested_caps);
-        }
-        else
-        {
-            // Reject the requested capabilities
-            write_to_client(client, "CAP * ACK :" + requested_caps);
-        }
+        std::string requested_caps = message.substr(message.find("REQ :") + 5);
+		std::cout << "requested_caps: |" << requested_caps << "|" << std::endl;
+        write_to_client(client, "CAP * ACK :" + requested_caps);
         return true;
     }
-    // Default response if the command is not recognized
+	else if (message.find("END") != std::string::npos)
+	{
+		write_to_client(client, "CAP * ACK :multi-prefix away-notify");
+		return true;
+	}
     write_to_client(client, "CAP * NAK :multi-prefix away-notify invite-notify");
     return true;
 }
