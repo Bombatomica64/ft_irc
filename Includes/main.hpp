@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 16:52:47 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:35:45 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,11 @@ inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const 
 	for (std::vector<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)
 		o << *it << std::endl;
 	return o;
+}
+
+inline bool operator==(const struct pollfd& pfd, int fd)
+{
+	return pfd.fd == fd;
 }
 
 #endif

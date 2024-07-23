@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 16:28:44 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 18:41:29 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ void Server::bind_socket(void)
 void Server::accept_connection()
 {
 	int ret = 0;
+	int optval = 1;
 	struct sockaddr_in client_addr = {};
 	socklen_t client_addr_size;
 	int client_socket;
@@ -140,6 +141,7 @@ void Server::accept_connection()
 					client_addr_size = sizeof(client_addr);
 					client_socket = accept(m_socket,
 										   (struct sockaddr *)&client_addr, &client_addr_size);
+					setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 					if (client_socket == -1)
 					{
 						std::cerr << "Error: accept failed" << std::endl;
@@ -244,7 +246,6 @@ void Server::read_from_client(int client)
 
 void Server::register_client(int client)
 {
-
 	char temp[2] = {0};
 	int ret;
 	int total_ret = 0;
@@ -266,7 +267,7 @@ void Server::register_client(int client)
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
-		throw Server::ClientException();
+		//throw Server::ClientException();
 		return;
 	}
 	std::cout << RED "Received: " << msg.substr(0, msg.size() - 1) << RESET << std::endl; // TODO remove
@@ -286,7 +287,7 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
-			if (split_msg[1][0] == ':')
+			if (split_msg.size() > 1 && split_msg[1].find(":") == 0)
 				split_msg[1].erase(0, 1);
 			if (verify_password(split_msg[1], m_hash, m_salt) && split_msg.size() >= 2)
 				m_clients[client]->set_reg(1);
@@ -312,12 +313,12 @@ void Server::register_client(int client)
 			{
 				if (get_client_by_nick(split_msg[1]) != NULL || split_msg[1].find("[bot]") != std::string::npos || split_msg[1] == "coucou")
 				{
-					write_to_client(client,":irc 433" + split_msg[1] + ":Nickname already in use"); //ERR_NICKNAMEINUSE
+					write_to_client(client,":irc 433 " + split_msg[1] + " :Nickname already in use"); //ERR_NICKNAMEINUSE
 					break;
 				}
 				if (split_msg[1].find(":@#&") != std::string::npos)
 				{
-					write_to_client(client, ":irc 432" + split_msg[1] + ":Erroneous nickname"); //ERR_ERRONEUSNICKNAME
+					write_to_client(client, ":irc 432 " + split_msg[1] + " :Erroneous nickname"); //ERR_ERRONEUSNICKNAME
 					break;
 				}
 				m_clients[client]->set_nick(split_msg[1]);
@@ -492,7 +493,7 @@ bool	Server::send_msg_to_channel(int client, std::string channel, std::string ms
 		}
 		return true;
 	}
-	if (!chan->is_client_in(m_clients[client]))
+	if (!chan->is_client_in(m_clients[client]->get_nick()))
 	{
 		std::cout << "client not in channel" << std::endl;
 		// TODO handle error
@@ -553,12 +554,12 @@ bool	Server::join(int client, std::string channel)
 		{
 			std::cout << "creating channel: |" << *it <<"|" << std::endl;
 			add_channel(name);
-			m_channels[name]->add_client(m_clients[client]);
+			m_channels[name]->add_client(m_clients[client]->get_nick());
 			send_msg_to_channel(-1, name, "USER :" + m_clients[client]->get_nick() + " has joined the channel");
-			m_channels[name]->add_op(*m_clients[client]);
+			m_channels[name]->add_op(m_clients[client]->get_nick());
 		}
 		else
-			m_channels[name]->join_channel(m_clients[client], split_key[i++]);
+			m_channels[name]->join_channel(*m_clients[client], split_key[i++]);
 	}
 	// TODO handle error
 	return false;
@@ -577,7 +578,7 @@ bool	Server::part(int client, std::string channels)
 	{
 		Channel *chan = this->get_channel(*it);
 		if (chan)
-			chan->remove_client(*m_clients[client]);
+			chan->remove_client(m_clients[client]->get_nick());
 		else
 		{
 			// TODO handle error
@@ -621,14 +622,14 @@ bool	Server::invite(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
 	Channel *chan = get_channel(split_msg[2]);
-	if (chan && chan->is_client_in(m_clients[client]))
+	if (chan && chan->is_client_in(m_clients[client]->get_nick()))
 	{
 		// TODO handle error
 		return false;
 	}
 	else if (chan && split_msg.size() == 3)
 	{
-		chan->add_invite(*m_clients[client]);
+		chan->add_invite(m_clients[client]->get_nick());
 		send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick()); // TODO check if this is correct
 		return true;
 	}
@@ -649,10 +650,14 @@ bool	Server::quit(int client, std::string message)
 	}
 	for (std::map<std::string, Channel*>::iterator it = m_channels.begin(); it != m_channels.end(); it++)
 	{
-		if (it->second->is_client_in(m_clients[client]))
-			it->second->remove_client(*m_clients[client]);
+		if (it->second->is_client_in(m_clients[client]->get_nick()))
+			it->second->remove_client(m_clients[client]->get_nick());
 	}
+	std::vector<struct pollfd>::iterator it = std::find(client_fds.begin(), client_fds.end(), client);
+	if (it != client_fds.end())
+		client_fds.erase(it);
 	close(client);
+	delete m_clients[client];
 	m_clients.erase(client);
 	return true;
 }
@@ -668,7 +673,7 @@ bool	Server::topic(int client, std::string params)
 		// TODO handle error
 		return false;
 	}
-	if (chan->is_client_in(m_clients[client]) == false)
+	if (chan->is_client_in(m_clients[client]->get_nick()) == false)
 	{
 		// TODO handle error
 		return false;
@@ -765,17 +770,17 @@ bool	Server::kick(int client, std::string message)
 		write_to_client(client, ":irc 403 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such channel");
 		return true;
 	}
-	if (!chan->is_client_in(m_clients[client]))
+	if (!chan->is_client_in(m_clients[client]->get_nick()))
 	{
 		write_to_client(client, ":irc 442 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not on that channel");
 		return true;
 	}
-	if(!chan->is_op(m_clients[client]))
+	if(!chan->is_op(m_clients[client]->get_nick()))
 	{
 		write_to_client(client, ":irc 482 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not channel operator");
 		return true;
 	}
-	if (!chan->is_client_in(get_client_by_nick(split_msg[2])))
+	if (!chan->is_client_in(split_msg[2]))
 	{
 		if (get_client_by_nick(split_msg[2]) == NULL)
 			write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :No such nick/channel");
@@ -783,7 +788,7 @@ bool	Server::kick(int client, std::string message)
 			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + split_msg[2] + " " + split_msg[1] + " :They aren't on that channel");
 		return true;
 	}
-	chan->remove_client(*get_client_by_nick(split_msg[2]));
+	chan->remove_client((split_msg[2]));
 	chan->add_ban(split_msg[2]);
 	write_to_client(get_client_by_nick(split_msg[1])->get_clientSocket(),":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
 	send_msg_to_channel(-1, split_msg[1], "KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
