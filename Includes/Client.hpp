@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/09 17:50:07 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:27:36 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Client
 		bool	parse_cmds(std::string cmd);
 		// bool	quit(std::string message);
 		bool	nick(std::string new_nick);
-		bool	ping(std::string message);
+		// bool	ping(std::string message);
 		bool	away(std::string message);
 		/*
 		void	receive_message( void );

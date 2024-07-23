@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/22 18:17:37 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:39:22 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 void	handle_signal(int sig)
 {
 	(void)sig;
-	throw std::runtime_error("Closing server...");
+	throw std::runtime_error("\nClosing server...");
 }
 
 int getTerminalWidth() {

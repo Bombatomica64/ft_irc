@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 11:17:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:51:49 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,9 @@ void Server::get_cmds()
 	m_cmds["PASS"] = &Server::pass;
 	m_cmds["USER"] = &Server::user;
 	m_cmds["CAP"] = &Server::cap;
+	m_cmds["WHO"] = &Server::who;
+	m_cmds["PING"] = &Server::ping;
+	m_cmds["USERHOST"] = &Server::userhost;
 }
 
 void Server::create_socket(void)
@@ -387,7 +390,6 @@ void Server::write_to_client(int client, std::string msg)
 	send(client, "\r\n", 2, 0);
 }
 
-
 Client*		Server::get_client_by_nick(std::string nick)
 {
 	for (std::map<int, Client*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
@@ -404,7 +406,6 @@ Channel*	Server::get_channel(std::string name)
 		return m_channels[name];
 	return NULL;
 }
-
 
 void	Server::add_channel(std::string name)
 {
@@ -789,44 +790,99 @@ bool	Server::kick(int client, std::string message)
 	return true;
 }
 
-bool	Server::cap(int client, std::string message)
+bool Server::cap(int client, std::string message)
 {
-	if (message.find("LS 302") != std::string::npos)
+    if (message.find("LS 302") != std::string::npos)
+    {
+        // Advertise supported capabilities
+        write_to_client(client, "CAP * LS :multi-prefix away-notify invite-notify");
+        return true;
+    }
+    else if (message.find("REQ") != std::string::npos)
+    {
+        // Extract the requested capabilities from the message
+        std::string requested_caps = message.substr(message.find("REQ :")); // Adjust index as needed
+        // Check if all requested capabilities are supported
+        std::string supported_caps = "multi-prefix away-notify";
+        if (requested_caps == supported_caps)
+        {
+            // Acknowledge the requested capabilities
+            write_to_client(client, "CAP * ACK :" + requested_caps);
+        }
+        else
+        {
+            // Reject the requested capabilities
+            write_to_client(client, "CAP * ACK :" + requested_caps);
+        }
+        return true;
+    }
+    // Default response if the command is not recognized
+    write_to_client(client, "CAP * NAK :multi-prefix away-notify invite-notify");
+    return true;
+}
+
+// bool	Server::cap(int client, std::string message)
+// {
+// 	if (message.find("LS 302") != std::string::npos)
+// 	{
+// 		write_to_client(client, "CAP * LS :multi-prefix away-notify invite-notify");
+// 		return true;
+// 	}
+// 	if (message.find("REQ") != std::string::npos)
+// 	{
+// 		write_to_client(client, "CAP * ACK :multi-prefix away-notify");
+// 		return true;
+// 	}
+// 	write_to_client(client, "CAP * NAK :multi-prefix away-notify invite-notify");
+// 	return true;
+// }
+
+bool Server::ping(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() == 2)
 	{
-		write_to_client(client, "CAP * LS :multi-prefix away-notify invite-notify");
+		if (m_clients[client]->send_message("PONG " + split_msg[1]))
+			return true;
+		else
+			return false;
+	}
+	return false;
+}
+
+bool	Server::who(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 431 " + m_clients[client]->get_nick() + " WHO :No nickname given");
 		return true;
 	}
-	if (message.find("REQ") != std::string::npos)
+	if (get_client_by_nick(split_msg[1]) == NULL)
 	{
-		write_to_client(client, "CAP * ACK :multi-prefix away-notify invite-notify");
+		write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such nick/channel");
 		return true;
 	}
-	write_to_client(client, "CAP_END");
+	write_to_client(client, ":irc 352 " + m_clients[client]->get_nick() + " " + split_msg[1] + " " + m_clients[client]->get_user() + " " + m_clients[client]->get_hostname() + " " + m_clients[client]->get_servername() + " " + split_msg[1] + " H :0 " + m_clients[client]->get_realname());
 	return true;
 }
+
+bool	Server::userhost(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " USERHOST :Not enough parameters");
+		return true;
+	}
+	std::string response = ":irc 302 " + m_clients[client]->get_nick() + " :";
+	for (std::vector<std::string>::iterator it = split_msg.begin() + 1; it != split_msg.end(); it++)
+	{
+		if (get_client_by_nick(*it) != NULL)
+			response += get_client_by_nick(*it)->get_nick() + "=" + get_client_by_nick(*it)->get_nick() + "@" + get_client_by_nick(*it)->get_hostname() + " ";
+	}
+	write_to_client(client, response);
+	return true;
+
+}
 // write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS
- 
-// std::cout << "Received: " << msg << std::endl;
-// if (msg.find("PASS") != std::string::npos)
-// {
-// 	if (msg.find(m_psw) != std::string::npos)
-// 	{
-// 		write_to_client(client, "Welcome to the server");
-// 		m_clients.push_back(new Client(client, m_addr));
-// 		m_clients.back()->connect_to_server();
-// 		m_clients.back()->send_message();
-// 		m_clients.back()->receive_message();
-// 		m_clients.back()->connect_to_channel();
-// 		m_clients.back()->quit();
-// 	}
-// 	else
-// 	{
-// 		write_to_client(client, "Wrong password");
-// 		close(client);
-// 	}
-// }
-// else
-// {
-// 	write_to_client(client, "You must send a password first");
-// 	close(client);
-// }

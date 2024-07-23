@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/22 18:06:14 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:29:43 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,9 @@ class Server
 		bool	pass(int client, std::string cmd);
 		bool	user(int client, std::string cmd);
 		bool	cap(int client, std::string cmd);
+		bool	who(int client, std::string cmd);
+		bool	ping(int client, std::string cmd);
+		bool	userhost(int client, std::string cmd);
 
 
 	public:

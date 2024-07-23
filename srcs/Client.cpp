@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/22 18:27:35 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:27:48 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_cmds["NICK"] = &Client::nick;
 	// m_cmds["OPER"] = &Client::oper;
 	// m_cmds["KICK"] = &Client::kick;
-	m_cmds["PING"] = &Client::ping;
+	// m_cmds["PING"] = &Client::ping;
 	m_cmds["AWAY"] = &Client::away;
 	// m_cmds["TOPIC"] = &Client::topic;
 }
@@ -104,23 +104,21 @@ bool	Client::parse_cmds(std::string cmd)
 	std::vector<std::string> split_cmd = split(cmd, " ");
 	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
 	{
+		std::cout << "Command: |" << split_cmd[0] << "|" << std::endl;
 		if (!(this->*m_cmds[split_cmd[0]])(cmd))
-			return false;
+			{
+				std::cerr << "Error: command failed" << std::endl; // TODO handle error
+				return false;
+			}
 		else
 			return true;
 	}
 	else
+	{
+		std::cerr << "Error: command not found" << std::endl; // TODO handle error
 		return false;
+	}
 	// TODO error sending
-}
-
-
-bool Client::ping(std::string message)
-{
-	std::vector<std::string> split_msg = split(message, " ");
-	if (split_msg.size() == 2 && send_message("PONG " + split_msg[1]))
-		return true;
-	return true;
 }
 
 
