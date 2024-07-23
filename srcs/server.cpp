@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/22 18:17:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 11:13:44 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,6 +273,11 @@ void Server::register_client(int client)
 		return;
 	}
 	std::vector<std::string> split_msg = split(msg, " ");
+	if (split_msg[0] == "CAP")
+	{
+		cap(client, msg);
+		return;
+	}
 	switch (m_clients[client]->get_reg_steps())
 	{
 	case 0:
@@ -784,11 +789,17 @@ bool	Server::kick(int client, std::string message)
 
 bool	Server::cap(int client, std::string message)
 {
-	(void)client;
 	if (message.find("LS 302") != std::string::npos)
 	{
-		write_to_client(client, "CAP * LS :multi-prefix");
+		write_to_client(client, "CAP * LS :multi-prefix away-notify invite-notify");
+		return true;
 	}
+	if (message.find("REQ") != std::string::npos)
+	{
+		write_to_client(client, "CAP * ACK :multi-prefix away-notify invite-notify");
+		return true;
+	}
+	write_to_client(client, "CAP_END");
 	return true;
 }
 // write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS
