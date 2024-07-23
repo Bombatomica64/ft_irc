@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 11:13:44 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/23 11:17:09 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,7 +262,7 @@ void Server::register_client(int client)
 	}
 	if (msg.empty())
 	{
-		std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
+		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
 		throw Server::ClientException();
 		return;
 	}
@@ -283,6 +283,8 @@ void Server::register_client(int client)
 	case 0:
 		if (split_msg[0] == "PASS")
 		{
+			if (split_msg[1][0] == ':')
+				split_msg[1].erase(0, 1);
 			if (verify_password(split_msg[1], m_hash, m_salt) && split_msg.size() >= 2)
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
