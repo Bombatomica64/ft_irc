@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/24 12:23:21 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/24 15:18:20 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -439,6 +439,8 @@ void	Server::parse_cmds(int client, std::string cmd)
 	// TODO error sending
 }
 
+//:juco!~juco@hostname.com PRIVMSG #channel :Hello world
+//:your@hostmask PRIVMSG #channel :some long message
 bool	Server::privmsg(int client, std::string message)
 {
 	size_t start = message.find("PRIVMSG");
@@ -448,24 +450,29 @@ bool	Server::privmsg(int client, std::string message)
 		return false;
 	}
 	std::string msg = message.substr(start + strlen("PRIVMSG "));
-	std::string to_send = msg.substr(msg.find(" :") + 2);
+	std::string to_send = ":" + m_clients[client]->get_nick()
+		+ "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PRIVMSG " + msg.substr(msg.find(" :"));
+	
 	std::string target_str = msg.substr(0, msg.find(" :"));
 	std::vector<std::string> split_targets = split(target_str, ",");
 	for (std::vector<std::string>::iterator it = split_targets.begin(); it != split_targets.end(); it++)
 	{
+		std::string spcific_send;
 		switch ((*it)[0])
 		{
 			// send to channel
 		case '#':
 		case '&':
 			// *it = (*it).substr(1);
-			if (!this->send_msg_to_channel(client, *it, to_send)) //-->below
+			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
+			if (!this->send_msg_to_channel(client, *it, spcific_send)) //-->below
 				return false;
 			break;
 		default:
 			if (*it == "coucou[bot]" || *it == "coucou")
 				m_coucou.parse_message(*m_clients[client], to_send);
 			// send to user
+			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
 			if (!this->get_client_by_nick(*it)->send_message(to_send))
 				return false;
 			break;
