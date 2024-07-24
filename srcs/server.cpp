@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/24 11:45:29 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/24 12:23:21 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -629,7 +629,7 @@ bool	Server::mode(int client, std::string message)
 	if (l_command.size() < 3)
 		l_command.push_back("");
 	std::cout << "l_command: " << l_command << "size is "<< l_command.size() << std::endl;
-	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]); 
+	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]);
 	// TODO handle error
 	return ret;
 }
