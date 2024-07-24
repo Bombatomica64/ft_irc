@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 18:25:57 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/24 11:55:07 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ Channel::Channel(std::string name, Server *server) : m_server(server)
 	m_modes['k'] = 0;
 	m_modes['o'] = 0;
 	m_modes['l'] = 0;
+	m_modes['b'] = 0;
 	m_mode_funcs['i'] = &Channel::modify_invite;
 	m_mode_funcs['t'] = &Channel::modify_topic_mode;
 	m_mode_funcs['k'] = &Channel::modify_key_mode;
 	m_mode_funcs['o'] = &Channel::modify_op;
 	m_mode_funcs['l'] = &Channel::modify_limit;
+	m_mode_funcs['b'] = &Channel::modify_ban;
 }
 
 Channel::Channel(std::string name, Server *server, std::map<char ,int> modes) : m_server(server)
@@ -157,27 +159,21 @@ void	Channel::join_channel(Client *client)
 // 	if (it != m_clients.end())
 // 		m_clients.erase(it);
 // }
-bool	Channel::modify_mode(std::vector<std::string> command, Client client)
+bool	Channel::modify_mode(std::vector<std::string> command, Client &client)
 {
 	int i = 0;
+	std::cout << "Modifiying mode on channel |" << m_name << "|" << std::endl;
+
 	std::cout << "command[2] = " << command[2] << std::endl;
+
 	std::cout << "the modes are: " << m_mode_funcs << std::endl;
 	if (command.size() > 4)
 	{
 		std::cerr << "Too many arguments" << std::endl; // TODO send error message
 		return false;
 	}
-	std::cout << "command[3] = " << command[3] << std::endl;
-	if (command.size() == 4 && command[3].empty())
-	{
-		if (command[2] != "#chan")
-		{
-			std::cerr << "Invalid channel name" << std::endl; // TODO send error message
-			return false;
-		}
-		send_modes(client);
-		return true;
-	}
+	if (command.size() < 4)
+		command.push_back("");
 	while (command[2][i] != '\0' && command[2][i] != ' ' && command[2][i] != '\r')
 	{
 	switch (command[2][i])
@@ -214,7 +210,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client client)
 	return true;
 }
 
-void	Channel::modify_invite(Client client, std::string parameters, bool what)
+void	Channel::modify_invite(Client &client, std::string parameters, bool what)
 {
 	(void)parameters;
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
@@ -228,8 +224,7 @@ void	Channel::modify_invite(Client client, std::string parameters, bool what)
 	}
 }
 
-
-void	Channel::modify_key_mode(Client client, std::string parameters, bool what)
+void	Channel::modify_key_mode(Client &client, std::string parameters, bool what)
 {
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
@@ -249,7 +244,7 @@ void	Channel::modify_key_mode(Client client, std::string parameters, bool what)
 	}
 }
 
-void	Channel::modify_topic_mode(Client client, std::string parameters, bool what)
+void	Channel::modify_topic_mode(Client &client, std::string parameters, bool what)
 {
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
@@ -277,7 +272,7 @@ void	Channel::modify_topic_mode(Client client, std::string parameters, bool what
 	}
 }
 
-void	Channel::modify_limit(Client client, std::string parameters, bool what)
+void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 {
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
@@ -302,7 +297,7 @@ void	Channel::modify_limit(Client client, std::string parameters, bool what)
 	}
 }
 
-void	Channel::modify_op(Client client, std::string parameters, bool what)
+void	Channel::modify_op(Client &client, std::string parameters, bool what)
 {
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
@@ -336,7 +331,7 @@ void	Channel::modify_op(Client client, std::string parameters, bool what)
 	}
 }
 
-void	Channel::send_modes(Client client)
+void	Channel::send_modes(Client &client)
 {
 	std::string start = ":irc 324 " + client.get_nick() + " " + this->get_name();
 	std::string modes = " +";
@@ -356,7 +351,7 @@ void	Channel::send_modes(Client client)
 	client.send_message(start + modes);
 }
 
-bool	Channel::send_topic(Client client) // TODO  proper topic sending
+bool	Channel::send_topic(Client &client) // TODO  proper topic sending
 {
 	if (m_topic.empty())
 		return(client.send_message(this->get_name() + " :No topic is set"));
@@ -370,4 +365,40 @@ bool	Channel::is_op(std::string client) const
 	if (m_ops.find(client) != m_ops.end())
 		return true;
 	return false;
+}
+
+void	Channel::modify_ban(Client &client, std::string parameters, bool what)
+{
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
+	if (parameters.empty())
+	{
+		this->send_bans(client);
+		return;
+	}
+	
+	if (what && is_mod)
+	{
+		m_bans.insert(parameters);
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +b " + parameters + "\r\n");
+	}
+	else if (!what && is_mod)
+	{
+		if (m_bans.find(parameters) != m_bans.end())
+		{
+			m_bans.erase(parameters);
+			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -b " + parameters + "\r\n");
+		}
+	}
+	else
+	{
+		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+	}
+}
+
+void	Channel::send_bans(Client &client)
+{
+	for (std::set<std::string>::iterator it = m_bans.begin(); it != m_bans.end(); ++it)
+	{
+		client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +b " + *it + "\r\n");
+	}
 }

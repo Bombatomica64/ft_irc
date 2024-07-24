@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 18:25:23 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/24 11:01:08 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ class Channel
 	private:
 		std::set<std::string> m_clients;
 		std::map<char, int> m_modes;
-		std::map<char, void (Channel::*)(Client, std::string, bool)> m_mode_funcs;
+		std::map<char, void (Channel::*)(Client&, std::string, bool)> m_mode_funcs;
 		std::set<std::string>	m_bans;
 		std::set<std::string>	m_invites;
 		std::set<std::string>	m_ops;
@@ -42,15 +42,17 @@ class Channel
 		void	remove_client(std::string client);
 		void	join_channel(Client *client);
 		void	join_channel(Client& client, std::string parameters);
-		bool	modify_mode(std::vector<std::string> command, Client client);
-		void	modify_op(Client client, std::string parameters, bool what);
-		void	modify_limit(Client client, std::string parameters, bool what);
-		void	modify_invite(Client client, std::string parameters, bool what);
-		void	modify_key_mode(Client client, std::string parameters, bool what);
-		void	modify_topic_mode(Client client, std::string parameters, bool what);
+		bool	modify_mode(std::vector<std::string> command, Client& client);
+		void	modify_op(Client& client, std::string parameters, bool what);
+		void	modify_limit(Client& client, std::string parameters, bool what);
+		void	modify_invite(Client& client, std::string parameters, bool what);
+		void	modify_key_mode(Client& client, std::string parameters, bool what);
+		void	modify_topic_mode(Client& client, std::string parameters, bool what);
+		void	modify_ban(Client& client, std::string parameters, bool what);
 		// bool	topic(Client client, std::string parameters);
-		bool	send_topic(Client client);
-		void	send_modes(Client client);
+		bool	send_topic(Client &client);
+		void	send_modes(Client &client);
+		void	send_bans(Client &client);
 
 		// accessors
 		public:
@@ -64,7 +66,7 @@ class Channel
 		std::set<std::string>	get_invites() { return m_invites; }
 		const std::set<std::string>&	get_ops() const { return m_ops; }
 		std::map<char, int>	get_modes() { return m_modes; }
-		std::map<char, void (Channel::*)(Client, std::string, bool)>	get_mode_funcs() { return m_mode_funcs; }
+		std::map<char, void (Channel::*)(Client&, std::string, bool)>	get_mode_funcs() { return m_mode_funcs; }
 		void	set_topic(std::string topic) { m_topic = topic; }
 		void	set_key(std::string key) { m_key = key; }
 		void	set_limit(int limit) { m_limit = limit; }
@@ -85,8 +87,8 @@ inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Channel*>
 	return o;
 }
 
-inline std::ostream &operator<<(std::ostream &o, std::map<char, void (Channel::*)(Client, std::string, bool)> const &v) {
-	for (std::map<char, void (Channel::*)(Client, std::string, bool)>::const_iterator it = v.begin(); it != v.end(); ++it)
+inline std::ostream &operator<<(std::ostream &o, std::map<char, void (Channel::*)(Client&, std::string, bool)> const &v) {
+	for (std::map<char, void (Channel::*)(Client&, std::string, bool)>::const_iterator it = v.begin(); it != v.end(); ++it)
 		o << "\""<<it->first << "\" ";
 
 	o << std::endl;

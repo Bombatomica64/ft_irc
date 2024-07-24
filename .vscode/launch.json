@@ -7,7 +7,7 @@
 		"program": "${workspaceFolder}/ircserv",
 		"args": ["8000" , "2"],
 		"stopAtEntry": false,
-		"cwd": "${fileDirname}",
+		"cwd": "${workspaceFolder}",
 		"environment": [],
 		"externalConsole": false,
 		"MIMode": "gdb",

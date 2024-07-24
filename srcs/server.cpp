@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 18:41:29 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/24 11:45:29 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -555,7 +555,7 @@ bool	Server::join(int client, std::string channel)
 			std::cout << "creating channel: |" << *it <<"|" << std::endl;
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]->get_nick());
-			send_msg_to_channel(-1, name, "USER :" + m_clients[client]->get_nick() + " has joined the channel");
+			send_msg_to_channel(-1, name, ":" + m_clients[client]->get_nick() + "!irc@localhost JOIN " + name);
 			m_channels[name]->add_op(m_clients[client]->get_nick());
 		}
 		else
@@ -590,29 +590,45 @@ bool	Server::part(int client, std::string channels)
 
 bool	Server::mode(int client, std::string message)
 {
-	std::vector<std::string> l_command;
-	l_command.push_back(message.substr(message.find("MODE") + strlen("MODE"))); // "MODE"
-	message = message.substr(message.find("MODE") + strlen("MODE"));
-	l_command.push_back(message.substr(message.find(" ") + 1)); // "channel"
-	size_t pos = l_command[1].find(" ");
-	if (pos != std::string::npos)
-		l_command[1] = l_command[1].substr(0, pos);
-	message = message.substr(message.find(" ") + 1);
-	l_command.push_back(message.substr(message.find(" ") + 1)); // "operation"
-	pos = l_command[2].find(" ");
-	if (pos != std::string::npos)
-		l_command[2] = l_command[2].substr(0, pos);
-	message = message.substr(message.find(" ") + 1);
-	if (message.find(" ") != std::string::npos)
-		l_command.push_back(message.substr(message.find(" ") + 1)); // "arguments"
-	else
-		l_command.push_back("");
-	if (m_channels.find(l_command[1]) == m_channels.end())
+	// std::vector<std::string> l_command;
+	// l_command.push_back(message.substr(message.find("MODE") + strlen("MODE"))); // "MODE"
+	// message = message.substr(message.find("MODE") + strlen("MODE"));
+	// l_command.push_back(message.substr(message.find(" ") + 1)); // "channel"
+	// size_t pos = l_command[1].find(" ");
+	// if (pos != std::string::npos)
+	// 	l_command[1] = l_command[1].substr(0, pos);
+	// message = message.substr(message.find(" ") + 1);
+	// l_command.push_back(message.substr(message.find(" ") + 1)); // "operation"
+	// pos = l_command[2].find(" ");
+	// if (pos != std::string::npos)
+	// 	l_command[2] = l_command[2].substr(0, pos);
+	// message = message.substr(message.find(" ") + 1);
+	// if (message.find(" ") != std::string::npos)
+	// 	l_command.push_back(message.substr(message.find(" ") + 1)); // "arguments"
+	// else
+	// 	l_command.push_back("");
+	// if (m_channels.find(l_command[1]) == m_channels.end())
+	// {
+	// 	// TODO
+	// 	// std::cout << "channel not found" << std::endl;
+	// 	return false;
+	// }
+	std::vector<std::string> l_command = split(message, " ");
+	if (l_command.size() < 2)
 	{
-		// TODO
-		// std::cout << "channel not found" << std::endl;
-		return false;
+		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " MODE :Not enough parameters");
+		return true;
 	}
+	if (l_command.size() == 2)
+	{
+		Channel *chan = get_channel(l_command[1]);
+		if (chan)
+			chan->send_modes(*m_clients[client]);
+		return true;
+	}
+	if (l_command.size() < 3)
+		l_command.push_back("");
+	std::cout << "l_command: " << l_command << "size is "<< l_command.size() << std::endl;
 	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]); 
 	// TODO handle error
 	return ret;
