@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/24 11:01:08 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/25 16:48:33 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Channel
 		bool	send_topic(Client &client);
 		void	send_modes(Client &client);
 		void	send_bans(Client &client);
+		void	topuc(Client &client, std::string parameters);
 
 		// accessors
 		public:
