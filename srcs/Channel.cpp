@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/24 11:55:07 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/25 17:35:34 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,14 +244,32 @@ void	Channel::modify_key_mode(Client &client, std::string parameters, bool what)
 	}
 }
 
+void	Channel::topuc(Client &client, std::string parameters)
+{
+	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
+	if (parameters.find(":") != std::string::npos)
+		parameters = parameters.substr(parameters.find(":") + 1, parameters.size());
+	if (m_modes['t'] == 0)
+		m_topic = parameters;
+	else if (is_mod)
+		m_topic = parameters;
+	else
+	{
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		return;
+	}
+	send_topic(client);
+}
+
+
 void	Channel::modify_topic_mode(Client &client, std::string parameters, bool what)
 {
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 	{
 		m_modes['t'] = 1;
-		if (parameters.find(" ") != std::string::npos)
-			m_topic = parameters.substr(parameters.find(" ") + 1);
+		if (!parameters.empty())
+			m_topic = parameters;
 		// client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
 		send_topic(client);
 	}

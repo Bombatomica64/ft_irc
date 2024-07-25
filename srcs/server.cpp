@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/25 16:13:32 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/25 17:19:20 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -682,28 +682,42 @@ bool	Server::quit(int client, std::string message)
 
 bool	Server::topic(int client, std::string params)
 {
+	std::string topic;
+	if (params.find(":") != std::string::npos)
+	{
+		topic = params.substr(params.find(":") + 1);
+		params = params.substr(0, params.find(":"));
+		std::cout << "topic: " << topic << std::endl;
+	}
 	std::vector<std::string> split_msg = split(params, " ");
-	if (split_msg[1].size() > 0)
-		split_msg[1] = split_msg[1].substr(1, split_msg[1].size());
+	std::cout << "split_msg_number: " << split_msg.size() << std::endl;
+	for (std::vector<std::string>::iterator it = split_msg.begin(); it != split_msg.end(); it++)
+		std::cout << "split_msg: " << *it << std::endl;
+	std::cout << std::endl;
+	if (split_msg.size() < 2) // TOPIC without #chan
+	{
+		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " TOPIC :Not enough parameters");
+		return true;
+	}
 	Channel *chan = get_channel(split_msg[1]);
 	if (!chan)
 	{
-		// TODO handle error
-		return false;
+		m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such channel");
+		return true;
 	}
 	if (chan->is_client_in(m_clients[client]->get_nick()) == false)
 	{
-		// TODO handle error
-		return false;
+		m_clients[client]->send_message(":irc 442 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not on that channel");
+		return true;
 	}
-	if (split_msg.size() == 2)
+	if (split_msg.size() == 2 + (topic.empty() ? 0 : 1))
 	{
 		chan->send_topic(*m_clients[client]);
 	}
 	else
 	{
-		chan->modify_topic_mode(*m_clients[client], split_msg[2], false);
-		chan->send_topic(*m_clients[client]);
+		chan->topuc(*m_clients[client], topic);
+
 	}
 	return true;
 }
