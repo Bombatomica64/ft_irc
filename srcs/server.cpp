@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/25 11:18:36 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/25 16:13:32 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,19 +202,20 @@ void Server::read_from_client(int client)
 		register_client(client);
 		return;
 	}
-	char temp[2] = {0};
-	int ret;
-	int total_ret = 0;
+	char temp[BUFFER_SIZE] = {0};
+	int total_ret;
 
 	std::string msg = "";
-	while ((ret = recv(client, temp, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
+	total_ret = recv(client, temp, BUFFER_SIZE, 0);
+	std::cerr << total_ret << std::endl;
+	if (total_ret == -1)
 	{
-		total_ret += ret;
-		if (msg.find("\r\n") != std::string::npos || ret == -1) // check docs for \r\n
-			break ;
-		
-		msg.append(temp, ret);
+		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+		throw Server::ClientException();
 	}
+	temp[total_ret] = '\0';
+	msg.append(temp);
+	
 	std::cerr << total_ret << std::endl;
 	if (total_ret == -1)
 	{
@@ -246,31 +247,25 @@ void Server::read_from_client(int client)
 
 void Server::register_client(int client)
 {
-	char temp[2] = {0};
-	int ret;
-	int total_ret = 0;
+	char temp[BUFFER_SIZE] = {0};
+	int total_ret;
 
 	std::string msg = "";
-	while ((ret = recv(client, temp, 1, 0)) > 0 || (msg.find("\r\n") == std::string::npos)) // check docs for \r\n
-	{
-		total_ret += ret;
-		if (msg.find("\r\n") != std::string::npos || ret == -1) // check docs for \r\n
-			break ;
-		
-		msg.append(temp, ret);
-	}
+	total_ret = recv(client, temp, BUFFER_SIZE, 0);
 	std::cerr << total_ret << std::endl;
 	if (total_ret == -1)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+		throw Server::ClientException();
 	}
+	msg.append(temp);
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
 		//throw Server::ClientException();
-		return;
+		// return;
 	}
-	std::cout << RED "Received: " << msg.substr(0, msg.size() - 1) << RESET << std::endl; // TODO remove
+	std::cout << RED "Received: [" << msg.substr(0, msg.size() - 1) << "]" << RESET << std::endl; // TODO remove
 	if (msg == "\n")
 	{
 		write_to_client(client, "You must send a password first");
