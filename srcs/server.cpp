@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/25 17:19:20 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/26 16:25:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,7 +272,7 @@ void Server::register_client(int client)
 		return;
 	}
 	std::vector<std::string> split_msg = split(msg, " ");
-	if (split_msg[0] == "CAP")
+	if (split_msg.size() > 0 && split_msg[0] == "CAP")
 	{
 		cap(client, msg);
 		return;
@@ -739,14 +739,6 @@ bool	Server::names(int client, std::string params)
 		{
 			std::set<std::string> clients = chan->get_clients();
 			message += chan->get_name() + " :";
-
-			//print ops in ./ircserv
-			// std::set<std::string>::const_iterator it = chan->get_ops().begin();
-			// while (it != chan->get_ops().end()) {
-			// 	send_msg_to_channel(client, split_msg[1], *it);
-			// 	it++;
-			// }
-			
 			for(std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
 			{
 				if (chan->get_ops().find(*it) != chan->get_ops().end())

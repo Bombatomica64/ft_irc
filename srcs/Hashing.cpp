@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 18:30:29 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/19 12:17:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/26 11:45:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,11 @@ std::string hash_password(const std::string& password, const std::string& salt)
 
 // Check if password is correct
 bool verify_password(const std::string& entered_password, const std::string& stored_hash, const std::string& salt) {
-    std::string hashed_entered_password = hash_password(entered_password, salt);
-    return hashed_entered_password == stored_hash;
+	if (entered_password.empty() || stored_hash.empty() || salt.empty()) {
+		return false;
+	}
+	std::string hashed_entered_password = hash_password(entered_password, salt);
+	return hashed_entered_password == stored_hash;
 }
 // Example usage
 // void example_usage() {

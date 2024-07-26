@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/25 16:48:33 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/26 17:08:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ class Channel
 		~Channel();
 		void	add_client(std::string client);
 		void	remove_client(std::string client);
-		void	join_channel(Client *client);
 		void	join_channel(Client& client, std::string parameters);
 		bool	modify_mode(std::vector<std::string> command, Client& client);
 		void	modify_op(Client& client, std::string parameters, bool what);

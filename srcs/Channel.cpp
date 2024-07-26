@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/25 17:35:34 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/26 17:08:03 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,12 +113,12 @@ void	Channel::join_channel(Client& client, std::string parameters)
 	}
 	if (m_modes['i'] && m_invites.find(client.get_nick()) == m_invites.end())
 	{
-		// TODO send error message
+		client.send_message(":irc 473 " + client.get_nick() + " " + m_name + " :Cannot join channel (+i)");
 		return;
 	}
 	if (m_bans.find(client.get_nick()) != m_bans.end())
 	{
-		// TODO send error message
+		client.send_message(":irc 474 " + client.get_nick() + " " + m_name + " :Cannot join channel (+b)");
 		return;
 	}
 	if (m_modes['k'] && parameters != m_key)
@@ -130,27 +130,6 @@ void	Channel::join_channel(Client& client, std::string parameters)
 	this->send_modes(client);
 	this->send_topic(client);
 	this->m_server->names(client.get_clientSocket(), "NAMES " + m_name);
-}
-
-void	Channel::join_channel(Client *client)
-{
-	if (m_modes['l'] && m_clients.size() >= static_cast<size_t>(m_modes['l']))
-	{
-		// TODO send error message
-		return;
-	}
-	// if (m_modes['k'] && m_key != "")
-	// {
-	// 	// TODO send error message
-	// 	return;
-	// }
-	if (m_modes['i'] && m_invites.find(client->get_nick()) == m_invites.end())
-	{
-		// TODO send error message
-		return;
-	}
-	this->add_client(client->get_nick());
-
 }
 
 // void	Channel::leave_channel(Client client)

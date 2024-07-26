@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/08 16:05:13 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/26 16:53:07 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,16 @@ std::string trimString(std::string nick)
     result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
     //result.erase(std::remove(result.begin(), result.end(), ' '), result.end());
     return result;
+}
+
+
+std::string	get_time( void )
+{
+	time_t	now = time(0);
+	char	buf[80];
+	tm		*ltm = localtime(&now);
+	std::string result;
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ltm);
+	result = buf;
+	return result;
 }
