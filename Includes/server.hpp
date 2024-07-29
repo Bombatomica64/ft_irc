@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 18:34:47 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/29 12:58:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ class Server
 		void	register_client(int client);
 		void	parse_cmds(int client, std::string cmd);
 		Client*	get_client_by_nick(std::string nick);
+		bool	is_client_in_channel(std::string nick, std::string channel);
+		bool	client_exist(const std::string &nick) const;
 		bool	privmsg(int client, std::string cmd);
 		bool	join(int client, std::string cmd);
 		bool	part(int client, std::string cmd);
