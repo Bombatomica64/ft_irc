@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/26 16:25:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/29 17:43:00 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -465,7 +465,10 @@ bool	Server::privmsg(int client, std::string message)
 			break;
 		default:
 			if (*it == "coucou[bot]" || *it == "coucou")
-				m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :"), to_send.size()));
+			{
+				m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :") + 1, to_send.size()));
+				return true;
+			}
 			// send to user
 			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
 			if (!this->get_client_by_nick(*it)->send_message(to_send))
