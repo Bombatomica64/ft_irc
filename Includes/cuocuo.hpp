@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:26:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/12 12:51:42 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/29 13:05:29 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ class Coucou
 	public:
 		Coucou();
 		~Coucou();
-		void	send_message(Client Client, std::string message);
-		void	parse_message(Client Client, std::string message);
+		void	send_message(Client& Client, std::string message);
+		void	parse_message(Client& Client, std::string message);
 		void	change_relation(std::string name);
-		void	add_angry_word(std::string word);
-		void	add_happy_word(std::string word);
-		void	remove_angry_word(std::string word);
-		void	remove_happy_word(std::string word);
-		void	domain_expansion(Client client, std::string message);
-		void	print_relations(Client client);
-		std::string get_name( Client client ) const;
+		// void	add_angry_word(std::string word);
+		// void	add_happy_word(std::string word);
+		// void	remove_angry_word(std::string word);
+		// void	remove_happy_word(std::string word);
+		void	domain_expansion(Client& client, std::string message);
+		void	print_relations(Client& client);
+		std::string get_name(Client& client) const;
 };
