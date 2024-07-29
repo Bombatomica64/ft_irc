@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 18:41:22 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/29 16:28:55 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ bool Client::send_message(std::string message)
 	message += "\r\n";
 	if (send(m_clientSocket, message.c_str(), message.size(), 0) == -1)
 	{
-		std::cerr << "Error: send failed" << std::endl; // TODO handle error
 		return false;
 	}
 	return true;
@@ -93,7 +92,6 @@ bool Client::send_message(Client receiver, std::string message)
 	}
 	if (send(receiver.get_clientSocket(), message.c_str(), message.size(), 0) == -1)
 	{
-		std::cerr << "Error: send failed" << std::endl; // TODO handle error
 		return false;
 	}
 	return true;
@@ -104,21 +102,13 @@ bool	Client::parse_cmds(std::string cmd)
 	std::vector<std::string> split_cmd = split(cmd, " ");
 	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
 	{
-		std::cout << "Command: |" << split_cmd[0] << "|" << std::endl;
 		if (!(this->*m_cmds[split_cmd[0]])(cmd))
-			{
-				std::cerr << "Error: command failed" << std::endl; // TODO handle error
-				return false;
-			}
+			return false;
 		else
 			return true;
 	}
 	else
-	{
-		std::cerr << "Error: command not found" << std::endl; // TODO handle error
 		return false;
-	}
-	// TODO error sending
 }
 
 
@@ -143,8 +133,8 @@ bool	Client::away(std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() == 1)
 	{
-		// TODO handle error
-		return false;
+		send_message(":irc 461" + m_nick + " AWAY :Not enough parameters");
+		return true;
 	}
 	else
 	{
@@ -155,7 +145,6 @@ bool	Client::away(std::string message)
 		m_away_msg = msg;
 		return true;
 	}
-	// TODO handle error
 	return false;
 }
 

@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 17:43:00 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/29 18:09:16 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,7 +382,7 @@ void Server::register_client(int client)
 }
 void Server::write_to_client(int client, std::string msg)
 {
-	send(client, msg.c_str(), msg.size(), 0); // possibly add MSG_NOSIGNAL with errno TODO
+	send(client, msg.c_str(), msg.size(), 0);
 	send(client, "\r\n", 2, 0);
 }
 
@@ -431,7 +431,6 @@ void	Server::parse_cmds(int client, std::string cmd)
 		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
 	else
 		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
-	// TODO error sending
 }
 
 //:juco!~juco@hostname.com PRIVMSG #channel :Hello world
@@ -484,9 +483,8 @@ bool	Server::send_msg_to_channel(int client, std::string channel, std::string ms
 	Channel *chan = this->get_channel(channel);
 	if (!chan)
 	{
-		std::cout << "channel not found" << std::endl;
-		// TODO handle error
-		return false;
+		m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + channel + " :No such channel");
+		return true;
 	}
 	std::set<std::string> clients = chan->get_clients();
 	if (client == -1)
@@ -500,8 +498,7 @@ bool	Server::send_msg_to_channel(int client, std::string channel, std::string ms
 	}
 	if (!chan->is_client_in(m_clients[client]->get_nick()))
 	{
-		std::cout << "client not in channel" << std::endl;
-		// TODO handle error
+		m_clients[client]->send_message(":irc 442 " + m_clients[client]->get_nick() + " " + channel + " :You're not on that channel");
 		return false;
 	}
 	clients.erase(m_clients[client]->get_nick());
@@ -512,8 +509,6 @@ bool	Server::send_msg_to_channel(int client, std::string channel, std::string ms
 	}
 
 	return true;
-	// TODO handle error
-	return false;
 }
 
 
@@ -531,16 +526,16 @@ bool	Server::join(int client, std::string channel)
 	std::cout << "split_key: " << split_key << std::endl;
 	if (split_msg.size() < 2)
 	{
-		// TODO handle error
-		return false;
+		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " JOIN :Not enough parameters");
+		return true;
 	}
 	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
 	{
 		//se non c'e' un # all'inizio del nome del canale, dai errore
 		if ((*it)[0] != '#' && (*it)[0] != '&')
 		{
-			// TODO handle error
-			return false;
+			m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
+			return true;
 		}
 	}
 
@@ -741,6 +736,7 @@ bool	Server::names(int client, std::string params)
 		if (chan)
 		{
 			std::set<std::string> clients = chan->get_clients();
+			message += ":irc 353 " + m_clients[client]->get_nick();
 			message += chan->get_name() + " :";
 			for(std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
 			{
@@ -910,5 +906,23 @@ bool	Server::userhost(int client, std::string message)
 	write_to_client(client, response);
 	return true;
 
+}
+
+bool	Server::is_client_in_channel(std::string channel, std::string client)
+{
+	Channel *chan = get_channel(channel);
+	if (chan)
+		return chan->is_client_in(client);
+	return false;
+}
+
+bool	Server::client_exist(const std::string& client) const
+{
+	for (std::map<int, Client *>::const_iterator it = m_clients.begin(); it != m_clients.end(); it++)
+	{
+		if (it->second->get_nick() == client)
+			return true;
+	}
+	return false;
 }
 // write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS

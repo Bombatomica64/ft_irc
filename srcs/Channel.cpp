@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/26 17:08:03 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/29 17:29:18 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ void	Channel::join_channel(Client& client, std::string parameters)
 		return;
 	}
 	this->add_client(client.get_nick());
+	this->m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " JOIN " + m_name + "\r\n");
 	this->send_modes(client);
 	this->send_topic(client);
 	this->m_server->names(client.get_clientSocket(), "NAMES " + m_name);
@@ -148,7 +149,7 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client &client)
 	std::cout << "the modes are: " << m_mode_funcs << std::endl;
 	if (command.size() > 4)
 	{
-		std::cerr << "Too many arguments" << std::endl; // TODO send error message
+		// std::cerr << "Too many arguments" << std::endl; there isn't an error message
 		return false;
 	}
 	if (command.size() < 4)
@@ -165,8 +166,9 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client &client)
 					(this->*m_mode_funcs[*it])(client, command[3], true);
 				else
 				{
-					std::cerr << "Unknown mode: " << *it << std::endl; // TODO send error message
-					return false;
+					client.send_message(":irc 472 " + client.get_nick() + " " + m_name + " :Unknown mode");
+					// std::cerr << "Unknown mode: " << *it << std::endl;
+					return true;
 				}
 			}
 		break;
@@ -178,7 +180,8 @@ bool	Channel::modify_mode(std::vector<std::string> command, Client &client)
 					(this->*m_mode_funcs[*it])(client, command[3], false);
 				else
 				{
-					std::cerr << "Unknown mode: " << *it << std::endl; // TODO send error message
+					client.send_message(":irc 472 " + client.get_nick() + " " + m_name + " :Unknown mode");
+					// std::cerr << "Unknown mode: " << *it << std::endl;
 					return false;
 				}
 			}
@@ -199,7 +202,8 @@ void	Channel::modify_invite(Client &client, std::string parameters, bool what)
 		m_modes['i'] = 0;
 	else
 	{
-		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
 
@@ -219,7 +223,8 @@ void	Channel::modify_key_mode(Client &client, std::string parameters, bool what)
 	}
 	else
 	{
-		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
 
@@ -265,7 +270,8 @@ void	Channel::modify_topic_mode(Client &client, std::string parameters, bool wha
 	}
 	else
 	{
-		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
 
@@ -281,7 +287,8 @@ void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 		}
 		catch(const std::exception& e)
 		{
-			std::cerr << "Invalid limit" << std::endl; // TODO send error message
+			client.send_message(":irc 400 " + client.get_nick() + " " + m_name + " :Invalid limit");
+			// std::cerr << "Invalid limit" << std::endl;
 		}
 	}
 	else if (!what && is_mod)
@@ -290,7 +297,8 @@ void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 	}
 	else
 	{
-		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
 
@@ -299,6 +307,12 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
 	{
+		if (!m_server->client_exist(parameters))
+		{
+			client.send_message(":irc 401 " + client.get_nick() + " " + m_name + " :No such nick/channel");
+			// std::cerr << "Client not found" << std::endl;
+			return;
+		}
 		Client *to_add = m_server->get_client_by_nick(parameters);
 		if (m_clients.find(to_add->get_nick()) != m_clients.end())
 		{
@@ -307,11 +321,13 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 		}
 		else if (m_ops.size() >= 3)
 		{
-			std::cerr << "Too many operators" << std::endl; // TODO send error message
+			client.send_message(":irc 400 " + client.get_nick() + " " + m_name + " :Too many operators");
+			// std::cerr << "Too many operators" << std::endl;
 		}
 		else
 		{
-			std::cerr << "Client not found" << std::endl; // TODO send error message
+			client.send_message(":irc 441 " + client.get_nick() + " " + m_name + " :They aren't on that channel");
+			// std::cerr << "Client not found" << std::endl;
 		}
 	}
 	else if (!what && is_mod)
@@ -324,7 +340,8 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 	}
 	else
 	{
-		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		// std::cerr << "You are not an operator" << std::endl; 
 	}
 }
 
@@ -348,13 +365,12 @@ void	Channel::send_modes(Client &client)
 	client.send_message(start + modes);
 }
 
-bool	Channel::send_topic(Client &client) // TODO  proper topic sending
+bool	Channel::send_topic(Client &client)
 {
 	if (m_topic.empty())
-		return(client.send_message(this->get_name() + " :No topic is set"));
+		return(client.send_message(":irc 331 " + client.get_nick() + " " + m_name + " :No topic is set")); 
 	else
-		return(client.send_message(this->get_name() + " :" + m_topic));
-	
+		return(client.send_message(":irc 332 " + client.get_nick() + " " + m_name + " :" + m_topic));
 }
 
 bool	Channel::is_op(std::string client) const
@@ -388,7 +404,8 @@ void	Channel::modify_ban(Client &client, std::string parameters, bool what)
 	}
 	else
 	{
-		std::cerr << "You are not an operator" << std::endl; // TODO send error message
+		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
+		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
 
