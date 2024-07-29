@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 18:09:16 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/29 18:27:11 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ void Server::read_from_client(int client)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 	}
-	if (total_ret == 0)
+	if (total_ret == 0 || msg == "\n")
 		return;
 	if (msg.empty())
 	{
@@ -229,7 +229,7 @@ void Server::read_from_client(int client)
 		throw Server::ClientException();
 		return;
 	}
-	std::cout << RED "Received: " << msg.substr(0, msg.size() - 1) << RESET << std::endl; 
+	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 1) << "}"RESET << std::endl; 
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
 	// if (m_commands.find(split_msg[0]) == m_commands.end())
