@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 17:19:43 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/30 17:26:16 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ void printLogo(std::string ip, int port) {
         std::string spaces(padding, ' ');
         std::cout <<CYAN<< spaces << art[i] <<RESET<< std::endl;
     }
+}
 
 std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWidth, int terminalHeight)
 {
@@ -117,7 +118,6 @@ std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWi
 	double scaleX = static_cast<double>(terminalWidth) / artWidth;
 	double scaleY = static_cast<double>(terminalHeight) / artHeight;
 
-	std::vector<std::string> scaledLines;
 	for (int i = 0; i < artHeight; i += scaleY)
 	{
 		std::string scaledRow;
