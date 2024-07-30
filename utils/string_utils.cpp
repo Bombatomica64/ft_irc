@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 13:18:24 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/30 13:18:49 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWi
 		std::string scaledRow;
 		for (int j = 0; j < artWidth; j += scaleX)
 		{
-			// Simple downscaling: take the first character in the block
 			scaledRow += art[i][j];
 		}
 		scaledLines.push_back(scaledRow);
