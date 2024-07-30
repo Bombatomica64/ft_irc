@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:26:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 18:40:47 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/30 15:57:39 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,15 @@ class Coucou
 		std::vector<std::string> m_happy_words;
 		std::vector<std::string> m_base_respones;
 		std::map<std::string, relation> m_relations; // true = happy, false = angry
+
+		std::set<std::string> m_angry_input;
+		std::set<std::string> m_happy_input;
 	public:
 		Coucou();
 		~Coucou();
 		void	send_message(Client& Client, std::string message);
 		void	parse_message(Client& Client, std::string message);
-		void	change_relation(Client& client, std::vector<std::string> words);
+		void	change_relation(Client& client, std::vector<std::string> words, std::string message);
 		// void	add_angry_word(std::string word);
 		// void	add_happy_word(std::string word);
 		// void	remove_angry_word(std::string word);

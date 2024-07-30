@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 13:17:56 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/30 16:34:45 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define MAIN_HPP
 
 #include <iostream>
+#include <sys/ioctl.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -58,6 +59,7 @@ std::string generate_salt(size_t length);
 std::string hash_password(const std::string &password, const std::string &salt);
 bool verify_password(const std::string &entered_password, const std::string &stored_hash, const std::string &salt);
 std::string get_time( void );
+void printLogo(std::string ip, int port);
 std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWidth, int terminalHeight);
 
 inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v)
