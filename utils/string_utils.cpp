@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/26 16:53:07 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/30 17:19:43 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,60 @@ std::string	get_time( void )
 	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ltm);
 	result = buf;
 	return result;
+}
+
+int getTerminalWidth() {
+    struct winsize ws;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1) {
+        // If ioctl fails, return a default width
+        return 80;
+    }
+    return ws.ws_col;
+}
+
+void printLogo(std::string ip, int port) {
+    std::string art[] = {
+	"┌──┬───────────────────────────────┬──┐ ",
+	"│  │                               │  │",
+	"│▇▇│                               │▇▇│",
+	"│  │      ██╗██████╗  ██████╗      │  │",
+	"│  │      ██║██╔══██╗██╔════╝      │  │",
+	"│  │      ██║██████╔╝██║           │  │",
+	"│  │      ██║██╔══██╗██║           │  │",
+	"│  │      ██║██║  ██║╚██████╗      │  │",
+	"│  │      ╚═╝╚═╝  ╚═╝ ╚═════╝      │  │",
+	"│  │                               │  │",
+	"│  │     IP:             Port:     │  │",
+	"│  │                               │  │",
+	"│  │                               │  │",
+	"│  ╰───────────────────────────────╯  │",
+	"│       ╭─────────────────────┬────╮  │",
+	"│       │  ┌───┐              │    │  │",
+	"│       │  │   │              │    │  │",
+	"│ ╔═╓ ╖ │  │   │              │    │  │",
+	"│ ║ ╠═╣ │  │   │              │    ││││",
+	"│ ╚═╙ ╜ │  │   │              │    │◥◤│",
+	"│       │  └───┘              │    │  │",
+	" ╲_____╱──────────────────────┴────│⎯⎯⎭",
+    };
+	//sources:
+	//Font Name: ANSI Shadow
+	//https://patorjk.com/software/taag/#p=testall&f=Graffiti&t=IRC
+
+    int terminalWidth = getTerminalWidth();
+
+    const int artHeight = 22;
+    int artWidth = 35;
+
+	std::string port_str = NumberToString(port);
+	art[11].replace(13, ip.size(), ip);
+	art[11].replace(29, port_str.size(), port_str);
+    for (int i = 0; i < artHeight; ++i)
+	{
+        int padding = (terminalWidth - artWidth) / 2;
+        if (padding < 0)
+			padding = 0;
+        std::string spaces(padding, ' ');
+        std::cout <<CYAN<< spaces << art[i] <<RESET<< std::endl;
+    }
 }

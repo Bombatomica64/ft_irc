@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 18:42:32 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/30 16:34:39 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,9 @@ void Server::accept_connection()
 	server_fd.fd = m_socket;
 	server_fd.events = POLLIN;
 	client_fds.push_back(server_fd);
+	
+	printLogo(inet_ntoa(m_addr.sin_addr), m_port);
+
 	while (true)
 	{
 		ret = poll(client_fds.data(), client_fds.size(), -1);
@@ -465,7 +468,7 @@ bool	Server::privmsg(int client, std::string message)
 		default:
 			if (*it == "coucou[bot]" || *it == "coucou")
 			{
-				m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :") + 1, to_send.size()));
+				m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :") + 2, to_send.size()));
 				return true;
 			}
 			// send to user

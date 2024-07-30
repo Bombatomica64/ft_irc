@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 18:40:41 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/30 16:17:07 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Coucou::Coucou()
 {
-	srand(time(NULL));
 	m_name = "Coucou";
 	m_angry_name = "Anouk";
 	m_happy_name = "lollo";
@@ -24,7 +23,7 @@ Coucou::Coucou()
 	m_angry_words.push_back("I'm angry");
 	m_angry_words.push_back("I can't believe you did that!");
 	m_angry_words.push_back("That was uncalled for!");
-	
+	m_angry_words.push_back("How could you?");
 	
 	m_happy_words.push_back("I'm happy");
 	m_happy_words.push_back("I'm glad you're here");
@@ -38,15 +37,79 @@ Coucou::Coucou()
 	m_base_respones.push_back("I'm not sure");
 	m_base_respones.push_back("It's a possibility");
 	m_base_respones.push_back("Zzzzzzz....");
+	m_base_respones.push_back("Ok");
+
+
+	m_angry_input.insert("scemo");
+	m_angry_input.insert("stupido");
+	m_angry_input.insert("idiota");
+	m_angry_input.insert("cretino");
+	m_angry_input.insert("deficiente");
+	m_angry_input.insert("imbecille");
+	m_angry_input.insert("scemotto");
+	m_angry_input.insert("scemone");
+	m_angry_input.insert("scemino");
+	m_angry_input.insert("scemuccio");
+	m_angry_input.insert("scemarello");
+	m_angry_input.insert("stronzo");
+	m_angry_input.insert("vaffanculo");
+	m_angry_input.insert("cazzo");
+	m_angry_input.insert("merda");
+	m_angry_input.insert("coglione");
+	m_angry_input.insert("frocio"); //l'ha detto il papa quindi è ok
+	m_angry_input.insert("rincoglionito");
+	m_angry_input.insert("puttana");
+	m_angry_input.insert("troia");
+	m_angry_input.insert("zoccola");
+	m_angry_input.insert("cagna");
+	m_angry_input.insert("pirla");
+	m_angry_input.insert("ritardato");
+	m_angry_input.insert("mongolo");
+	m_angry_input.insert("acustico");
+	m_angry_input.insert("stupid");
+	m_angry_input.insert("idiot");
+	m_angry_input.insert("cretin");
+	m_angry_input.insert("moron");
+	m_angry_input.insert("dumb");
+	m_angry_input.insert("retarded");
+	m_angry_input.insert("fool");
+	m_angry_input.insert("dunce");
+	m_angry_input.insert("imbecile");
+	m_angry_input.insert("python");
+
+	m_happy_input.insert("bravo");
+	m_happy_input.insert("ottimo");
+	m_happy_input.insert("fantastico");
+	m_happy_input.insert("eccellente");
+	m_happy_input.insert("meraviglioso");
+	m_happy_input.insert("splendido");
+	m_happy_input.insert("stupendo");
+	m_happy_input.insert("straordinario");
+	m_happy_input.insert("eccezionale");
+	m_happy_input.insert("magnifico");
+	m_happy_input.insert("superlativo");
+	m_happy_input.insert("incredibile");
+	m_happy_input.insert("impressionante");
+	m_happy_input.insert("formidabile");
+	m_happy_input.insert("favoloso");
+	m_happy_input.insert("spettacolare");
+	m_happy_input.insert("sorprendente");
+	m_happy_input.insert("strabiliante");
+	m_happy_input.insert("sbalorditivo");
+	m_happy_input.insert("grazie");
+	m_happy_input.insert("thank");
+	m_happy_input.insert("thanks");
+	m_happy_input.insert("gracias");
 }
 
 Coucou::~Coucou()
 {
 	m_angry_words.clear();
 	m_happy_words.clear();
+	
 }
 
-void	Coucou::change_relation(Client& client, std::vector<std::string> words) //controlla lo stato se va cambiato o no? AAAAAAA o offese generiche. 
+void	Coucou::change_relation(Client& client, std::vector<std::string> words, std::string message) //controlla lo stato se va cambiato o no? AAAAAAA o offese generiche. 
 {
 	if (m_relations.find(client.get_nick()) == m_relations.end())
 	{
@@ -60,6 +123,36 @@ void	Coucou::change_relation(Client& client, std::vector<std::string> words) //c
 	{
 		print_relations(client);
 	}
+
+	int nUpper = 0;
+	for (std::string::iterator it = message.begin(); it != message.end(); it++)
+	{
+		if (isupper(*it))
+			nUpper++;
+	}
+	if (nUpper > 5)
+	{
+		m_relations[client.get_nick()] = ANGRY;
+		return;
+	}
+	
+	for (std::vector<std::string>::iterator it = words.begin(); it != words.end(); it++)
+	{
+		if (m_angry_input.find(*it) != m_angry_input.end())
+		{
+			m_relations[client.get_nick()] = ANGRY;
+			return;
+		}
+	}
+	for (std::vector<std::string>::iterator it = words.begin(); it != words.end(); it++)
+	{
+		if (m_happy_input.find(*it) != m_happy_input.end())
+		{
+			m_relations[client.get_nick()] = HAPPY;
+			return;
+		}
+	}
+	m_relations[client.get_nick()] = NORMAL;
 	
 }
 
@@ -68,28 +161,30 @@ void	Coucou::parse_message(Client& client, std::string message)
 	std::vector<std::string> words = split(message, " ");
 	std::cerr << words << std::endl;
 	
-	change_relation(client, words);
+	change_relation(client, words, message);
 	
 	switch (m_relations[client.get_nick()])
 	{
 		case HAPPY:
 			send_message(client, "sono happy");	
+			send_message(client, m_happy_words[rand() % m_happy_words.size()]);
 			break;
 		case ANGRY:
 			send_message(client, "sono angry");	
+			send_message(client, m_angry_words[rand() % m_angry_words.size()]);
 			break;
 		case NORMAL:
-			send_message(client, "sono normal");	
+			send_message(client, "sono normal");
+			send_message(client, m_base_respones[rand() % m_base_respones.size()]);	
 			break;
 		default:
 			std::cout << "default" << std::endl;
 	}
 }
 
-
 void	Coucou::send_message(Client& client, std::string message)
 {
-	message.insert(0, ":" + this->get_name(client) + "!" + client.get_nick()  );
+	message.insert(0, ":" + this->get_name(client) + "!" + client.get_nick() + " ");
 	client.send_message(message);
 }
 
@@ -114,6 +209,7 @@ std::string Coucou::get_name(Client& client) const
 
 void	Coucou::domain_expansion(Client& client)
 {
+	std::cerr << "DOMAIN EXPANSION" << std::endl;
 	std::string response;
 	if (m_relations[client.get_nick()] == HAPPY)
 	{
@@ -133,6 +229,7 @@ void	Coucou::domain_expansion(Client& client)
 		std::fstream file("docs/Nah_id_win", std::ios::in);
 		std::getline(file, response, '\0');
 	}
+	std::cerr << response.size() << std::endl;
 	send_message(client, response);
 }
 
