@@ -39,6 +39,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
+#include <typeinfo>
 
 #define BUFFER_SIZE 2048
 
@@ -59,6 +60,7 @@ std::string hash_password(const std::string &password, const std::string &salt);
 bool verify_password(const std::string &entered_password, const std::string &stored_hash, const std::string &salt);
 std::string get_time( void );
 void printLogo(std::string ip, int port);
+std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWidth, int terminalHeight);
 
 inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v)
 {
