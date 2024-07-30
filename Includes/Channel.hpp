@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/26 17:08:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/30 18:04:43 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ class Channel
 		void	add_op(std::string op) { m_ops.insert(op); }
 		bool	is_client_in(std::string client) const;
 		bool	is_op(std::string client) const;
+		bool	is_ban(std::string client) const;
 };
 
 inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Channel*> const &v) {

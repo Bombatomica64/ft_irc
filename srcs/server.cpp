@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 16:34:39 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/30 18:13:31 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -653,18 +653,34 @@ bool	Server::invite(int client, std::string message)
 		m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :No such channel");
 		return true;
 	}
+	if (!get_client_by_nick(split_msg[1]))
+	{
+		m_clients[client]->send_message(":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such nick/channel");
+		return true;
+	}
 	if (!chan->is_client_in(m_clients[client]->get_nick()))
 	{
-		// TODO handle error
+		m_clients[client]->send_message(":irc 442 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :You're not on that channel");
 		return true;
 	}
-	if (chan && split_msg.size() == 3)
+	if (chan->is_client_in(split_msg[1]))
 	{
-		chan->add_invite(m_clients[client]->get_nick());
-		send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick()); // TODO check if this is correct
+		m_clients[client]->send_message(":irc 443 " + m_clients[client]->get_nick() + " " + split_msg[1] + " " + split_msg[2] + " :is already on channel");
 		return true;
 	}
-	// TODO handle error
+	if (m_channels[split_msg[2]]->is_op(m_clients[client]->get_nick()) == false && m_channels[split_msg[2]]->is_ban(split_msg[1]) == true)
+	{
+		m_clients[client]->send_message(":irc 482 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :You're not channel operator");
+		return true;
+	}
+	if (split_msg.size() == 3)
+	{
+		chan->add_invite(split_msg[1]);
+		get_client_by_nick(split_msg[1])->send_message(":" + m_clients[client]->get_nick() + " 341 " + split_msg[1] + " " + split_msg[2]);
+		// send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick());
+		return true;
+	}
+
 	return false;
 }
 

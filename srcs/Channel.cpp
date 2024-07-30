@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 17:29:18 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/30 18:04:55 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,4 +415,11 @@ void	Channel::send_bans(Client &client)
 	{
 		client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +b " + *it + "\r\n");
 	}
+}
+
+bool	Channel::is_ban(std::string client) const
+{
+	if (m_bans.find(client) != m_bans.end())
+		return true;
+	return false;
 }
