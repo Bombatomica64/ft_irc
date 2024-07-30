@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 18:42:32 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/30 12:56:29 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void Server::bind_socket(void)
 
 	m_addr.sin_family = AF_INET;
 	m_addr.sin_port = htons(m_port);
-	m_addr.sin_addr.s_addr = INADDR_ANY;
+	inet_pton(AF_INET, "10.12.2.10", &m_addr.sin_addr);
 	if (bind(m_socket, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1)
 	{
 		std::cerr << "Error: socket binding failed - " << strerror(errno) << std::endl;
@@ -127,6 +127,7 @@ void Server::accept_connection()
 	server_fd.fd = m_socket;
 	server_fd.events = POLLIN;
 	client_fds.push_back(server_fd);
+	std::cout << "Server started on IP " << inet_ntoa(m_addr.sin_addr) << " on port " << m_port << std::endl;
 	while (true)
 	{
 		ret = poll(client_fds.data(), client_fds.size(), -1);
@@ -170,9 +171,11 @@ void Server::accept_connection()
 					catch (const std::exception &e)
 					{
 						std::cerr << e.what() << std::endl;
-						m_clients.erase(client_fds[i].fd);
-						close(client_fds[i].fd);
-						client_fds.erase(client_fds.begin() + i);
+						if (typeid(e) == typeid(Server::ClientException))
+						{
+							this->quit(client_fds[i].fd, "QUIT");
+							client_fds.erase(client_fds.begin() + i);
+						}
 						std::string msg(e.what());
 						if (msg == "close")
 							throw std::runtime_error("close");
@@ -221,14 +224,16 @@ void Server::read_from_client(int client)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 	}
-	if (total_ret == 0 || msg == "\n")
-		return;
+	if (total_ret == 0)
+		throw Server::ClientException();
 	if (msg.empty())
 	{
 		std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
 		throw Server::ClientException();
 		return;
 	}
+	if (msg == "\n")
+		return;
 	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 1) << "}"RESET << std::endl; 
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
@@ -253,7 +258,7 @@ void Server::register_client(int client)
 	std::string msg = "";
 	total_ret = recv(client, temp, BUFFER_SIZE, 0);
 	std::cerr << total_ret << std::endl;
-	if (total_ret == -1)
+	if (total_ret == -1 || total_ret == 0)
 	{
 		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
 		throw Server::ClientException();
@@ -358,7 +363,7 @@ void Server::register_client(int client)
 				m_clients[client]->set_registered(true);
 
 				m_clients[client]->send_message(":irc 001 " + m_clients[client]->get_nick() + " :Welcome to the Jungle Network, " + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname());
-				m_clients[client]->send_message(":irc 002 " + m_clients[client]->get_nick() + " :Your host is " + m_clients[client]->get_servername() + ", running version 4.2");
+				m_clients[client]->send_message(":irc 002 " + m_clients[client]->get_nick() + " :Your host is irc, running version 4.2");
 				m_clients[client]->send_message(":irc 003 " + m_clients[client]->get_nick() + " :This server was created " + m_date );
 				m_clients[client]->send_message(":irc 004 " + m_clients[client]->get_nick() + " " + m_clients[client]->get_servername() + " 4.2 uMode:none cMode:+i,+t,+k,+o");
 				m_clients[client]->send_message(":irc 375 " + m_clients[client]->get_nick() + " :- Welcome to the Jungle");
@@ -561,7 +566,6 @@ bool	Server::join(int client, std::string channel)
 		else
 			m_channels[name]->join_channel(*m_clients[client], split_key[i++]);
 	}
-	// TODO handle error
 	return false;
 }
 
@@ -571,7 +575,7 @@ bool	Server::part(int client, std::string channels)
 	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	if (split_msg.size() < 2)
 	{
-		// TODO handle error
+		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " PART :Not enough parameters");
 		return false;
 	}
 	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
@@ -581,7 +585,7 @@ bool	Server::part(int client, std::string channels)
 			chan->remove_client(m_clients[client]->get_nick());
 		else
 		{
-			// TODO handle error
+			m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
 			return false;
 		}
 	}
@@ -609,7 +613,6 @@ bool	Server::mode(int client, std::string message)
 	// 	l_command.push_back("");
 	// if (m_channels.find(l_command[1]) == m_channels.end())
 	// {
-	// 	// TODO
 	// 	// std::cout << "channel not found" << std::endl;
 	// 	return false;
 	// }
@@ -638,12 +641,22 @@ bool	Server::invite(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
 	Channel *chan = get_channel(split_msg[2]);
-	if (chan && chan->is_client_in(m_clients[client]->get_nick()))
+	if (split_msg.size() < 3)
+	{
+		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " INVITE :Not enough parameters");
+		return true;
+	}
+	if (!chan)
+	{
+		m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :No such channel");
+		return true;
+	}
+	if (!chan->is_client_in(m_clients[client]->get_nick()))
 	{
 		// TODO handle error
-		return false;
+		return true;
 	}
-	else if (chan && split_msg.size() == 3)
+	if (chan && split_msg.size() == 3)
 	{
 		chan->add_invite(m_clients[client]->get_nick());
 		send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick()); // TODO check if this is correct
