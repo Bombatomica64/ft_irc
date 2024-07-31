@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 11:49:28 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 12:45:14 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,42 @@ class Channel;
 class Server
 {
 	private:
+		
+		//password
 		std::string					m_salt;
 		std::string					m_hash;
-		std::vector<struct pollfd>	client_fds;
-		struct pollfd 				server_fd;
-		std::map<int, Client*>		m_clients;
-		std::map<std::string, Channel*> m_channels;
-		std::map<std::string, bool (Server::*)(int, std::string)> m_cmds;
-		std::string					m_date;
-		Coucou						m_coucou;
 
-	protected :
-		std::set<std::string> m_commands;
-		int			m_socket;
-		int			m_port;
-		struct sockaddr_in m_addr;
-		Server() {}
+		// clients
+		std::vector<struct pollfd>	m_client_fds;
+		std::map<int, Client*>		m_clients;
+		
+		//channels
+		std::map<std::string, Channel*> m_channels;
+		
+		//commands
+		std::map<std::string, bool (Server::*)(int, std::string)> m_cmds;
+		
+		//Net stuff
+		struct pollfd		m_server_fd;
+		int					m_socket;
+		int					m_port;
+		struct sockaddr_in	m_addr;
+
+		//bot
+		Coucou				m_coucou;
+		
+		//other
+		std::string			m_date;
+		Server() {} //useless
 
 	public:
 		Server(char *port, char *psw);
+		void NewFunction();
 		~Server();
 
 	public:
-		void	create_socket(void);
-		void	bind_socket(void);
+		void create_socket(void);
+		void bind_socket(void);
 		void	accept_connection( void );
 		void	get_cmds();
 

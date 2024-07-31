@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 11:55:25 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 13:13:19 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,25 @@
 
 Server::Server(char *port, char *psw)
 {
+	//Variables
+	m_coucou = Coucou();
 	get_cmds();
+	m_date = get_time(0);
+	
+	//Input validation
 	check_input(port, psw);
 	m_port = std::strtold(port, NULL);
+
+	//Password hashing
 	m_salt = generate_salt(16);
 	m_hash = hash_password(psw, m_salt);
 	create_socket();
 	
-	time_t now = time(0);
-	struct tm tstruct;
-    char buf[80];
-    tstruct = *localtime(&now);
-	strftime(buf, sizeof(buf), "%a, %d %b %Y at %H:%M:%S", &tstruct);
-	m_date = buf;
 }
 
 void Server::get_cmds()
 {
-	// m_commands.insert("PASS"); 
-	m_commands.insert("NICK");
-	m_commands.insert("USER");
-	m_commands.insert("JOIN");
-	m_commands.insert("PART");
-	m_commands.insert("PRIVMSG");
-	m_commands.insert("QUIT");
-	m_commands.insert("PING");
-	m_commands.insert("PONG");
-	m_commands.insert("KICK");
-	m_commands.insert("TOPIC");
-	m_commands.insert("MODE");
-	m_commands.insert("INVITE");
-	m_commands.insert("OPER");
+	
 	m_cmds["PRIVMSG"] = &Server::privmsg;
 	m_cmds["JOIN"] = &Server::join;
 	m_cmds["PART"] = &Server::part;
@@ -83,8 +71,7 @@ Server::~Server()
 			delete it->second;
 		}
 	m_clients.clear();
-	m_commands.clear();
-	client_fds.clear();
+	m_client_fds.clear();
 	for (std::map<std::string, Channel *>::iterator it = m_channels.begin(); it != m_channels.end(); ++it)
 		delete it->second;
 	m_channels.clear();
@@ -117,36 +104,43 @@ void Server::bind_socket(void)
 
 void Server::accept_connection()
 {
+	
+	//these do stuff don't touch
 	int ret = 0;
 	int optval = 1;
-	struct sockaddr_in client_addr = {0};
+	struct sockaddr_in client_addr = {};
 	socklen_t client_addr_size;
 	int client_socket;
-	struct pollfd client_fd = {0};
-	server_fd.fd = m_socket;
-	server_fd.events = POLLIN;
-	client_fds.push_back(server_fd);
+	struct pollfd client_fd = {};
+
+	//add server to poll
+	m_server_fd.fd = m_socket;
+	m_server_fd.events = POLLIN;
+	m_client_fds.push_back(m_server_fd);
 	
 	printLogo(inet_ntoa(m_addr.sin_addr), m_port);
 
 	while (true)
 	{
-		ret = poll(client_fds.data(), client_fds.size(), -1);
+		//poll for events
+		ret = poll(m_client_fds.data(), m_client_fds.size(), -1);
 		if (ret == -1)
 			throw Server::PollException();
-		for (size_t i = 0; i < client_fds.size(); ++i)
+
+		//check for events
+		for (size_t i = 0; i < m_client_fds.size(); ++i)
 		{
-			if ((client_fds[i].revents & POLLIN))
+			if ((m_client_fds[i].revents & POLLIN))
 			{
-				if (client_fds[i].fd == m_socket)
+				//new connection
+				if (m_client_fds[i].fd == m_socket)
 				{
 					client_addr_size = sizeof(client_addr);
-					client_socket = accept(m_socket,
-										   (struct sockaddr *)&client_addr, &client_addr_size);
+					client_socket = accept(m_socket, (struct sockaddr *)&client_addr, &client_addr_size);
 					if (client_socket == -1)
 					{
 						std::cerr << "Error: accept failed" << std::endl;
-						// throw Server::ClientException();
+						throw Server::clientSocketException();
 						continue;
 					}
 					setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
@@ -157,25 +151,26 @@ void Server::accept_connection()
 					}
 					client_fd.fd = client_socket;
 					client_fd.events = POLLIN;
-					client_fds.push_back(client_fd);
+					m_client_fds.push_back(client_fd);
 					m_clients[client_socket] = new Client(client_socket, client_addr);
 				}
+				//existing connection
 				else
 				{
 					try
 					{
-						if (m_clients[client_fds[i].fd]->get_registered() == false || m_clients[client_fds[i].fd]->get_connected() == false)
-							register_client(client_fds[i].fd);
+						if (m_clients[m_client_fds[i].fd]->get_registered() == false || m_clients[m_client_fds[i].fd]->get_connected() == false)
+							register_client(m_client_fds[i].fd);
 						else
-							read_from_client(client_fds[i].fd);
+							read_from_client(m_client_fds[i].fd);
 					}
 					catch (const std::exception &e)
 					{
 						std::cerr << e.what() << std::endl;
 						if (typeid(e) == typeid(Server::ClientException))
 						{
-							this->quit(client_fds[i].fd, "QUIT");
-							client_fds.erase(client_fds.begin() + i);
+							this->quit(m_client_fds[i].fd, "QUIT");
+							m_client_fds.erase(m_client_fds.begin() + i);
 						}
 						std::string msg(e.what());
 						if (msg == "close")
@@ -227,16 +222,6 @@ void Server::read_from_client(int client)
 	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 1) << "}"RESET << std::endl; 
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
-	// if (m_commands.find(split_msg[0]) == m_commands.end())
-	// {
-	// 	write_to_client(client, "Unknown command");
-	// 	return;
-	// }
-	// parse_cmds(client, msg);
-	// if (msg == "QUIT") // temporary
-	// {
-	// 	throw std::runtime_error("close");
-	// }
 	std::cout << BLUE << " " << msg << RESET << std::endl;
 }
 
@@ -701,9 +686,9 @@ bool	Server::quit(int client, std::string message)
 		if (it->second->is_client_in(m_clients[client]->get_nick()))
 			it->second->remove_client(m_clients[client]->get_nick());
 	}
-	std::vector<struct pollfd>::iterator it = std::find(client_fds.begin(), client_fds.end(), client);
-	if (it != client_fds.end())
-		client_fds.erase(it);
+	std::vector<struct pollfd>::iterator it = std::find(m_client_fds.begin(), m_client_fds.end(), client);
+	if (it != m_client_fds.end())
+		m_client_fds.erase(it);
 	close(client);
 	delete m_clients[client];
 	m_clients.erase(client);

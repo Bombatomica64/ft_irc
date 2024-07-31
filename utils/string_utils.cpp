@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 17:26:16 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/31 12:18:55 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,16 @@ std::string trimString(std::string nick)
 	return result;
 }
 
-std::string get_time(void)
+std::string get_time(int flag)
 {
 	time_t now = time(0);
 	char buf[80];
 	tm *ltm = localtime(&now);
 	std::string result;
-	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ltm);
+	if (flag == 1)
+		strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ltm);
+	else
+		strftime(buf, sizeof(buf), "%a, %d %b %Y at %H:%M:%S", ltm);
 	result = buf;
 	return result;
 }
