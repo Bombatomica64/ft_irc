@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 15:36:07 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 17:22:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -580,21 +580,33 @@ bool Server::join(int client, std::string channel)
 bool Server::part(int client, std::string channels)
 {
 	std::vector<std::string> split_msg = split(channels, " ");
-	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	if (split_msg.size() < 2)
 	{
 		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " PART :Not enough parameters");
-		return false;
+		return true;
 	}
+	else if (split_msg.size() > 2)
+	{
+		m_clients[client]->send_message(":irc 400 " + m_clients[client]->get_nick() + " PART :Too many parameters");
+		return true;
+	}
+	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
 	{
 		Channel *chan = this->get_channel(*it);
-		if (chan)
+		if (chan && chan->is_client_in(m_clients[client]->get_nick()))
+		{
 			chan->remove_client(m_clients[client]->get_nick());
+		}
+		else if (chan->is_client_in(m_clients[client]->get_nick()) == false)
+		{
+			m_clients[client]->send_message(":irc 442 " + m_clients[client]->get_nick() + " " + *it + " :You're not on that channel");
+			return true;
+		}
 		else
 		{
 			m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
-			return false;
+			return true;
 		}
 	}
 	return true;
@@ -944,4 +956,13 @@ bool Server::client_exist(const std::string &client) const
 			return true;
 	}
 	return false;
+}
+
+void	Server::remove_channel(std::string name)
+{
+	if (m_channels.find(name) != m_channels.end())
+	{
+		delete m_channels[name];
+		m_channels.erase(name);
+	}
 }
