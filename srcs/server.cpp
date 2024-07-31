@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 15:30:09 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 15:36:07 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,6 @@ void Server::accept_connection()
 						if (typeid(e) == typeid(Server::ClientException))
 						{
 							this->quit(m_client_fds[i].fd, "QUIT");
-							m_client_fds.erase(m_client_fds.begin() + i);
 						}
 						std::string msg(e.what());
 						if (msg == "close")
