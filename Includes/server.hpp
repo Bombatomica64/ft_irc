@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 15:21:38 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 17:21:39 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ class Server
 		void		add_channel(std::string name);
 		void		add_channel(std::string name, std::map<char, int> modes);
 		bool		send_msg_to_channel(int client, std::string Channel ,std::string msg);
+		void		remove_channel(std::string name);
+		// bool		send_msg_to_all(int client, std::string msg);
 	/**
 	 * @brief client functions
 	 */

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 18:04:55 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 18:15:36 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,30 @@ Channel::~Channel()
 void	Channel::add_client(std::string client)
 {
 	m_clients.insert(client);
-	std::cout << "Current channel" << m_clients << std::endl;
+	std::cout << "Current channel " << m_name << " is :" << m_clients << std::endl;
 }
 
 void	Channel::remove_client(std::string client)
 {
 	if (m_clients.find(client) != m_clients.end())
 		m_clients.erase(client);
+	if (m_ops.find(client) != m_ops.end())
+		m_ops.erase(client);
+	if (this->size() == 0)
+		m_server->remove_channel(m_name);
+	if (m_ops.size() == 0)
+	{
+		try
+		{
+			std::set<std::string>::iterator it = m_ops.begin();
+			std::advance(it, rand() % m_clients.size());
+			m_ops.insert(*it);
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+		}
+	}	
 }
 
 bool	Channel::is_client_in(std::string client) const
@@ -90,19 +107,6 @@ bool	Channel::is_client_in(std::string client) const
 		return true;
 	return false;
 }
-// moved to server.cpp
-// bool	Channel::send_message(Client sender, std::string message)
-// {
-// 	for (std::set<std::string>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
-// 	{
-// 		if (*it != sender.get_nick())
-// 		{
-// 			sender.send_message(message);
-// 			std::cout << "Message sent to " << it->second->get_nick() << message << std::endl;
-// 		}
-// 	}
-// 	return true;
-// }
 
 void	Channel::join_channel(Client& client, std::string parameters)
 {
@@ -133,12 +137,6 @@ void	Channel::join_channel(Client& client, std::string parameters)
 	this->m_server->names(client.get_clientSocket(), "NAMES " + m_name);
 }
 
-// void	Channel::leave_channel(Client client)
-// {
-// 	std::vector<Client>::iterator it =m_clients.begin(), m_clients.end(), client);
-// 	if (it != m_clients.end())
-// 		m_clients.erase(it);
-// }
 bool	Channel::modify_mode(std::vector<std::string> command, Client &client)
 {
 	int i = 0;
@@ -244,7 +242,6 @@ void	Channel::topuc(Client &client, std::string parameters)
 	}
 	send_topic(client);
 }
-
 
 void	Channel::modify_topic_mode(Client &client, std::string parameters, bool what)
 {
@@ -422,4 +419,11 @@ bool	Channel::is_ban(std::string client) const
 	if (m_bans.find(client) != m_bans.end())
 		return true;
 	return false;
+}
+
+int	Channel::get_mode(char mode)
+{
+	if(m_modes.find(mode) == m_modes.end())
+		return m_modes[mode];
+	return -1;
 }
