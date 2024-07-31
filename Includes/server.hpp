@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/29 12:58:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 11:49:28 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ class Server
 		int			m_port;
 		struct sockaddr_in m_addr;
 		Server() {}
-		//Server(Server const &src);
-		//Server &operator=(Server const &src);
 
 	public:
 		Server(char *port, char *psw);

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 18:13:31 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 11:55:25 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ Server::~Server()
 	m_channels.clear();
 }
 
-
 void Server::bind_socket(void)
 {
 	int optval = 1;
@@ -120,10 +119,10 @@ void Server::accept_connection()
 {
 	int ret = 0;
 	int optval = 1;
-	struct sockaddr_in client_addr = {};
+	struct sockaddr_in client_addr = {0};
 	socklen_t client_addr_size;
 	int client_socket;
-	struct pollfd client_fd = {};
+	struct pollfd client_fd = {0};
 	server_fd.fd = m_socket;
 	server_fd.events = POLLIN;
 	client_fds.push_back(server_fd);
@@ -144,13 +143,13 @@ void Server::accept_connection()
 					client_addr_size = sizeof(client_addr);
 					client_socket = accept(m_socket,
 										   (struct sockaddr *)&client_addr, &client_addr_size);
-					setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 					if (client_socket == -1)
 					{
 						std::cerr << "Error: accept failed" << std::endl;
 						// throw Server::ClientException();
 						continue;
 					}
+					setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 					if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
 					{
 						close(client_socket);
@@ -189,17 +188,6 @@ void Server::accept_connection()
 	}
 }
 
-	// int ret = recv(client, buffer, BUFFER_SIZE, 0);
-	// if (ret == -1)
-	// {
-	// 	throw Server::ClientException();
-	// 	return;
-	// }
-	// if (ret == 0)
-	// {
-	// 	close(client);
-	// 	return;
-	// }
 void Server::read_from_client(int client)
 {
 	if (m_clients[client]->get_registered() == false || m_clients[client]->get_connected() == false)
@@ -387,6 +375,7 @@ void Server::register_client(int client)
 		break;
 	}
 }
+
 void Server::write_to_client(int client, std::string msg)
 {
 	send(client, msg.c_str(), msg.size(), 0);
@@ -416,13 +405,11 @@ void	Server::add_channel(std::string name)
 		m_channels[name] = new Channel(name, this);
 }
 
-
 void	Server::add_channel(std::string name, std::map<char, int> modes)
 {
 	if (m_channels.find(name) == m_channels.end())
 		m_channels[name] = new Channel(name, this, modes);
 }
-
 
 void	Server::parse_cmds(int client, std::string cmd)
 {
@@ -445,12 +432,28 @@ void	Server::parse_cmds(int client, std::string cmd)
 bool	Server::privmsg(int client, std::string message)
 {
 	size_t start = message.find("PRIVMSG");
-	if (start == std::string::npos)
+	bool flag = false;
+	for (std::string::iterator it = message.begin() + start; it != message.end(); it++)
 	{
-		// handle error
-		return false;
+		if (*it != ' ' || (*it > 6 && *it < 14))
+			{
+				flag = true;
+				break;
+			}
+	}
+	if (start == std::string::npos && !flag)
+	{
+		m_clients[client]->send_message(":irc 411 " + m_clients[client]->get_nick() + " :No recipient given (PRIVMSG)");
+		return true;
 	}
 	std::string msg = message.substr(start + strlen("PRIVMSG "));
+	
+	if (msg.find(" :") == std::string::npos)
+	{
+		m_clients[client]->send_message(":irc 412 " + m_clients[client]->get_nick() + " :No text to send");
+		return true;
+	}
+	
 	std::string to_send = ":" + m_clients[client]->get_nick()
 		+ "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PRIVMSG " + msg.substr(msg.find(" :"));
 	
@@ -464,7 +467,6 @@ bool	Server::privmsg(int client, std::string message)
 			// send to channel
 		case '#':
 		case '&':
-			// *it = (*it).substr(1);
 			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
 			if (!this->send_msg_to_channel(client, *it, spcific_send)) //-->below
 				return false;
@@ -517,7 +519,6 @@ bool	Server::send_msg_to_channel(int client, std::string channel, std::string ms
 
 	return true;
 }
-
 
 bool	Server::join(int client, std::string channel)
 {
@@ -804,6 +805,7 @@ bool	Server::user(int client, std::string message)
 	write_to_client(client, ":irc 462 :You may not reregister");
 	return true;
 }
+
 bool	Server::kick(int client, std::string message)
 {
 	std::string kick_msg = "";
@@ -874,22 +876,6 @@ bool Server::cap(int client, std::string message)
     return true;
 }
 
-// bool	Server::cap(int client, std::string message)
-// {
-// 	if (message.find("LS 302") != std::string::npos)
-// 	{
-// 		write_to_client(client, "CAP * LS :multi-prefix away-notify invite-notify");
-// 		return true;
-// 	}
-// 	if (message.find("REQ") != std::string::npos)
-// 	{
-// 		write_to_client(client, "CAP * ACK :multi-prefix away-notify");
-// 		return true;
-// 	}
-// 	write_to_client(client, "CAP * NAK :multi-prefix away-notify invite-notify");
-// 	return true;
-// }
-
 bool Server::ping(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
@@ -956,4 +942,3 @@ bool	Server::client_exist(const std::string& client) const
 	}
 	return false;
 }
-// write_to_client(client, ":irc 461 PASS :Not enough parameters"); //ERR_NEEDMOREPARAMS
