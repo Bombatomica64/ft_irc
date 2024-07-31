@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 15:21:38 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 18:13:17 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ class Server
 
 	public:
 		Server(char *port, char *psw);
-		void NewFunction();
 		~Server();
 
 	public:
@@ -82,6 +81,7 @@ class Server
 		Client*	get_client_by_nick(std::string nick);
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
+		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
 		bool	privmsg(int client, std::string cmd);
 		bool	join(int client, std::string cmd);
 		bool	part(int client, std::string cmd);
