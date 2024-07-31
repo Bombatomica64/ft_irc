@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 12:45:14 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 15:21:38 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,29 @@ class Server
 			virtual const char *what() const throw()
 			{
 				return "Error: client failed";
+			}
+		};
+		class BindException : public std::exception
+		{
+			virtual const char *what() const throw()
+			{
+				return "Error: bind failed";
+			}
+		};
+
+		class ListenException : public std::exception
+		{
+			virtual const char *what() const throw()
+			{
+				return "Error: listen failed";
+			}
+		};
+
+		class FcntlException : public std::exception
+		{
+			virtual const char *what() const throw()
+			{
+				return "Error: fcntl failed";
 			}
 		};
 };

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:31:32 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/30 16:34:04 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/07/31 15:23:23 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,8 @@ int main(int ac, char **av)
 	srand(time(NULL));
 
 	
-	Server server(av[1], av[2]);
-	try
-	{
+	try {
+		Server server(av[1], av[2]);
 		server.accept_connection();
 	}
 	catch(const std::exception& e)
