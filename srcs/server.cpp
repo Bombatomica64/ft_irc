@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 18:39:05 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/02 18:07:25 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -760,8 +760,7 @@ bool Server::topic(int client, std::string params)
 std::string Server::getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names)
 {
 	std::set<std::string> clients = chan->get_clients();
-	std::string message = ":irc 353 " + m_clients[client]->get_nick();
-	message += " " + chan->get_name() + " :";
+	std::string message = ":irc 353 " + m_clients[client]->get_nick() + " = " + chan->get_name() + " :";
 	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
 	{
 		if (chan->get_ops().find(*it) != chan->get_ops().end())
@@ -801,7 +800,6 @@ bool Server::names(int client, std::string params)
 			}
 			m_clients[client]->send_message(message);
 		}
-		m_clients[client]->send_message("ciao");
 		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " * :End of /NAMES list");
 	}
 	else
@@ -817,14 +815,6 @@ bool Server::names(int client, std::string params)
 		}
 		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " * :End of /NAMES list");
 	}
-	// if (!message.empty())
-	// {
-	// 	if (client != -1)
-	// 		m_clients[client]->send_message(message);
-	// 	else
-	// 		send_msg_to_channel(client, split_msg[1], message);
-	// 	return true;
-	// }
 	return true;
 }
 
