@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 18:15:36 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/05 15:41:32 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,9 @@ void	Channel::modify_key_mode(Client &client, std::string parameters, bool what)
 		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
-
+/**
+ * @brief changes the topic of the channel and sends it to the client
+ */
 void	Channel::topuc(Client &client, std::string parameters)
 {
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
@@ -369,6 +371,15 @@ bool	Channel::send_topic(Client &client)
 	else
 		return(client.send_message(":irc 332 " + client.get_nick() + " " + m_name + " :" + m_topic));
 }
+
+bool	Channel::send_topic_all( void )
+{
+	if (m_topic.empty())
+		return false;
+	m_server->send_msg_to_set(m_clients, ":irc 332 " + m_name + " :" + m_topic);
+	return true;
+}
+
 
 bool	Channel::is_op(std::string client) const
 {

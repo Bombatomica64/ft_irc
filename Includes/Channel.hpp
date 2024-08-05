@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 18:22:56 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/05 15:40:26 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ class Channel
 		
 		//send functions
 		bool	send_topic(Client &client);
+		bool	send_topic_all( void );
 		void	send_modes(Client &client);
 		void	send_bans(Client &client);
 		void	topuc(Client &client, std::string parameters); //it

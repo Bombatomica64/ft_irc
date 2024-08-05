@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 17:22:45 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/05 15:45:03 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,8 +386,8 @@ void Server::register_client(int client)
 
 void Server::write_to_client(int client, std::string msg)
 {
+	msg.append("\r\n");
 	send(client, msg.c_str(), msg.size(), 0);
-	send(client, "\r\n", 2, 0);
 }
 
 Client *Server::get_client_by_nick(std::string nick)
@@ -598,7 +598,7 @@ bool Server::part(int client, std::string channels)
 		{
 			chan->remove_client(m_clients[client]->get_nick());
 		}
-		else if (chan->is_client_in(m_clients[client]->get_nick()) == false)
+		else if (chan && chan->is_client_in(m_clients[client]->get_nick()) == false)
 		{
 			m_clients[client]->send_message(":irc 442 " + m_clients[client]->get_nick() + " " + *it + " :You're not on that channel");
 			return true;
@@ -656,7 +656,7 @@ bool Server::mode(int client, std::string message)
 	// TODO handle error
 	return ret;
 }
-
+//TODO add away reply
 bool Server::invite(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
@@ -729,7 +729,7 @@ bool Server::quit(int client, std::string message)
 
 bool Server::topic(int client, std::string params)
 {
-	std::string topic;
+	std::string topic = "";
 	if (params.find(":") != std::string::npos)
 	{
 		topic = params.substr(params.find(":") + 1);
@@ -737,10 +737,7 @@ bool Server::topic(int client, std::string params)
 		std::cout << "topic: " << topic << std::endl;
 	}
 	std::vector<std::string> split_msg = split(params, " ");
-	std::cout << "split_msg_number: " << split_msg.size() << std::endl;
-	for (std::vector<std::string>::iterator it = split_msg.begin(); it != split_msg.end(); it++)
-		std::cout << "split_msg: " << *it << std::endl;
-	std::cout << std::endl;
+	
 	if (split_msg.size() < 2) // TOPIC without #chan
 	{
 		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " TOPIC :Not enough parameters");
@@ -964,5 +961,13 @@ void	Server::remove_channel(std::string name)
 	{
 		delete m_channels[name];
 		m_channels.erase(name);
+	}
+}
+void	Server::send_msg_to_set(std::set<std::string> clients, std::string msg)
+{
+	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (get_client_by_nick(*it))
+			get_client_by_nick(*it)->send_message(msg);
 	}
 }

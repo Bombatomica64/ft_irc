@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 17:21:39 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/05 15:42:37 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,11 @@ class Server
 
 	public:
 		Server(char *port, char *psw);
-		void NewFunction();
 		~Server();
 
 	public:
-		void create_socket(void);
-		void bind_socket(void);
+		void	create_socket(void);
+		void	bind_socket(void);
 		void	accept_connection( void );
 		void	get_cmds();
 
@@ -81,6 +80,7 @@ class Server
 		void	write_to_client(int client, std::string msg);
 		void	register_client(int client);
 		void	parse_cmds(int client, std::string cmd);
+		void	send_msg_to_set(std::set<std::string> clients, std::string msg);
 		Client*	get_client_by_nick(std::string nick);
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
