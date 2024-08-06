@@ -12,7 +12,7 @@
 
 #include <server.hpp>
 
-Server::Server(char *port, char *psw)
+Server::Server(std::string port, std::string psw)
 {
 	// Variables
 	m_coucou = Coucou();
@@ -21,17 +21,17 @@ Server::Server(char *port, char *psw)
 
 	// Input validation
 	check_input(port, psw);
-	m_port = std::strtold(port, NULL);
+	m_port = std::strtold(port.c_str(), NULL);
 
 	// Password hashing
 	m_salt = generate_salt(16);
-	m_hash = hash_password(psw, m_salt);
+	m_hash = hash_password(psw.c_str(), m_salt);
 	create_socket();
 }
 
 void Server::get_cmds()
 {
-
+	m_cmds["NICK"] = &Server::nick;
 	m_cmds["PRIVMSG"] = &Server::privmsg;
 	m_cmds["JOIN"] = &Server::join;
 	m_cmds["PART"] = &Server::part;
@@ -104,7 +104,7 @@ void Server::bind_socket(void)
 		throw std::runtime_error("Host information retrieval failed");
 	}
 
-	struct in_addr **addr_list = (struct in_addr **)host->h_addr_list;
+	struct in_addr **addr_list = reinterpret_cast<struct in_addr **>(host->h_addr_list);
 	if (addr_list[0] == NULL)
 	{
 		std::cerr << "Error: no IP addresses found for host" << std::endl;
@@ -113,7 +113,7 @@ void Server::bind_socket(void)
 
 	m_addr.sin_addr = *addr_list[0];
 
-	if(bind(m_socket, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1)
+	if(bind(m_socket, reinterpret_cast<struct sockaddr *>(&m_addr), sizeof(m_addr)) == -1)
 	{
 		std::cerr << "Error: socket binding failed - " << strerror(errno) << std::endl;
 		throw Server::BindException();
@@ -145,8 +145,8 @@ void Server::accept_connection()
 	m_server_fd.fd = m_socket;
 	m_server_fd.events = POLLIN;
 	m_client_fds.push_back(m_server_fd);
-
-	printLogo(inet_ntoa(m_addr.sin_addr), m_port);
+	m_ip = inet_ntoa(m_addr.sin_addr);
+	printLogo(m_ip, m_port);
 
 	while (true)
 	{
@@ -164,7 +164,7 @@ void Server::accept_connection()
 				if (m_client_fds[i].fd == m_socket)
 				{
 					client_addr_size = sizeof(client_addr);
-					client_socket = accept(m_socket, (struct sockaddr *)&client_addr, &client_addr_size);
+					client_socket = accept(m_socket, reinterpret_cast<struct sockaddr *>(&client_addr), &client_addr_size);
 					if (client_socket == -1)
 					{
 						continue;
@@ -386,8 +386,8 @@ void Server::register_client(int client)
 
 void Server::write_to_client(int client, std::string msg)
 {
+	msg.append("\r\n");
 	send(client, msg.c_str(), msg.size(), 0);
-	send(client, "\r\n", 2, 0);
 }
 
 Client *Server::get_client_by_nick(std::string nick)
@@ -581,21 +581,33 @@ bool Server::join(int client, std::string channel)
 bool Server::part(int client, std::string channels)
 {
 	std::vector<std::string> split_msg = split(channels, " ");
-	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	if (split_msg.size() < 2)
 	{
 		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " PART :Not enough parameters");
-		return false;
+		return true;
 	}
+	else if (split_msg.size() > 2)
+	{
+		m_clients[client]->send_message(":irc 400 " + m_clients[client]->get_nick() + " PART :Too many parameters");
+		return true;
+	}
+	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
 	{
 		Channel *chan = this->get_channel(*it);
-		if (chan)
+		if (chan && chan->is_client_in(m_clients[client]->get_nick()))
+		{
 			chan->remove_client(m_clients[client]->get_nick());
+		}
+		else if (chan && chan->is_client_in(m_clients[client]->get_nick()) == false)
+		{
+			m_clients[client]->send_message(":irc 442 " + m_clients[client]->get_nick() + " " + *it + " :You're not on that channel");
+			return true;
+		}
 		else
 		{
 			m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
-			return false;
+			return true;
 		}
 	}
 	return true;
@@ -645,7 +657,7 @@ bool Server::mode(int client, std::string message)
 	// TODO handle error
 	return ret;
 }
-
+//TODO add away reply
 bool Server::invite(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
@@ -718,7 +730,7 @@ bool Server::quit(int client, std::string message)
 
 bool Server::topic(int client, std::string params)
 {
-	std::string topic;
+	std::string topic = "";
 	if (params.find(":") != std::string::npos)
 	{
 		topic = params.substr(params.find(":") + 1);
@@ -726,10 +738,7 @@ bool Server::topic(int client, std::string params)
 		std::cout << "topic: " << topic << std::endl;
 	}
 	std::vector<std::string> split_msg = split(params, " ");
-	std::cout << "split_msg_number: " << split_msg.size() << std::endl;
-	for (std::vector<std::string>::iterator it = split_msg.begin(); it != split_msg.end(); it++)
-		std::cout << "split_msg: " << *it << std::endl;
-	std::cout << std::endl;
+	
 	if (split_msg.size() < 2) // TOPIC without #chan
 	{
 		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " TOPIC :Not enough parameters");
@@ -961,6 +970,28 @@ bool Server::userhost(int client, std::string message)
 	return true;
 }
 
+bool Server::nick(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 431 " + m_clients[client]->get_nick() + " NICK :No nickname given");
+		return true;
+	}
+	if (get_client_by_nick(split_msg[1]) != NULL)
+	{
+		write_to_client(client, ":irc 433 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Nickname is already in use");
+		return true;
+	}
+	if (split_msg[1].find(":@#&") != std::string::npos)
+	{
+		write_to_client(client, ":irc 432 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Erroneous nickname");
+		return true;
+	}
+	m_clients[client]->set_nick(split_msg[1]);
+	return true;
+}
+
 bool Server::is_client_in_channel(std::string channel, std::string client)
 {
 	Channel *chan = get_channel(channel);
@@ -977,4 +1008,31 @@ bool Server::client_exist(const std::string &client) const
 			return true;
 	}
 	return false;
+}
+
+void	Server::remove_channel(std::string name)
+{
+	if (m_channels.find(name) != m_channels.end())
+	{
+		delete m_channels[name];
+		m_channels.erase(name);
+	}
+}
+void	Server::send_msg_to_set(std::set<std::string> clients, std::string msg)
+{
+	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (get_client_by_nick(*it))
+			get_client_by_nick(*it)->send_message(msg);
+	}
+}
+
+int	Server::get_port() const
+{
+	return m_port;
+}
+
+std::string	Server::get_ip() const
+{
+	return m_ip;
 }

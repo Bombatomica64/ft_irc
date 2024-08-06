@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 12:18:55 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 10:14:00 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,15 @@ int getTerminalWidth() {
     return ws.ws_col;
 }
 
+int getTerminalHeight() {
+	struct winsize ws;
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1) {
+		// If ioctl fails, return a default height
+		return 24;
+	}
+	return ws.ws_row;
+}
+
 void printLogo(std::string ip, int port) {
     std::string art[] = {
 	"┌──┬───────────────────────────────┬──┐ ",
@@ -94,42 +103,79 @@ void printLogo(std::string ip, int port) {
 	//Font Name: ANSI Shadow
 	//https://patorjk.com/software/taag/#p=testall&f=Graffiti&t=IRC
 
-    int terminalWidth = getTerminalWidth();
+    size_t terminalWidth = static_cast<size_t>(getTerminalWidth());
 
-    const int artHeight = 22;
-    int artWidth = 35;
+    const size_t artHeight = 22;
+    size_t artWidth = 39;
 
 	std::string port_str = NumberToString(port);
 	art[11].replace(13, ip.size(), ip);
 	art[11].replace(29, port_str.size(), port_str);
-    for (int i = 0; i < artHeight; ++i)
+    for (size_t i = 0; i < artHeight; ++i)
 	{
-        int padding = (terminalWidth - artWidth) / 2;
+        size_t padding = (terminalWidth - artWidth) / 2;
         if (padding < 0)
 			padding = 0;
         std::string spaces(padding, ' ');
-        std::cout <<CYAN<< spaces << art[i] <<RESET<< std::endl;
+        std::cout << CYAN << spaces << art[i] << RESET << std::endl;
     }
 }
 
 std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWidth, int terminalHeight)
 {
-	int artWidth = art[0].length();
-	int artHeight = art.size();
-	std::vector<std::string> scaledLines;
+    size_t artWidth = art[0].length();
+    size_t artHeight = art.size();
+    std::vector<std::string> scaledLines;
 
-	double scaleX = static_cast<double>(terminalWidth) / artWidth;
-	double scaleY = static_cast<double>(terminalHeight) / artHeight;
+    size_t scaleX = std::max((terminalWidth / artWidth), static_cast<size_t>(1));
+    size_t scaleY = std::max((terminalHeight / artHeight), static_cast<size_t>(1));
 
-	for (int i = 0; i < artHeight; i += scaleY)
+    for (size_t i = 0; i < artHeight; i += scaleY)
+    {
+        std::string scaledRow;
+        for (size_t j = 0; j < artWidth; j += scaleX)
+        {
+            scaledRow += art[i][j];
+        }
+        scaledLines.push_back(scaledRow);
+    }
+
+    return scaledLines;
+}
+
+void printQrCode()
+{
+	std::string art[] = {
+	"█████████████████████████████████",
+	"██ ▄▄▄▄▄ ██▄▄ ▀█▄█▀  █▀█ ▄▄▄▄▄ ██",
+	"██ █   █ █▀▄  █▀▄▀▄▀▄▀ █ █   █ ██",
+	"██ █▄▄▄█ █▄▀ █▄▀▄▄▄█ ▄ █ █▄▄▄█ ██",
+	"██▄▄▄▄▄▄▄█▄▀▄█ █▄█ █▄▀ █▄▄▄▄▄▄▄██",
+	"██▄ █▀▀ ▄▄▀▄ █▄▄  ▄▄█ █▀█▀ ▄▀▀███",
+	"███▀ █▀█▄▄▄▄▀ ▄▄▀ ▀█▀▀█▀██▄▀█████",
+	"███▀▄█▀▀▄█▀  █▀ ▄  ▀▀▄ █  ▀██▀ ██",
+	"██▄██▀█▀▄ ▄▄▄█▀   ▄▄█▀▄▄█▀ ▄ █▀██",
+	"██ ▀▄ ▄▄▄▄ ▄██▄█▄▀█ ▀ █▄▀ ▀▄ ▀▀██",
+	"██ ▄ ▀▀█▄▄▀▀ ▀▄▄ ▄ ▄█▄▀█▀█▄▄██▄██",
+	"██▄█▄▄█▄▄▄▀▄█▄▀▀█   ▀▄ ▄▄▄ ▀▄▄▄██",
+	"██ ▄▄▄▄▄ █ ▄▄█▀ ▄ ▀█▄  █▄█ ▄▄▀▀██",
+	"██ █   █ ██▄▀▄▄▄█ ██▀   ▄▄▄ ▀█ ██",
+	"██ █▄▄▄█ █▀▄▀ ▄██▄ ▄▄▄▄▄  ▄  ▄▀██",
+	"██▄▄▄▄▄▄▄█▄▄▄▄███▄█▄█▄██▄▄▄█▄████",
+	"█████████████████████████████████",
+	};
+
+	size_t terminalWidth = static_cast<size_t>(getTerminalWidth());
+
+    const size_t artHeight = 17;
+    size_t artWidth = 33;
+
+    for (size_t i = 0; i < artHeight; ++i)
 	{
-		std::string scaledRow;
-		for (int j = 0; j < artWidth; j += scaleX)
-		{
-			scaledRow += art[i][j];
-		}
-		scaledLines.push_back(scaledRow);
-	}
-
-	return scaledLines;
+        size_t padding = (terminalWidth - artWidth) / 2;
+        if (padding < 0)
+			padding = 0;
+        std::string spaces(padding, ' ');
+        std::cout << spaces << art[i] << std::endl;
+    }
 }

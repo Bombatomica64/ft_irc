@@ -44,6 +44,7 @@ class Server
 		int					m_socket;
 		int					m_port;
 		struct sockaddr_in	m_addr;
+		std::string			m_ip;
 
 		//bot
 		Coucou				m_coucou;
@@ -53,12 +54,12 @@ class Server
 		Server() {} //useless
 
 	public:
-		Server(char *port, char *psw);
+		Server(std::string port, std::string psw);
 		~Server();
 
 	public:
-		void create_socket(void);
-		void bind_socket(void);
+		void	create_socket(void);
+		void	bind_socket(void);
 		void	accept_connection( void );
 		void	get_cmds();
 
@@ -70,6 +71,11 @@ class Server
 		void		add_channel(std::string name);
 		void		add_channel(std::string name, std::map<char, int> modes);
 		bool		send_msg_to_channel(int client, std::string Channel ,std::string msg);
+		void		remove_channel(std::string name);
+		std::string	get_ip( void ) const ;
+		std::string	get_date( void ) const { return m_date; }
+		int			get_port( void ) const ;
+		// bool		send_msg_to_all(int client, std::string msg);
 	/**
 	 * @brief client functions
 	 */
@@ -78,6 +84,7 @@ class Server
 		void	write_to_client(int client, std::string msg);
 		void	register_client(int client);
 		void	parse_cmds(int client, std::string cmd);
+		void	send_msg_to_set(std::set<std::string> clients, std::string msg);
 		Client*	get_client_by_nick(std::string nick);
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
@@ -96,6 +103,7 @@ class Server
 		bool	cap(int client, std::string cmd);
 		bool	who(int client, std::string cmd);
 		bool	ping(int client, std::string cmd);
+		bool	nick(int client, std::string cmd);
 		bool	userhost(int client, std::string cmd);
 
 

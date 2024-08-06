@@ -54,5 +54,10 @@
 		"ctime": "cpp",
 		"iomanip": "cpp",
 		"cinttypes": "cpp"
-	}
+	},
+	"python.testing.pytestArgs": [
+		"srcs"
+	],
+	"python.testing.unittestEnabled": false,
+	"python.testing.pytestEnabled": true
 }

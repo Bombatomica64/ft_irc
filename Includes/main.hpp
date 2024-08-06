@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 15:29:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:00:34 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ std::string NumberToString(T Number)
 	return ss.str();
 }
 
-void check_input(char *host, char *port);
+void check_input(std::string host, std::string port);
 
 std::vector<std::string> split(std::string str, std::string token);
 std::string trimString(std::string nick);
@@ -61,7 +61,11 @@ std::string hash_password(const std::string &password, const std::string &salt);
 bool verify_password(const std::string &entered_password, const std::string &stored_hash, const std::string &salt);
 std::string get_time( int flag );
 void printLogo(std::string ip, int port);
+void printQrCode( void );
 std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWidth, int terminalHeight);
+int getTerminalWidth();
+int getTerminalHeight();
+
 
 inline std::ostream &operator<<(std::ostream &o, std::vector<std::string> const &v)
 {

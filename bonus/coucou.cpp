@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   coucou.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
 /*   Updated: 2024/07/31 15:59:38 by mruggier         ###   ########.fr       */
@@ -226,7 +226,6 @@ void	Coucou::domain_expansion(Client& client)
 		std::fstream file("docs/Nah_id_win", std::ios::in);
 		std::getline(file, response, '\0');
 	}
-	std::cerr << response.size() << std::endl;
 	send_message(client, response);
 }
 

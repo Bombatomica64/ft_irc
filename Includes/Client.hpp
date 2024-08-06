@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/23 12:27:36 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:03:08 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,54 +17,57 @@
 class Client
 {
 	private:
-		int			m_clientSocket;
-		struct sockaddr_in m_clientAddr;
-		int	m_reg_steps;
+
+		//client identity
 		std::string m_nick;
-		std::string m_user;
+		
+		//client internet stuff
+		int					m_clientSocket;
+		struct sockaddr_in	m_clientAddr;
 		std::map<std::string, bool (Client::*)(std::string)> m_cmds;
+
+		//registration stuff
+		int			m_reg_steps;
 		bool		m_registered;
-		bool		m_connected;
+		bool		m_connected; //true and based
+		std::string m_user; //rarely used
+		std::string m_hostname; //rarely used
+		std::string m_realname; //not used
+		std::string m_servername; //not used
+		
+		//away (not fully implemented)
 		bool		m_away;
 		std::string m_away_msg;
-		std::string m_realname;
-		std::string m_hostname;
-		std::string m_servername;
 
-	public:
+		//useless
 		Client() {}
+	public:
+		//constructors
 		Client(Client const &src);
+		Client(int clientSocket, struct sockaddr_in clientAddr);
+		~Client();
 		Client &operator=(Client const &src);
+
+		//operators they are REALLY useful
 		bool	operator==(std::string const &src) const { return (m_nick == src); }
 		bool	operator==(Client* const src) const { return (m_nick == src->get_nick()); }
 		bool	operator==(Client const &src) const { return (m_clientSocket == src.get_clientSocket()); }
 		bool	operator!=(Client const &src) const { return !(*this == src); }
 		bool	operator<(Client const &src) const { return (m_clientSocket < src.get_clientSocket()); }
 		bool	operator>(Client const &src) const { return (m_clientSocket > src.get_clientSocket()); }
-		Client(int clientSocket, struct sockaddr_in clientAddr);
-		~Client();
-		bool	send_message(std::string message);
-		bool	send_message(Client receiver, std::string message);
-		bool	parse_cmds(std::string cmd);
-		// bool	quit(std::string message);
-		bool	nick(std::string new_nick);
-		// bool	ping(std::string message);
-		bool	away(std::string message);
-		/*
-		void	receive_message( void );
-		void	connect_to_channel( void );
-		bool	list(std::string message);
-		bool	admin(std::string message);
-		bool	summon(std::string message);
-		bool	users(std::string message);
-		bool	notice(std::string message);
-		idk what to do with these functions yet
-		*/
-		// bool	oper(std::string user);
-		// bool	kick(std::string message);
-		// bool	topic(std::string message);
 		static bool	is_me( Client* me, Client* other) { return (me->get_nick() == other->get_nick()); }
 		static bool	is_me( Client* me, std::string other) { return (me->get_nick() == other); }
+		
+		//send message to itself or to another client
+		bool	send_message(std::string message);
+		bool	send_message(Client receiver, std::string message);
+
+		//commands, most of them are implemented in the server
+		bool	parse_cmds(std::string cmd);
+		// bool	nick(std::string new_nick);
+		bool	away(std::string message);
+
+		
 	//accessors
 	public:
 		std::string get_nick( void ) const { return m_nick; }
@@ -78,6 +81,8 @@ class Client
 		bool		get_registered( void ) const { return m_registered; }
 		bool		get_connected( void ) const { return m_connected; }
 		bool		is_away( void ) const { return m_away; }
+
+		//mutators
 		void		set_reg(int step) { m_reg_steps = step; }
 		void		set_nick(std::string nick) { m_nick = nick; }
 		void		set_user(std::string user) { m_user = user; }
@@ -88,8 +93,10 @@ class Client
 		void		set_realname(std::string realname) { m_realname = realname; }
 };
 
+//prints alle the information about the client
 std::ostream &operator<<(std::ostream &out, Client const &src);
 
+//prints all the client's nick in a vector
 inline std::ostream &operator<<(std::ostream &out, std::vector<Client*> clients) {
 	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
 	{
@@ -98,6 +105,7 @@ inline std::ostream &operator<<(std::ostream &out, std::vector<Client*> clients)
 	return out;
 }
 
+//prints all the clients in a map
 inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Client*> const &v) {
 	for (std::map<std::string, Client*>::const_iterator it = v.begin(); it != v.end(); ++it)
 		o << it->first;
@@ -106,6 +114,7 @@ inline std::ostream &operator<<(std::ostream &o, std::map<std::string, Client*> 
 	return o;
 }
 
+//prints all the clients in a set
 inline std::ostream &operator<<(std::ostream &o, std::set<std::string> const &v) {
 	for (std::set<std::string>::const_iterator it = v.begin(); it != v.end(); ++it)
 		o <<"["<< *it <<"]";
@@ -113,3 +122,4 @@ inline std::ostream &operator<<(std::ostream &o, std::set<std::string> const &v)
 	o << std::endl;
 	return o;
 }
+
