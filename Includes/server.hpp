@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 17:38:42 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 18:44:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ class Server
 		Client*	get_client_by_nick(std::string nick);
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
+		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
 		bool	privmsg(int client, std::string cmd);
 		bool	join(int client, std::string cmd);
 		bool	part(int client, std::string cmd);

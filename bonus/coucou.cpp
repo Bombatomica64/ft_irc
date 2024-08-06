@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:14:08 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/07/31 15:59:38 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,15 +166,12 @@ void	Coucou::parse_message(Client& client, std::string message)
 	switch (m_relations[client.get_nick()])
 	{
 		case HAPPY:
-			send_message(client, "sono happy");	
 			send_message(client, m_happy_words[rand() % m_happy_words.size()]);
 			break;
 		case ANGRY:
-			send_message(client, "sono angry");	
 			send_message(client, m_angry_words[rand() % m_angry_words.size()]);
 			break;
 		case NORMAL:
-			send_message(client, "sono normal");
 			send_message(client, m_base_respones[rand() % m_base_respones.size()]);	
 			break;
 		default:
