@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 17:02:45 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:30:33 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -956,6 +956,7 @@ bool Server::nick(int client, std::string message)
 		return true;
 	}
 	m_clients[client]->set_nick(split_msg[1]);
+	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " NICK " + split_msg[1]);
 	return true;
 }
 

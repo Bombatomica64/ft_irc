@@ -6,7 +6,7 @@
 #    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/08/06 11:15:47 by lmicheli         ###   ########.fr        #
+#    Updated: 2024/08/06 17:45:58 by lmicheli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,6 +44,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f test
 
 re: fclean all
 
@@ -66,12 +67,19 @@ GMOCK_MAIN_LIB = $(GTEST_DIR)/lib/libgmock_main.a
 GTEST = $(GTEST_LIB) $(GTEST_MAIN_LIB)
 GMOCK = $(GMOCK_LIB) $(GMOCK_MAIN_LIB)
 
-TESTS = tests/gtest.cpp
+TESTS = tests/gtest.cpp \
+		srcs/parse.cpp   \
+		srcs/server.cpp   \
+		srcs/Client.cpp    \
+		srcs/Channel.cpp    \
+		srcs/Hashing.cpp     \
+		bonus/coucou.cpp      \
+		utils/string_utils.cpp \
 
-CXX = clang++ --std=c++17
+CXX = clang++ --std=c++17 -g
 
-test: $(TESTS) $(SRC) $(GTEST) $(GMOCK)
-	$(CXX) $(INC) $(GTEST_INC) $(GMOCK_INC) $(SRC) $(TESTS) $(GTEST) $(GMOCK) -o test $(CRYPTO)
+test: $(TESTS) $(GTEST) $(GMOCK)
+	$(CXX) $(INC) $(GTEST_INC) $(GMOCK_INC) $(TESTS) $(GTEST) $(GMOCK) -o test $(CRYPTO) -lpthread
 	./test
 
 .PHONY: all clean fclean re

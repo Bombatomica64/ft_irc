@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 16:56:52 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:38:42 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ class Server
 		
 		//other
 		std::string			m_date;
-		Server() {} //useless
 
 	public:
+		Server() {} //useless
 		Server(std::string port, std::string psw);
 		~Server();
 
