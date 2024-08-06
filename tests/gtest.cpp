@@ -35,7 +35,7 @@ class MockClient
 		}
 		void send(std::string message) 
 		{
-			send(m_clientSocket, message.c_str(), message.length(), 0);
+			::send(m_clientSocket, message.c_str(), message.length(), 0);
 		}
 };
 
@@ -44,7 +44,8 @@ class ServerTest : public ::testing::Test {
 protected:
     void SetUp() override 
 	{
-        server = new Server("6667", "2");
+		std::string argv[] = {"./server", "6667", "2"};
+        server = new Server(argv[1], argv[2]);
 		client = new MockClient(server->get_ip(), server->get_port());
     }
 
@@ -57,8 +58,8 @@ private:
 	MockClient* client;
 };
 
-// Test case for the 
-TEST(ServerTest, NICK << "Test the NICK command")
+// Test case for the
+TEST(ServerTest, basic)
 {
 	client->send("PASS :2\r\n");
 	client->send("NICK test\r\n");

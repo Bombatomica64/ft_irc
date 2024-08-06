@@ -6,13 +6,13 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 15:22:06 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:02:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <server.hpp>
 
-Server::Server(char *port, char *psw)
+Server::Server(std::string port, std::string psw)
 {
 	// Variables
 	m_coucou = Coucou();
@@ -21,11 +21,11 @@ Server::Server(char *port, char *psw)
 
 	// Input validation
 	check_input(port, psw);
-	m_port = std::strtold(port, NULL);
+	m_port = std::strtold(port.c_str(), NULL);
 
 	// Password hashing
 	m_salt = generate_salt(16);
-	m_hash = hash_password(psw, m_salt);
+	m_hash = hash_password(psw.c_str(), m_salt);
 	create_socket();
 }
 
@@ -934,6 +934,28 @@ bool Server::userhost(int client, std::string message)
 			response += get_client_by_nick(*it)->get_nick() + "=" + get_client_by_nick(*it)->get_nick() + "@" + get_client_by_nick(*it)->get_hostname() + " ";
 	}
 	write_to_client(client, response);
+	return true;
+}
+
+bool Server::nick(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 431 " + m_clients[client]->get_nick() + " NICK :No nickname given");
+		return true;
+	}
+	if (get_client_by_nick(split_msg[1]) != NULL)
+	{
+		write_to_client(client, ":irc 433 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Nickname is already in use");
+		return true;
+	}
+	if (split_msg[1].find(":@#&") != std::string::npos)
+	{
+		write_to_client(client, ":irc 432 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Erroneous nickname");
+		return true;
+	}
+	m_clients[client]->set_nick(split_msg[1]);
 	return true;
 }
 

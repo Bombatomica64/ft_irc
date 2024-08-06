@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 15:21:45 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:03:06 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_registered = false;
 	m_connected = false;
 	m_reg_steps = 0;
-	m_cmds["NICK"] = &Client::nick;
+	// m_cmds["NICK"] = &Client::nick;
 	// m_cmds["OPER"] = &Client::oper;
 	// m_cmds["KICK"] = &Client::kick;
 	// m_cmds["PING"] = &Client::ping;

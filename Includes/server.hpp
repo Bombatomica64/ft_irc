@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 15:22:21 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 16:56:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Server
 		Server() {} //useless
 
 	public:
-		Server(char *port, char *psw);
+		Server(std::string port, std::string psw);
 		~Server();
 
 	public:

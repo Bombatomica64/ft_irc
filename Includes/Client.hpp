@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:05:40 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:03:08 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ class Client
 
 		//commands, most of them are implemented in the server
 		bool	parse_cmds(std::string cmd);
-		bool	nick(std::string new_nick);
+		// bool	nick(std::string new_nick);
 		bool	away(std::string message);
 
 		

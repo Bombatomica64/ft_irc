@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:04:47 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:00:34 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ std::string NumberToString(T Number)
 	return ss.str();
 }
 
-void check_input(char *host, char *port);
+void check_input(std::string host, std::string port);
 
 std::vector<std::string> split(std::string str, std::string token);
 std::string trimString(std::string nick);
