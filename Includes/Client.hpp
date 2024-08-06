@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 18:38:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 10:05:40 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,3 +122,4 @@ inline std::ostream &operator<<(std::ostream &o, std::set<std::string> const &v)
 	o << std::endl;
 	return o;
 }
+

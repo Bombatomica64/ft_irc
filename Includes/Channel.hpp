@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/05 15:40:26 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 10:05:47 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ class Channel
 
 		public:
 		// accessors
-		int	size() { return m_clients.size(); }
+		int	size() { return static_cast<int>(m_clients.size()); }
 		int	get_limit() { return m_limit; }
 		int	get_mode(char mode);
 		std::string	get_key() { return m_key; }
@@ -119,3 +119,4 @@ inline std::ostream &operator<<(std::ostream &o, std::map<char, void (Channel::*
 	o << std::endl;
 	return o;
 }
+

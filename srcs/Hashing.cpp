@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 18:30:29 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/26 11:45:52 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 10:14:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,3 @@ bool verify_password(const std::string& entered_password, const std::string& sto
 	std::string hashed_entered_password = hash_password(entered_password, salt);
 	return hashed_entered_password == stored_hash;
 }
-// Example usage
-// void example_usage() {
-//     std::string password = "my_secure_password";
-//     std::string salt = generate_salt(16); // Generate a 16-character salt
-//     std::string hashed_password = hash_password(password, salt);
-//     store_hashed_password("username", hashed_password, salt);
-// }
-
-// Function to verify password

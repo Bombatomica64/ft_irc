@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/05 15:45:03 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 10:24:22 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -783,12 +783,12 @@ bool Server::names(int client, std::string params)
 			std::set<std::string> clients = chan->get_clients();
 			message += ":irc 353 " + m_clients[client]->get_nick();
 			message += chan->get_name() + " :";
-			for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
+			for (std::set<std::string>::iterator iter = clients.begin(); iter != clients.end(); ++iter)
 			{
-				if (chan->get_ops().find(*it) != chan->get_ops().end())
-					message += "@" + *it + " ";
+				if (chan->get_ops().find(*iter) != chan->get_ops().end())
+					message += "@" + *iter + " ";
 				else
-					message += *it + " ";
+					message += *iter + " ";
 			}
 			message += "\n";
 		}
