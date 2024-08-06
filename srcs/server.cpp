@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:24:22 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 15:22:06 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ Server::Server(char *port, char *psw)
 
 void Server::get_cmds()
 {
-
+	m_cmds["NICK"] = &Server::nick;
 	m_cmds["PRIVMSG"] = &Server::privmsg;
 	m_cmds["JOIN"] = &Server::join;
 	m_cmds["PART"] = &Server::part;
@@ -104,7 +104,7 @@ void Server::bind_socket(void)
 		throw std::runtime_error("Host information retrieval failed");
 	}
 
-	struct in_addr **addr_list = (struct in_addr **)host->h_addr_list;
+	struct in_addr **addr_list = reinterpret_cast<struct in_addr **>(host->h_addr_list);
 	if (addr_list[0] == NULL)
 	{
 		std::cerr << "Error: no IP addresses found for host" << std::endl;
@@ -113,7 +113,7 @@ void Server::bind_socket(void)
 
 	m_addr.sin_addr = *addr_list[0];
 
-	if(bind(m_socket, (struct sockaddr *)&m_addr, sizeof(m_addr)) == -1)
+	if(bind(m_socket, reinterpret_cast<struct sockaddr *>(&m_addr), sizeof(m_addr)) == -1)
 	{
 		std::cerr << "Error: socket binding failed - " << strerror(errno) << std::endl;
 		throw Server::BindException();
@@ -145,8 +145,8 @@ void Server::accept_connection()
 	m_server_fd.fd = m_socket;
 	m_server_fd.events = POLLIN;
 	m_client_fds.push_back(m_server_fd);
-
-	printLogo(inet_ntoa(m_addr.sin_addr), m_port);
+	m_ip = inet_ntoa(m_addr.sin_addr);
+	printLogo(m_ip, m_port);
 
 	while (true)
 	{
@@ -164,7 +164,7 @@ void Server::accept_connection()
 				if (m_client_fds[i].fd == m_socket)
 				{
 					client_addr_size = sizeof(client_addr);
-					client_socket = accept(m_socket, (struct sockaddr *)&client_addr, &client_addr_size);
+					client_socket = accept(m_socket, reinterpret_cast<struct sockaddr *>(&client_addr), &client_addr_size);
 					if (client_socket == -1)
 					{
 						continue;
@@ -970,4 +970,14 @@ void	Server::send_msg_to_set(std::set<std::string> clients, std::string msg)
 		if (get_client_by_nick(*it))
 			get_client_by_nick(*it)->send_message(msg);
 	}
+}
+
+int	Server::get_port() const
+{
+	return m_port;
+}
+
+std::string	Server::get_ip() const
+{
+	return m_ip;
 }

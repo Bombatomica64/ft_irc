@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:06:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 15:21:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,21 +112,21 @@ bool	Client::parse_cmds(std::string cmd)
 }
 
 
-bool Client::nick(std::string new_nick)
-{
-	std::vector<std::string> split_msg = split(new_nick, " ");
-	if (split_msg.size() == 2)
-	{
-		m_nick = split_msg[1];
-		return true;
-	}
-	if (split_msg.size() == 1)
-	{
-		this->send_message("431 :No nickname given");
-		return false;
-	}
-	return false;
-}
+// bool Client::nick(std::string new_nick)
+// {
+// 	std::vector<std::string> split_msg = split(new_nick, " ");
+// 	if (split_msg.size() == 2)
+// 	{
+// 		m_nick = split_msg[1];
+// 		return true;
+// 	}
+// 	if (split_msg.size() == 1)
+// 	{
+// 		this->send_message("431 :No nickname given");
+// 		return false;
+// 	}
+// 	return false;
+// }
 
 bool	Client::away(std::string message)
 {

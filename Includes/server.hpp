@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:05:37 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 15:22:21 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ class Server
 		int					m_socket;
 		int					m_port;
 		struct sockaddr_in	m_addr;
+		std::string			m_ip;
 
 		//bot
 		Coucou				m_coucou;
@@ -71,6 +72,9 @@ class Server
 		void		add_channel(std::string name, std::map<char, int> modes);
 		bool		send_msg_to_channel(int client, std::string Channel ,std::string msg);
 		void		remove_channel(std::string name);
+		std::string	get_ip( void ) const ;
+		std::string	get_date( void ) const { return m_date; }
+		int			get_port( void ) const ;
 		// bool		send_msg_to_all(int client, std::string msg);
 	/**
 	 * @brief client functions
@@ -98,6 +102,7 @@ class Server
 		bool	cap(int client, std::string cmd);
 		bool	who(int client, std::string cmd);
 		bool	ping(int client, std::string cmd);
+		bool	nick(int client, std::string cmd);
 		bool	userhost(int client, std::string cmd);
 
 
