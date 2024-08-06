@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 15:22:06 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/06 18:22:47 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -934,6 +934,23 @@ bool Server::userhost(int client, std::string message)
 			response += get_client_by_nick(*it)->get_nick() + "=" + get_client_by_nick(*it)->get_nick() + "@" + get_client_by_nick(*it)->get_hostname() + " ";
 	}
 	write_to_client(client, response);
+	return true;
+}
+
+bool	Server::nick(int client, std::string msg)
+{
+	if (get_client_by_nick(msg) != NULL || msg.find("[bot]") != std::string::npos || msg == "coucou")
+	{
+		write_to_client(client, ":irc 433 " + msg + " :Nickname already in use"); // ERR_NICKNAMEINUSE
+		return true;
+	}
+	if (msg.find(":@#&") != std::string::npos)
+	{
+		write_to_client(client, ":irc 432 " + msg + " :Erroneous nickname"); // ERR_ERRONEUSNICKNAME
+		return true;
+	}
+	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " NICK " + msg);
+	m_clients[client]->set_nick(msg);
 	return true;
 }
 
