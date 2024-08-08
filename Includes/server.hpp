@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 18:44:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/08 12:19:46 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Server
 		
 		//other
 		std::string			m_date;
+		std::vector<t_file> m_files;
 
 	public:
 		Server() {} //useless
@@ -106,7 +107,8 @@ class Server
 		bool	nick(int client, std::string cmd);
 		bool	userhost(int client, std::string cmd);
 
-
+		void	handle_file_request(int client, std::string cmd, std::string receiver);
+		void	transfer_file(t_file file);
 	public:
 		class clientSocketException : public std::exception
 		{

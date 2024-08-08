@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:14:00 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/08 12:33:50 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,4 +178,13 @@ void printQrCode()
         std::string spaces(padding, ' ');
         std::cout << spaces << art[i] << std::endl;
     }
+}
+std::string decode_ip(std::string ip)
+{
+	std::string result;
+	int ip_int = std::strtol(ip.c_str(), NULL, 10);
+	struct in_addr addr;
+	addr.s_addr = htonl(ip_int);
+	result = inet_ntoa(addr);
+	return result;
 }
