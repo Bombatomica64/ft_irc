@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/08 12:19:46 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/22 17:44:38 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,22 +90,167 @@ class Server
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
 		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
-		bool	privmsg(int client, std::string cmd);
-		bool	join(int client, std::string cmd);
-		bool	part(int client, std::string cmd);
-		bool	mode(int client, std::string cmd);
-		bool	quit(int client, std::string cmd);
-		bool	invite(int client, std::string cmd);
-		bool	topic(int client, std::string cmd);
-		bool	kick(int client, std::string cmd);
-		bool	names(int client, std::string cmd);
-		bool	pass(int client, std::string cmd);
-		bool	user(int client, std::string cmd);
-		bool	cap(int client, std::string cmd);
-		bool	who(int client, std::string cmd);
-		bool	ping(int client, std::string cmd);
-		bool	nick(int client, std::string cmd);
-		bool	userhost(int client, std::string cmd);
+		
+		
+		/**
+		 * @brief Sends a private message to a client.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the message was sent successfully.
+		 * @return false otherwise.
+		 */
+		bool privmsg(int client, std::string cmd);
+		
+		/**
+		 * @brief Joins a client to a channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the client joined the channel successfully.
+		 * @return false otherwise.
+		 */
+		bool join(int client, std::string cmd);
+		
+		/**
+		 * @brief Removes a client from a channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the client left the channel successfully.
+		 * @return false otherwise.
+		 */
+		bool part(int client, std::string cmd);
+		
+		/**
+		 * @brief Changes the mode of a client or channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the mode was changed successfully.
+		 * @return false otherwise.
+		 */
+		bool mode(int client, std::string cmd);
+		
+		/**
+		 * @brief Disconnects a client from the server.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the client disconnected successfully.
+		 * @return false otherwise.
+		 */
+		bool quit(int client, std::string cmd);
+		
+		/**
+		 * @brief Invites a client to a channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the client was invited successfully.
+		 * @return false otherwise.
+		 */
+		bool invite(int client, std::string cmd);
+		
+		/**
+		 * @brief Changes the topic of a channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the topic was changed successfully.
+		 * @return false otherwise.
+		 */
+		bool topic(int client, std::string cmd);
+		
+		/**
+		 * @brief Kicks a client from a channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the client was kicked successfully.
+		 * @return false otherwise.
+		 */
+		bool kick(int client, std::string cmd);
+		
+		/**
+		 * @brief Lists the names of clients in a channel.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the names were listed successfully.
+		 * @return false otherwise.
+		 */
+		bool names(int client, std::string cmd);
+		
+		/**
+		 * @brief Authenticates a client with a password.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the client was authenticated successfully.
+		 * @return false otherwise.
+		 */
+		bool pass(int client, std::string cmd);
+		
+		/**
+		 * @brief Registers a new user.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the user was registered successfully.
+		 * @return false otherwise.
+		 */
+		bool user(int client, std::string cmd);
+		
+		/**
+		 * @brief Handles capability negotiation.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the capability was handled successfully.
+		 * @return false otherwise.
+		 */
+		bool cap(int client, std::string cmd);
+		
+		/**
+		 * @brief Lists information about users.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the information was listed successfully.
+		 * @return false otherwise.
+		 */
+		bool who(int client, std::string cmd);
+		
+		/**
+		 * @brief Responds to a ping request.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the ping was responded to successfully.
+		 * @return false otherwise.
+		 */
+		bool ping(int client, std::string cmd);
+		
+		/**
+		 * @brief Changes the nickname of a client.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the nickname was changed successfully.
+		 * @return false otherwise.
+		 */
+		bool nick(int client, std::string cmd);
+		
+		/**
+		 * @brief Retrieves the user host information.
+		 * 
+		 * @param client The client ID.
+		 * @param cmd The command string.
+		 * @return true if the user host information was retrieved successfully.
+		 * @return false otherwise.
+		 */
+		bool userhost(int client, std::string cmd);
 
 		void	handle_file_request(int client, std::string cmd, std::string receiver);
 		void	transfer_file(t_file file);
