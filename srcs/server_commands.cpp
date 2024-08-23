@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/22 17:40:12 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/23 16:16:06 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -316,6 +316,7 @@ bool Server::mode(int client, std::string message)
 	// TODO handle error
 	return ret;
 }
+
 //TODO add away reply
 bool Server::invite(int client, std::string message)
 {
