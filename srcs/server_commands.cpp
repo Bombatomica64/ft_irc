@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/23 16:16:06 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/23 16:32:45 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ void Server::parse_cmds(int client, std::string cmd)
 
 //: juco!~juco@hostname.com PRIVMSG #channel :Hello world
 //: your@hostmask PRIVMSG #channel :some long message
+
 bool Server::privmsg(int client, std::string message)
 {
 	size_t start = message.find("PRIVMSG");

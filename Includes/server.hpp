@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/23 16:11:13 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/23 17:33:52 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,178 +93,147 @@ class Server
 		
 		
 		/**
-		 * @brief Sends a private message to a client. t
+		 * @brief Sends a private message to a client.
 		 * 
-		 * PRIVMSG <receiver> :<message>
+		 * @note PRIVMSGㅤ<receiver>{,<receiver>}ㅤ:<message>
+		 * @note users or channels
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the message was sent successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool privmsg(int client, std::string cmd);
 		
 		/**
-		 * @brief Joins a client to a channel.
+		 * @brief Sends a message to a channel.
 		 * 
-		 * JOIN #<channel>
+		 * @note JOINㅤ#<channel>{,#<channel>}ㅤ[<key>{,<key>}]
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the client joined the channel successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool join(int client, std::string cmd);
 		
 		/**
-		 * @brief Removes a client from a channel.
+		 * @brief Leaves a channel.
 		 * 
-		 * PART #<channel>
+		 * @note PARTㅤ#<channel>{,#<channel>}
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the client left the channel successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool part(int client, std::string cmd);
 		
 		/**
-		 * @brief Changes the mode of a client or channel.
+		 * @brief Changes the mode of a channel or user.
 		 * 
-		 * MODE <client/channel> <mode>
+		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k} [<user>]
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the mode was changed successfully, also if an error message is sent.
+		 * @warning
 		 */
 		bool mode(int client, std::string cmd);
 		
 		/**
 		 * @brief Disconnects a client from the server.
 		 * 
-		 * QUIT :<message>
+		 * @note QUITㅤ[:<message>]
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the client disconnected successfully, also if an error message is sent.
+		 * @warning
 		 */
 		bool quit(int client, std::string cmd);
 		
 		/**
 		 * @brief Invites a client to a channel.
 		 * 
-		 * INVITE <client> <channel>
+		 * @note INVITEㅤ<nickname>ㅤ#<channel>
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the client was invited successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool invite(int client, std::string cmd);
 		
 		/**
 		 * @brief Changes the topic of a channel.
 		 * 
-		 * TOPIC #<channel> :<topic>
+		 * @note TOPICㅤ#<channel>ㅤ[:<topic>]
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the topic was changed successfully, also if an error message is sent.
+		 * @warning
 		 */
 		bool topic(int client, std::string cmd);
 		
 		/**
 		 * @brief Kicks a client from a channel.
 		 * 
-		 * KICK <channel> <client> :<message>
+		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the client was kicked successfully, also if an error message is sent.
+		 * @warning #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 */
 		bool kick(int client, std::string cmd);
 		
 		/**
-		 * @brief Lists the names of clients in a channel.
+		 * @brief Lists the clients in a channel.
 		 * 
-		 * NAMES #<channel>
+		 * @note NAMESㅤ[#<channel>{,#<channel>}]
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the names were listed successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool names(int client, std::string cmd);
 		
 		/**
-		 * @brief Authenticates a client with a password.
+		 * @brief Registers a password.
 		 * 
-		 * PASS <password>
+		 * @note PASSㅤ<password>
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the client was authenticated successfully, also if an error message is sent.
+		 * @warning crash if not enough parameters (PASS e basta)
 		 */
 		bool pass(int client, std::string cmd);
 		
 		/**
-		 * @brief Registers a new user.
+		 * @brief Registers a user.
 		 * 
-		 * USER <username> <hostname> <servername> :<realname>
+		 * @note USERㅤ<username>ㅤ<hostname>ㅤ<servername>ㅤ<realname>
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the user was registered successfully, also if an error message is sent.
+		 * @warning
 		 */
 		bool user(int client, std::string cmd);
 		
 		/**
-		 * @brief Handles capability negotiation.
+		 * @brief Registers a nickname.
 		 * 
-		 * CAP <client> <cmd>
+		 * @note konversation
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the capability was handled successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool cap(int client, std::string cmd);
 		
 		/**
-		 * @brief Lists information about users.
+		 * @brief Retrieves information about a client.
 		 * 
-		 * WHO <client>
+		 * @note WHOㅤ<client>ㅤ(parziale)
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the information was listed successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool who(int client, std::string cmd);
 		
 		/**
-		 * @brief Responds to a ping request.
+		 * @brief Pings a client.
 		 * 
-		 * PING <client>
+		 * @note PINGㅤ<client>ㅤ(parziale)
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the ping was responded to successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool ping(int client, std::string cmd);
 		
 		/**
-		 * @brief Changes the nickname of a client.
+		 * @brief Retrieves the user host information.
 		 * 
-		 * NICK <new_nick>
+		 * @note NICKㅤ<nickname>
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the nickname was changed successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool nick(int client, std::string cmd);
 		
 		/**
 		 * @brief Retrieves the user host information.
 		 * 
-		 * USERHOST <client>
+		 * @note USERHOSTㅤ<nickname> (parziale)
 		 * 
-		 * @param client The client ID.
-		 * @param cmd The command string.
-		 * @return true if the user host information was retrieved successfully, also if an error message is sent.
+		 * @warning 
 		 */
 		bool userhost(int client, std::string cmd);
 
