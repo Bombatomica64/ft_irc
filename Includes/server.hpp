@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/08 12:19:46 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/23 17:33:52 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,22 +90,152 @@ class Server
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
 		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
-		bool	privmsg(int client, std::string cmd);
-		bool	join(int client, std::string cmd);
-		bool	part(int client, std::string cmd);
-		bool	mode(int client, std::string cmd);
-		bool	quit(int client, std::string cmd);
-		bool	invite(int client, std::string cmd);
-		bool	topic(int client, std::string cmd);
-		bool	kick(int client, std::string cmd);
-		bool	names(int client, std::string cmd);
-		bool	pass(int client, std::string cmd);
-		bool	user(int client, std::string cmd);
-		bool	cap(int client, std::string cmd);
-		bool	who(int client, std::string cmd);
-		bool	ping(int client, std::string cmd);
-		bool	nick(int client, std::string cmd);
-		bool	userhost(int client, std::string cmd);
+		
+		
+		/**
+		 * @brief Sends a private message to a client.
+		 * 
+		 * @note PRIVMSGㅤ<receiver>{,<receiver>}ㅤ:<message>
+		 * @note users or channels
+		 * 
+		 * @warning 
+		 */
+		bool privmsg(int client, std::string cmd);
+		
+		/**
+		 * @brief Sends a message to a channel.
+		 * 
+		 * @note JOINㅤ#<channel>{,#<channel>}ㅤ[<key>{,<key>}]
+		 * 
+		 * @warning 
+		 */
+		bool join(int client, std::string cmd);
+		
+		/**
+		 * @brief Leaves a channel.
+		 * 
+		 * @note PARTㅤ#<channel>{,#<channel>}
+		 * 
+		 * @warning 
+		 */
+		bool part(int client, std::string cmd);
+		
+		/**
+		 * @brief Changes the mode of a channel or user.
+		 * 
+		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k} [<user>]
+		 * 
+		 * @warning
+		 */
+		bool mode(int client, std::string cmd);
+		
+		/**
+		 * @brief Disconnects a client from the server.
+		 * 
+		 * @note QUITㅤ[:<message>]
+		 * 
+		 * @warning
+		 */
+		bool quit(int client, std::string cmd);
+		
+		/**
+		 * @brief Invites a client to a channel.
+		 * 
+		 * @note INVITEㅤ<nickname>ㅤ#<channel>
+		 * 
+		 * @warning 
+		 */
+		bool invite(int client, std::string cmd);
+		
+		/**
+		 * @brief Changes the topic of a channel.
+		 * 
+		 * @note TOPICㅤ#<channel>ㅤ[:<topic>]
+		 * 
+		 * @warning
+		 */
+		bool topic(int client, std::string cmd);
+		
+		/**
+		 * @brief Kicks a client from a channel.
+		 * 
+		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
+		 * 
+		 * @warning #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
+		 */
+		bool kick(int client, std::string cmd);
+		
+		/**
+		 * @brief Lists the clients in a channel.
+		 * 
+		 * @note NAMESㅤ[#<channel>{,#<channel>}]
+		 * 
+		 * @warning 
+		 */
+		bool names(int client, std::string cmd);
+		
+		/**
+		 * @brief Registers a password.
+		 * 
+		 * @note PASSㅤ<password>
+		 * 
+		 * @warning crash if not enough parameters (PASS e basta)
+		 */
+		bool pass(int client, std::string cmd);
+		
+		/**
+		 * @brief Registers a user.
+		 * 
+		 * @note USERㅤ<username>ㅤ<hostname>ㅤ<servername>ㅤ<realname>
+		 * 
+		 * @warning
+		 */
+		bool user(int client, std::string cmd);
+		
+		/**
+		 * @brief Registers a nickname.
+		 * 
+		 * @note konversation
+		 * 
+		 * @warning 
+		 */
+		bool cap(int client, std::string cmd);
+		
+		/**
+		 * @brief Retrieves information about a client.
+		 * 
+		 * @note WHOㅤ<client>ㅤ(parziale)
+		 * 
+		 * @warning 
+		 */
+		bool who(int client, std::string cmd);
+		
+		/**
+		 * @brief Pings a client.
+		 * 
+		 * @note PINGㅤ<client>ㅤ(parziale)
+		 * 
+		 * @warning 
+		 */
+		bool ping(int client, std::string cmd);
+		
+		/**
+		 * @brief Retrieves the user host information.
+		 * 
+		 * @note NICKㅤ<nickname>
+		 * 
+		 * @warning 
+		 */
+		bool nick(int client, std::string cmd);
+		
+		/**
+		 * @brief Retrieves the user host information.
+		 * 
+		 * @note USERHOSTㅤ<nickname> (parziale)
+		 * 
+		 * @warning 
+		 */
+		bool userhost(int client, std::string cmd);
 
 		void	handle_file_request(int client, std::string cmd, std::string receiver);
 		void	transfer_file(t_file file);
