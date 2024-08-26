@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 10:33:03 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/08 12:38:06 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/26 15:40:46 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ typedef struct s_file
 void check_input(std::string host, std::string port);
 
 std::vector<std::string> split(std::string str, std::string token);
+std::vector<std::string> cosplit(const std::string &s, const std::string &delimiter);
 std::string trimString(std::string nick);
 std::string generate_salt(size_t length);
 std::string hash_password(const std::string &password, const std::string &salt);

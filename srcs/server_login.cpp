@@ -213,36 +213,18 @@ void Server::read_from_client(int client)
 	}
 	if (msg == "\n")
 		return;
-	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 1) << "}" RESET << std::endl;
+	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
 	std::cout << BLUE << " " << msg << RESET << std::endl;
 }
 
-void Server::register_client(int client)
+void Server::login(int client, std::string msg)
 {
-	char temp[BUFFER_SIZE] = {0};
-	int total_ret;
-
-	std::string msg = "";
-	total_ret = recv(client, temp, BUFFER_SIZE, 0);
-	std::cerr << total_ret << std::endl;
-	if (total_ret == -1 || total_ret == 0)
+	std::cout << RED "Received: [" << msg.substr(0, msg.size() - 2) << "]" << RESET << std::endl; // TODO remove
+	if (msg == "\r\n")
 	{
-		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
-		throw Server::ClientException();
-	}
-	msg.append(temp);
-	if (msg.empty())
-	{
-		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
-		// throw Server::ClientException();
-		//  return;
-	}
-	std::cout << RED "Received: [" << msg.substr(0, msg.size() - 1) << "]" << RESET << std::endl; // TODO remove
-	if (msg == "\n")
-	{
-		write_to_client(client, "You must send a password first");
+		//write_to_client(client, ":irc PASS :You must send a password first");
 		return;
 	}
 	std::vector<std::string> split_msg = split(msg, " ");
@@ -272,6 +254,7 @@ void Server::register_client(int client)
 		}
 		else
 		{
+			//per quale cavolo di motivo qui non posso scrivere You must send a password first TODO
 			write_to_client(client, ":irc 461 PASS :Not enough parameters"); // ERR_NEEDMOREPARAMS
 		}
 		break;
@@ -297,7 +280,7 @@ void Server::register_client(int client)
 				write_to_client(client, ":irc 461 NICK :No nickname given"); // ERR_NONICKNAMEGIVEN
 		}
 		else
-			write_to_client(client, "You must send a nickname first");
+			write_to_client(client, ":irc NICK :You must send a nickname first");
 		break;
 	case 2:
 		if (split_msg[0] == "USER")
@@ -342,7 +325,7 @@ void Server::register_client(int client)
 				m_clients[client]->send_message(":irc 376 " + m_clients[client]->get_nick() + " :- End of MOTD command");
 			}
 			else
-				write_to_client(client, "You must send a username first");
+				write_to_client(client, ":irc USER :You must send a username first");
 			break;
 		}
 	default:
@@ -350,5 +333,55 @@ void Server::register_client(int client)
 		close(client);
 		exit(1);
 		break;
+	}
+}
+
+void Server::register_client(int client)
+{
+	char temp[BUFFER_SIZE] = {0};
+	int total_ret;
+
+	std::string msg = "";
+	total_ret = recv(client, temp, BUFFER_SIZE, 0);
+	std::cerr << "size:" << total_ret << std::endl;
+	if (total_ret == -1 || total_ret == 0)
+	{
+		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+		throw Server::ClientException();
+	}
+	msg.append(temp);
+	if (msg.empty())
+	{
+		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+		// throw Server::ClientException();
+		//  return;
+	}
+	// if (msg == "\n")
+	// 	return;
+
+	//hexchat
+	//e non e' alla fine del messaggio
+	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
+	{
+		msg = msg.substr(0, msg.size() - 2);
+	}
+	else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n")
+	{
+		msg = msg.substr(0, msg.size() - 1);
+	}
+	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
+	if (msg.find("\r\n") != std::string::npos)
+	{
+		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
+		for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++)
+		{
+			*it += "\r\n";
+			login (client, *it);
+		}
+	}
+	else
+	{
+		msg += "\r\n";
+		login(client, msg);
 	}
 }

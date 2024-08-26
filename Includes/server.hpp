@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/23 17:33:52 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/26 16:00:22 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,13 @@ class Server
 		std::vector<t_file> m_files;
 
 	public:
+		/**
+		 * @brief Construct a new Server object
+		 * 
+		 * @warning aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server
+		 * @warning se dopo NICK non scrivo qualcosa che non sia USER crasha
+		 * @warning ctrl c con nc manda messaggio error: client failed
+		 */
 		Server() {} //useless
 		Server(std::string port, std::string psw);
 		~Server();
@@ -90,6 +97,7 @@ class Server
 		bool	is_client_in_channel(std::string nick, std::string channel);
 		bool	client_exist(const std::string &nick) const;
 		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
+		void	login(int client, std::string msg);
 		
 		
 		/**
@@ -215,7 +223,7 @@ class Server
 		 * 
 		 * @note PINGㅤ<client>ㅤ(parziale)
 		 * 
-		 * @warning 
+		 * @warning pong compare su hexchat?
 		 */
 		bool ping(int client, std::string cmd);
 		
