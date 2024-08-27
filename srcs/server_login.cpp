@@ -328,6 +328,11 @@ void Server::login(int client, std::string msg)
 				write_to_client(client, ":irc USER :You must send a username first");
 			break;
 		}
+		else
+		{
+			write_to_client(client, ":irc USER :You must send a username first");
+			break;
+		}
 	default:
 		std::cerr << " how do you get here? " << std::endl;
 		close(client);

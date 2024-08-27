@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/23 16:32:45 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:56:18 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -588,10 +588,11 @@ bool Server::ping(int client, std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() == 2)
 	{
-		if (m_clients[client]->send_message("PONG " + split_msg[1]))
+		m_clients[client]->send_message(":irc PONG " + m_clients[client]->get_nick() + " " + split_msg[1]);
+		//if (m_clients[client]->send_message("PONG " + split_msg[1]))
 			return true;
-		else
-			return false;
+		// else
+		// 	return false;
 	}
 	return false;
 }

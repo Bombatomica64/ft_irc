@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/26 16:00:22 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:52:01 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,10 @@ class Server
 		 * @brief Construct a new Server object
 		 * 
 		 * @warning aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server
-		 * @warning se dopo NICK non scrivo qualcosa che non sia USER crasha
 		 * @warning ctrl c con nc manda messaggio error: client failed
+		 * @warning dopo il login scritte a caso vengono tagliate da received {c}
+		 * 
+		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha
 		 */
 		Server() {} //useless
 		Server(std::string port, std::string psw);
@@ -99,7 +101,8 @@ class Server
 		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
 		void	login(int client, std::string msg);
 		
-		
+		//🟥 🟧 🟨 🟩
+
 		/**
 		 * @brief Sends a private message to a client.
 		 * 
@@ -222,8 +225,9 @@ class Server
 		 * @brief Pings a client.
 		 * 
 		 * @note PINGㅤ<client>ㅤ(parziale)
+		 * @note 🟩 ping non funziona con hexchat che dopo molti secondi si chiude
 		 * 
-		 * @warning pong compare su hexchat?
+		 * @warning
 		 */
 		bool ping(int client, std::string cmd);
 		
@@ -232,7 +236,7 @@ class Server
 		 * 
 		 * @note NICKㅤ<nickname>
 		 * 
-		 * @warning 
+		 * @warning
 		 */
 		bool nick(int client, std::string cmd);
 		

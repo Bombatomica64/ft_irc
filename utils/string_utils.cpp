@@ -6,29 +6,33 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/26 15:40:21 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:12:39 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <main.hpp>
 
-std::vector<std::string> cosplit(const std::string &s, const std::string &delimiter) {
-    std::vector<std::string> tokens;
+std::vector<std::string> cosplit(const std::string &instr, const std::string &delimiter)
+{
+    std::vector<std::string> vec;
     size_t start = 0;
-    size_t end = s.find(delimiter);
-    while (end != std::string::npos) {
-        std::string token = s.substr(start, end - start);
-        if (!token.empty()) {
-            tokens.push_back(token);
+    size_t it = instr.find(delimiter);
+    while (it != std::string::npos)
+	{
+        std::string token = instr.substr(start, it - start);
+        if (!token.empty())
+		{
+            vec.push_back(token);
         }
-        start = end + delimiter.length();
-        end = s.find(delimiter, start);
+        start = it + delimiter.length();
+        it = instr.find(delimiter, start);
     }
-    std::string token = s.substr(start);
-    if (!token.empty()) {
-        tokens.push_back(token);
+    std::string token = instr.substr(start);
+    if (!token.empty())
+	{
+        vec.push_back(token);
     }
-    return tokens;
+    return vec;
 }
 
 std::vector<std::string> split(std::string str, std::string token)
