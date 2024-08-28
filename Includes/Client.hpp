@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 17:03:08 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/28 12:59:58 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ class Client
 
 		//client identity
 		std::string m_nick;
+		std::string str_user;
+		bool nickfailed;
 		
 		//client internet stuff
 		int					m_clientSocket;
@@ -81,6 +83,8 @@ class Client
 		bool		get_registered( void ) const { return m_registered; }
 		bool		get_connected( void ) const { return m_connected; }
 		bool		is_away( void ) const { return m_away; }
+		bool		get_nick_failed( void ) const { return nickfailed; }
+		std::string get_str_user( void ) const { return str_user; }
 
 		//mutators
 		void		set_reg(int step) { m_reg_steps = step; }
@@ -91,6 +95,8 @@ class Client
 		void		set_hostname(std::string hostname) { m_hostname = hostname; }
 		void		set_servername(std::string servername) { m_servername = servername; }
 		void		set_realname(std::string realname) { m_realname = realname; }
+		void		set_nick_failed(bool failed) { nickfailed = failed; }
+		void		set_str_user(std::string user) { str_user = user; }
 };
 
 //prints alle the information about the client

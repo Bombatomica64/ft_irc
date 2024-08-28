@@ -266,6 +266,7 @@ void Server::login(int client, std::string msg)
 				if (get_client_by_nick(split_msg[1]) != NULL || split_msg[1].find("[bot]") != std::string::npos || split_msg[1] == "coucou")
 				{
 					write_to_client(client, ":irc 433 " + split_msg[1] + " :Nickname already in use"); // ERR_NICKNAMEINUSE
+					m_clients[client]->set_nick_failed(true);
 					break;
 				}
 				if (split_msg[1].find(":@#&") != std::string::npos)
@@ -381,12 +382,26 @@ void Server::register_client(int client)
 		for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++)
 		{
 			*it += "\r\n";
+			if ((*it).find("USER") != std::string::npos)
+				{m_clients[client]->set_str_user(*it);
+				std::cerr <<YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;}
 			login (client, *it);
+			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
+				login (client, m_clients[client]->get_str_user());
+			std::cout << YELLOW << m_clients[client]->get_reg_steps() << RESET << std::endl;
 		}
 	}
 	else
 	{
 		msg += "\r\n";
 		login(client, msg);
+		std::cout << YELLOW << m_clients[client]->get_reg_steps() << RESET << std::endl;
+		std::cout << YELLOW << m_clients[client]->get_nick_failed() << RESET << std::endl;
+		std::cout << YELLOW << m_clients[client]->get_str_user() << RESET << std::endl;
+		if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
+		{
+			login (client, m_clients[client]->get_str_user());
+		}
+
 	}
 }

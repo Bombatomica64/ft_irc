@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/27 15:52:01 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/28 13:05:07 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ class Channel;
 class Server
 {
 	private:
-		
 		//password
 		std::string					m_salt;
 		std::string					m_hash;
@@ -57,11 +56,11 @@ class Server
 		/**
 		 * @brief Construct a new Server object
 		 * 
-		 * @warning aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server
-		 * @warning ctrl c con nc manda messaggio error: client failed
+		 * @warning ctrl c con nc manda messaggio error: client failed, mentre se chiudo hexchat durante il problema di sopra, crasha
 		 * @warning dopo il login scritte a caso vengono tagliate da received {c}
+		 * @warning se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂
 		 * 
-		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha
+		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 */
 		Server() {} //useless
 		Server(std::string port, std::string psw);
@@ -198,6 +197,7 @@ class Server
 		 * @brief Registers a user.
 		 * 
 		 * @note USERㅤ<username>ㅤ<hostname>ㅤ<servername>ㅤ<realname>
+		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha
 		 * 
 		 * @warning
 		 */

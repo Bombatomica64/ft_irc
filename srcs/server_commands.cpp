@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/27 15:56:18 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/28 13:03:14 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -650,8 +650,8 @@ bool Server::nick(int client, std::string message)
 		write_to_client(client, ":irc 432 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Erroneous nickname");
 		return true;
 	}
+	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " changed his nickname to " + split_msg[1]);
 	m_clients[client]->set_nick(split_msg[1]);
-	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " NICK " + split_msg[1]);
 	return true;
 }
 
