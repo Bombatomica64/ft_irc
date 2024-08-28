@@ -213,6 +213,15 @@ void Server::read_from_client(int client)
 	}
 	if (msg == "\n")
 		return;
+	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
+	{
+		msg = msg.substr(0, msg.size() - 2);
+	}
+	else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n")
+	{
+		msg = msg.substr(0, msg.size() - 1);
+	}
+	msg += "\r\n";
 	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
 	std::vector<std::string> split_msg = split(msg, " ");
 	parse_cmds(client, trimString(msg));
@@ -388,16 +397,15 @@ void Server::register_client(int client)
 			login (client, *it);
 			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
 				login (client, m_clients[client]->get_str_user());
-			std::cout << YELLOW << m_clients[client]->get_reg_steps() << RESET << std::endl;
 		}
 	}
 	else
 	{
 		msg += "\r\n";
 		login(client, msg);
-		std::cout << YELLOW << m_clients[client]->get_reg_steps() << RESET << std::endl;
-		std::cout << YELLOW << m_clients[client]->get_nick_failed() << RESET << std::endl;
-		std::cout << YELLOW << m_clients[client]->get_str_user() << RESET << std::endl;
+		// std::cout << YELLOW << m_clients[client]->get_reg_steps() << RESET << std::endl;
+		// std::cout << YELLOW << m_clients[client]->get_nick_failed() << RESET << std::endl;
+		// std::cout << YELLOW << m_clients[client]->get_str_user() << RESET << std::endl;
 		if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
 		{
 			login (client, m_clients[client]->get_str_user());
