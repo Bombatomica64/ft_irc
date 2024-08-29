@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/28 13:03:14 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/29 17:20:00 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,7 +229,6 @@ bool Server::join(int client, std::string channel)
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]->get_nick());
 			send_msg_to_channel(-1, name, ":" + m_clients[client]->get_nick() + "!irc@" + inet_ntoa(m_addr.sin_addr) + " JOIN " + name);
-
 			m_channels[name]->add_op(m_clients[client]->get_nick());
 		}
 		else
@@ -430,15 +429,15 @@ bool Server::topic(int client, std::string params)
 std::string Server::getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names)
 {
 	std::set<std::string> clients = chan->get_clients();
-	std::string message = ":irc 353 " + m_clients[client]->get_nick();
-	message += " " + chan->get_name() + " :";
+	std::string message = ":irc 353 " + m_clients[client]->get_nick() + " = " + chan->get_name() + " :";
+	std::set<std::string> ops = chan->get_ops();
 	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
 	{
-		if (chan->get_ops().find(*it) != chan->get_ops().end())
+		if (ops.find(*it) != ops.end())
 			message += "@" + *it + " ";
 		else
 			message += *it + " ";
-		std::cout << "client_names: " << *it ;
+		std::cout << "client_names: " << *it << std::endl;
 		if (client_names.find(*it) != client_names.end())
 			{client_names.erase(*it); 
 			std::cout << " found" << std::endl;}
@@ -464,14 +463,13 @@ bool Server::names(int client, std::string params)
 		}
 		if (!client_names.empty())
 		{
-			std::string message = ":irc 353 " + m_clients[client]->get_nick() + " *" + " :";
+			std::string message = ":irc 353 " + m_clients[client]->get_nick() + "= * :";
 			for (std::set<std::string>::iterator it = client_names.begin(); it != client_names.end(); it++)
 			{
 				message += *it + " ";
 			}
 			m_clients[client]->send_message(message);
 		}
-		m_clients[client]->send_message("ciao");
 		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " * :End of /NAMES list");
 	}
 	else
@@ -485,7 +483,7 @@ bool Server::names(int client, std::string params)
 			else
 				m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
 		}
-		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " * :End of /NAMES list");
+		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " " + split_msg[1] + " * :End of /NAMES list");
 	}
 	// if (!message.empty())
 	// {

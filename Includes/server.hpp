@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/29 15:28:06 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/29 17:19:15 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ class Server
 		/**
 		 * @brief Construct a new Server object
 		 * 
-		 * @warning ctrl c con nc manda messaggio error: client failed
+		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed
 		 * 
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
@@ -117,7 +117,9 @@ class Server
 		 * 
 		 * @note JOINㅤ#<channel>{,#<channel>}ㅤ[<key>{,<key>}]
 		 * 
-		 * @warning 
+		 * @warning 🟥 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale.
+		 * @warning 🟥 se dopo essere entrato nel canale scrivo NAMES #chan sembra che entri veramente nel canale.
+		 * @warning 🟥 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori)
 		 */
 		bool join(int client, std::string cmd);
 		
@@ -171,7 +173,7 @@ class Server
 		 * 
 		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
 		 * 
-		 * @warning #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
+		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 */
 		bool kick(int client, std::string cmd);
 		
@@ -179,8 +181,10 @@ class Server
 		 * @brief Lists the clients in a channel.
 		 * 
 		 * @note NAMESㅤ[#<channel>{,#<channel>}]
+		 * @note 🟩 siamo di nuovo tutti amministratori. ho messo get->ops() fuori dal ciclo for.
+		 * @note 🟩 completamente sballato su hexchat (ora 353 ha un brutto = in mezzo)
 		 * 
-		 * @warning completamente sballato su hexchat, e siamo di nuovo tutti amministratori
+		 * @warning 🟥 non puoi fare NAMES su hexchat se al di fuori di un canale, quindi non gli arriva il fatto che sia un canale pubblico
 		 */
 		bool names(int client, std::string cmd);
 		
