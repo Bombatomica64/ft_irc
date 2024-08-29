@@ -192,17 +192,17 @@ void Server::read_from_client(int client)
 	std::cerr << total_ret << std::endl;
 	if (total_ret == -1)
 	{
-		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
 		throw Server::ClientException();
 	}
 	temp[total_ret] = '\0';
 	msg.append(temp);
 
 	std::cerr << total_ret << std::endl;
-	if (total_ret == -1)
-	{
-		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
-	}
+	// if (total_ret == -1)
+	// {
+	// 	std::cout << "Error: mannagia a cristo b" << strerror(errno) << std::endl;
+	// } perche' ce ne erano 2?
 	if (total_ret == 0)
 		throw Server::ClientException();
 	if (msg.empty())
@@ -249,7 +249,7 @@ void Server::login(int client, std::string msg)
 		{
 			if (split_msg.size() > 1 && split_msg[1].find(":") == 0)
 				split_msg[1].erase(0, 1);
-			if (verify_password(split_msg[1], m_hash, m_salt) && split_msg.size() >= 2)
+			if (split_msg.size() >= 2 && verify_password(split_msg[1], m_hash, m_salt))
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
 			{
@@ -361,7 +361,7 @@ void Server::register_client(int client)
 	std::cerr << "size:" << total_ret << std::endl;
 	if (total_ret == -1 || total_ret == 0)
 	{
-		std::cout << "Error: mannagia a cristo " << strerror(errno) << std::endl;
+		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
 		throw Server::ClientException();
 	}
 	msg.append(temp);

@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/28 16:46:01 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/29 15:28:06 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ class Server
 		/**
 		 * @brief Construct a new Server object
 		 * 
-		 * @warning ctrl c con nc manda messaggio error: client failed, mentre se chiudo hexchat durante il problema di sopra, crasha
+		 * @warning ctrl c con nc manda messaggio error: client failed
 		 * 
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
@@ -180,7 +180,7 @@ class Server
 		 * 
 		 * @note NAMESㅤ[#<channel>{,#<channel>}]
 		 * 
-		 * @warning 
+		 * @warning completamente sballato su hexchat, e siamo di nuovo tutti amministratori
 		 */
 		bool names(int client, std::string cmd);
 		
@@ -188,8 +188,9 @@ class Server
 		 * @brief Registers a password.
 		 * 
 		 * @note PASSㅤ<password>
+		 * @note 🟩 crash if not enough parameters (PASS e basta) basic_string::_M_construct null not valid, ho semplicemente invertito i controlli di un if
 		 * 
-		 * @warning crash if not enough parameters (PASS e basta)
+		 * @warning
 		 */
 		bool pass(int client, std::string cmd);
 		
@@ -197,7 +198,7 @@ class Server
 		 * @brief Registers a user.
 		 * 
 		 * @note USERㅤ<username>ㅤ<hostname>ㅤ<servername>ㅤ<realname>
-		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha
+		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha, aggiunto qualcosa alla fine di USER
 		 * 
 		 * @warning
 		 */
