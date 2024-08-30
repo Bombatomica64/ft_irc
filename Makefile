@@ -6,7 +6,7 @@
 #    By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/08/22 17:32:05 by mruggier         ###   ########.fr        #
+#    Updated: 2024/08/26 12:50:31 by mruggier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,8 @@ SRC = $(SRCS) $(UTILS)
 INC = -I Includes
 
 #CC = clang++ -Wall -Wextra -Werror -std=c++98 -g -Ofast
-CC = clang++ -Wall -Wextra -Werror -pedantic -Wshadow -Wfloat-equal -Wundef -Wredundant-decls -Wold-style-cast -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2 -std=c++98 -g -Ofast
+CC = clang++ -Wall -Wextra -Werror -pedantic -Wshadow -Wfloat-equal -Wundef -Wredundant-decls -Wold-style-cast -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2 -std=c++98 -g 
+#-Ofast
 
 CRYPTO = -lssl -lcrypto
 

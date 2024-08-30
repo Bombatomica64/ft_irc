@@ -6,11 +6,34 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/26 12:12:28 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/28 16:16:26 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <main.hpp>
+
+std::vector<std::string> cosplit(const std::string &instr, const std::string &delimiter)
+{
+    std::vector<std::string> vec;
+    size_t start = 0;
+    size_t it = instr.find(delimiter);
+    while (it != std::string::npos)
+	{
+        std::string token = instr.substr(start, it - start);
+        if (!token.empty())
+		{
+            vec.push_back(token);
+        }
+        start = it + delimiter.length();
+        it = instr.find(delimiter, start);
+    }
+    std::string token = instr.substr(start);
+    if (!token.empty())
+	{
+        vec.push_back(token);
+    }
+    return vec;
+}
 
 std::vector<std::string> split(std::string str, std::string token)
 {
@@ -104,20 +127,29 @@ void printLogo(std::string ip, int port) {
 	//https://patorjk.com/software/taag/#p=testall&f=Graffiti&t=IRC
 
     size_t terminalWidth = static_cast<size_t>(getTerminalWidth());
+	std::string port_str = NumberToString(port);
+	if (terminalWidth < 39)
+	{
+		std::cout << "IP: " << ip << std::endl;
+		std::cout << "Port: " << port << std::endl;
+	 	return;
+	}
 
     const size_t artHeight = 22;
     size_t artWidth = 39;
 
-	std::string port_str = NumberToString(port);
 	art[11].replace(13, ip.size(), ip);
 	art[11].replace(29, port_str.size(), port_str);
-    for (size_t i = 0; i < artHeight; ++i)
+	(void)ip;
+	for (size_t i = 0; i < artHeight; ++i)
 	{
-        size_t padding = (terminalWidth - artWidth) / 2;
-        if (padding < 0)
+		int padding = terminalWidth - artWidth;
+		if (padding > 0)
+			padding = padding / 2;
+		else
 			padding = 0;
-        std::string spaces(padding, ' ');
-        std::cout << CYAN << spaces << art[i] << RESET << std::endl;
+		std::string spaces(padding, ' ');
+		std::cout << CYAN << spaces << art[i] << RESET << std::endl;
     }
 }
 
@@ -166,14 +198,21 @@ void printQrCode()
 	};
 
 	size_t terminalWidth = static_cast<size_t>(getTerminalWidth());
+	if (terminalWidth < 33)
+	{
+		std::cout << "https://github.com/Bombatomica64/ft_irc" << std::endl;
+		return;
+	}
 
     const size_t artHeight = 17;
     size_t artWidth = 33;
 
     for (size_t i = 0; i < artHeight; ++i)
 	{
-        size_t padding = (terminalWidth - artWidth) / 2;
-        if (padding < 0)
+		int padding = terminalWidth - artWidth;
+		if (padding > 0)
+			padding = padding / 2;
+		else
 			padding = 0;
         std::string spaces(padding, ' ');
         std::cout << spaces << art[i] << std::endl;

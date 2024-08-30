@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/23 16:32:45 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/30 16:06:58 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,9 +228,10 @@ bool Server::join(int client, std::string channel)
 			std::cout << "creating channel: |" << *it << "|" << std::endl;
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]->get_nick());
-			send_msg_to_channel(-1, name, ":" + m_clients[client]->get_nick() + "!irc@" + inet_ntoa(m_addr.sin_addr) + " JOIN " + name);
-
+			send_msg_to_channel(-1, name, ":" + m_clients[client]->get_nick() + "!irc@" + inet_ntoa(m_addr.sin_addr) + " JOIN :" + name + "\r\n");
 			m_channels[name]->add_op(m_clients[client]->get_nick());
+
+			names((*m_clients[client]).get_clientSocket(), "NAMES " + name + "\r\n"); //anche se crea lui il canale, hexchat vuole comumque names
 		}
 		else
 			m_channels[name]->join_channel(*m_clients[client], split_key[i++]);
@@ -430,15 +431,15 @@ bool Server::topic(int client, std::string params)
 std::string Server::getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names)
 {
 	std::set<std::string> clients = chan->get_clients();
-	std::string message = ":irc 353 " + m_clients[client]->get_nick();
-	message += " " + chan->get_name() + " :";
+	std::string message = ":irc 353 " + m_clients[client]->get_nick() + " = " + chan->get_name() + " :";
+	std::set<std::string> ops = chan->get_ops();
 	for (std::set<std::string>::iterator it = clients.begin(); it != clients.end(); ++it)
 	{
-		if (chan->get_ops().find(*it) != chan->get_ops().end())
+		if (ops.find(*it) != ops.end())
 			message += "@" + *it + " ";
 		else
 			message += *it + " ";
-		std::cout << "client_names: " << *it ;
+		std::cout << "client_names: " << *it << std::endl;
 		if (client_names.find(*it) != client_names.end())
 			{client_names.erase(*it); 
 			std::cout << " found" << std::endl;}
@@ -464,14 +465,13 @@ bool Server::names(int client, std::string params)
 		}
 		if (!client_names.empty())
 		{
-			std::string message = ":irc 353 " + m_clients[client]->get_nick() + " *" + " :";
+			std::string message = ":irc 353 " + m_clients[client]->get_nick() + "= * :";
 			for (std::set<std::string>::iterator it = client_names.begin(); it != client_names.end(); it++)
 			{
 				message += *it + " ";
 			}
 			m_clients[client]->send_message(message);
 		}
-		m_clients[client]->send_message("ciao");
 		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " * :End of /NAMES list");
 	}
 	else
@@ -485,7 +485,7 @@ bool Server::names(int client, std::string params)
 			else
 				m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
 		}
-		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " * :End of /NAMES list");
+		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " " + split_msg[1] + " * :End of /NAMES list");
 	}
 	// if (!message.empty())
 	// {
@@ -588,10 +588,11 @@ bool Server::ping(int client, std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() == 2)
 	{
-		if (m_clients[client]->send_message("PONG " + split_msg[1]))
+		m_clients[client]->send_message(":irc PONG " + m_clients[client]->get_nick() + " " + split_msg[1]);
+		//if (m_clients[client]->send_message("PONG " + split_msg[1]))
 			return true;
-		else
-			return false;
+		// else
+		// 	return false;
 	}
 	return false;
 }
@@ -649,8 +650,8 @@ bool Server::nick(int client, std::string message)
 		write_to_client(client, ":irc 432 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Erroneous nickname");
 		return true;
 	}
+	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " changed his nickname to " + split_msg[1]);
 	m_clients[client]->set_nick(split_msg[1]);
-	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " NICK " + split_msg[1]);
 	return true;
 }
 

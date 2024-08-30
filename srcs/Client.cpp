@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 17:03:06 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/08/28 12:57:02 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 {
+	str_user = "";
+	nickfailed = false;
 	m_clientSocket = clientSocket;
 	m_clientAddr = clientAddr;
 	m_registered = false;
