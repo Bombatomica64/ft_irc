@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/29 17:19:15 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/30 16:02:27 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,9 +116,9 @@ class Server
 		 * @brief Sends a message to a channel.
 		 * 
 		 * @note JOINㅤ#<channel>{,#<channel>}ㅤ[<key>{,<key>}]
+		 * @note 🟨 se dopo essere entrato nel canale scrivo NAMES #chan sembra che entri veramente nel canale. hexchat vuole names anche quando crei il canale. vorra' anche modes e topic?
 		 * 
 		 * @warning 🟥 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale.
-		 * @warning 🟥 se dopo essere entrato nel canale scrivo NAMES #chan sembra che entri veramente nel canale.
 		 * @warning 🟥 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori)
 		 */
 		bool join(int client, std::string cmd);
@@ -222,7 +222,7 @@ class Server
 		 * 
 		 * @note WHOㅤ<client>ㅤ(parziale)
 		 * 
-		 * @warning 
+		 * @warning 🟥 * #chan :No such nick/channel appena crei un canale
 		 */
 		bool who(int client, std::string cmd);
 		

@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/29 17:20:00 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/30 16:06:58 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,8 +228,10 @@ bool Server::join(int client, std::string channel)
 			std::cout << "creating channel: |" << *it << "|" << std::endl;
 			add_channel(name);
 			m_channels[name]->add_client(m_clients[client]->get_nick());
-			send_msg_to_channel(-1, name, ":" + m_clients[client]->get_nick() + "!irc@" + inet_ntoa(m_addr.sin_addr) + " JOIN " + name);
+			send_msg_to_channel(-1, name, ":" + m_clients[client]->get_nick() + "!irc@" + inet_ntoa(m_addr.sin_addr) + " JOIN :" + name + "\r\n");
 			m_channels[name]->add_op(m_clients[client]->get_nick());
+
+			names((*m_clients[client]).get_clientSocket(), "NAMES " + name + "\r\n"); //anche se crea lui il canale, hexchat vuole comumque names
 		}
 		else
 			m_channels[name]->join_channel(*m_clients[client], split_key[i++]);
