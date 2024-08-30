@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/30 16:02:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/08/30 17:45:27 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ class Server
 		 * 
 		 * @warning 🟥 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale.
 		 * @warning 🟥 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori)
+		 * @warning 🟥 se crei un canale con valgrind crasha, penso per modify mode
 		 */
 		bool join(int client, std::string cmd);
 		
