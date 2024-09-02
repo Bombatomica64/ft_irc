@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:14:24 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/02 16:12:45 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void	Channel::remove_client(std::string client)
 		m_ops.erase(client);
 	if (this->size() == 0)
 		m_server->remove_channel(m_name);
-	if (m_ops.size() == 0)
+	else if (m_ops.size() == 0 && !m_clients.empty())
 	{
 		try
 		{

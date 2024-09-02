@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/30 16:06:58 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/02 16:32:03 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,14 +376,21 @@ bool Server::quit(int client, std::string message)
 	{
 		m_clients[client]->send_message("QUIT :" + message.substr(message.find(" :") + 2));
 	}
-	for (std::map<std::string, Channel *>::iterator it = m_channels.begin(); it != m_channels.end(); it++)
+
+	std::map<std::string, Channel *>::iterator it = m_channels.begin();
+	while ( it != m_channels.end())
 	{
-		if (it->second->is_client_in(m_clients[client]->get_nick()))
-			it->second->remove_client(m_clients[client]->get_nick());
+		std::map<std::string, Channel *>::iterator tmp = it;
+		it++;
+		if (tmp->second->is_client_in(m_clients[client]->get_nick()))
+		{
+			tmp->second->remove_client(m_clients[client]->get_nick());
+		}
 	}
-	std::vector<struct pollfd>::iterator it = std::find(m_client_fds.begin(), m_client_fds.end(), client);
-	if (it != m_client_fds.end())
-		m_client_fds.erase(it);
+
+	std::vector<struct pollfd>::iterator it2 = std::find(m_client_fds.begin(), m_client_fds.end(), client);
+	if (it2 != m_client_fds.end())
+		m_client_fds.erase(it2);
 	close(client);
 	delete m_clients[client];
 	m_clients.erase(client);

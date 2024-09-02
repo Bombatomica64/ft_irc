@@ -157,7 +157,9 @@ void Server::accept_connection()
 						if (m_clients[m_client_fds[i].fd]->get_registered() == false || m_clients[m_client_fds[i].fd]->get_connected() == false)
 							register_client(m_client_fds[i].fd);
 						else
+						{
 							read_from_client(m_client_fds[i].fd);
+						}
 					}
 					catch (const std::exception &e)
 					{
@@ -213,6 +215,7 @@ void Server::read_from_client(int client)
 	}
 	if (msg == "\n")
 		return;
+
 	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
 	{
 		msg = msg.substr(0, msg.size() - 2);
@@ -221,11 +224,29 @@ void Server::read_from_client(int client)
 	{
 		msg = msg.substr(0, msg.size() - 1);
 	}
-	msg += "\r\n";
-	std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
-	std::vector<std::string> split_msg = split(msg, " ");
-	parse_cmds(client, trimString(msg));
-	std::cout << BLUE << " " << msg << RESET << std::endl;
+
+	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
+	if (msg.find("\r\n") != std::string::npos)
+	{
+		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
+		for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++)
+		{
+			*it += "\r\n";
+			msg = *it;
+			std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
+			parse_cmds(client, trimString(msg));
+		}
+	}
+	else
+	{
+		msg += "\r\n";
+		std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
+		parse_cmds(client, trimString(msg));
+	}
+
+	// msg += "\r\n";
+	// std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
+	// std::cout << BLUE << " " << msg << RESET << std::endl;
 }
 
 void Server::login(int client, std::string msg)

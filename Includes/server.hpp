@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/30 17:45:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/02 16:37:36 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ class Server
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
 		 * @note 🟨 dopo il login scritte a caso vengono tagliate da received {c} da capire se ci sono problemi con il fatto che modifico i comandi perche' abbiano sempre \r\n alla fine (duplicato nella registrazione e dopo)
+		 * @note 🟩 dopo join, hexchat manda mode e who insieme, quindi ora tutti i comandi vengono controllati se sono multipli.
 		 */
 		Server() {} //useless
 		Server(std::string port, std::string psw);
@@ -117,10 +118,9 @@ class Server
 		 * 
 		 * @note JOINㅤ#<channel>{,#<channel>}ㅤ[<key>{,<key>}]
 		 * @note 🟨 se dopo essere entrato nel canale scrivo NAMES #chan sembra che entri veramente nel canale. hexchat vuole names anche quando crei il canale. vorra' anche modes e topic?
+		 * @note 🟧 se crei un canale con valgrind crasha, penso per modify mode, insieme al problema sotto, ho palesmente rotto qualcosa
 		 * 
-		 * @warning 🟥 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale.
 		 * @warning 🟥 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori)
-		 * @warning 🟥 se crei un canale con valgrind crasha, penso per modify mode
 		 */
 		bool join(int client, std::string cmd);
 		
@@ -146,6 +146,7 @@ class Server
 		 * @brief Disconnects a client from the server.
 		 * 
 		 * @note QUITㅤ[:<message>]
+		 * @note 🟧 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale. insomma in remove_client ho aggiunto un else if, cosi' magari non controlla se ci sono operatori in un canale appena cancellato. poi in quit ho messo it come tmp, poi it++ e poi cancellato tmp, senno cancellavamo l'iteratore e non potevamo andare avanti
 		 * 
 		 * @warning
 		 */
