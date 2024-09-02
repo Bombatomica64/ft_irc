@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/02 16:32:03 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/02 17:28:54 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,7 +258,7 @@ bool Server::part(int client, std::string channels)
 		Channel *chan = this->get_channel(*it);
 		if (chan && chan->is_client_in(m_clients[client]->get_nick()))
 		{
-			chan->remove_client(m_clients[client]->get_nick());
+			chan->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
 		}
 		else if (chan && chan->is_client_in(m_clients[client]->get_nick()) == false)
 		{
@@ -384,7 +384,7 @@ bool Server::quit(int client, std::string message)
 		it++;
 		if (tmp->second->is_client_in(m_clients[client]->get_nick()))
 		{
-			tmp->second->remove_client(m_clients[client]->get_nick());
+			tmp->second->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
 		}
 	}
 
@@ -558,7 +558,7 @@ bool Server::kick(int client, std::string message)
 			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + split_msg[2] + " " + split_msg[1] + " :They aren't on that channel");
 		return true;
 	}
-	chan->remove_client((split_msg[2]));
+	chan->remove_client(split_msg[2], *m_clients[client]);
 	chan->add_ban(split_msg[2]);
 	write_to_client(get_client_by_nick(split_msg[1])->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
 	send_msg_to_channel(-1, split_msg[1], "KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);

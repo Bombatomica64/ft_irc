@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/02 16:37:36 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/02 17:43:50 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ class Server
 		 * @note 🟨 se dopo essere entrato nel canale scrivo NAMES #chan sembra che entri veramente nel canale. hexchat vuole names anche quando crei il canale. vorra' anche modes e topic?
 		 * @note 🟧 se crei un canale con valgrind crasha, penso per modify mode, insieme al problema sotto, ho palesmente rotto qualcosa
 		 * 
-		 * @warning 🟥 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori)
+		 * @warning
 		 */
 		bool join(int client, std::string cmd);
 		
@@ -128,6 +128,7 @@ class Server
 		 * @brief Leaves a channel.
 		 * 
 		 * @note PARTㅤ#<channel>{,#<channel>}
+		 * @note 🟨 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori). ok, ora manda anche il messaggio e il messaggio di part in remove_client. il messaggio di part va mandato li?
 		 * 
 		 * @warning 
 		 */

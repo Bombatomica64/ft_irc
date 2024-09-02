@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/02 16:12:45 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/02 17:43:28 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,21 +78,26 @@ void	Channel::add_client(std::string client)
 	std::cout << "Current channel " << m_name << " is :" << m_clients << std::endl;
 }
 
-void	Channel::remove_client(std::string client)
+void	Channel::remove_client(std::string client_nick, Client &client)
 {
-	if (m_clients.find(client) != m_clients.end())
-		m_clients.erase(client);
-	if (m_ops.find(client) != m_ops.end())
-		m_ops.erase(client);
+	if (m_clients.find(client_nick) != m_clients.end())
+		m_clients.erase(client_nick);
+	if (m_ops.find(client_nick) != m_ops.end())
+		m_ops.erase(client_nick);
 	if (this->size() == 0)
 		m_server->remove_channel(m_name);
 	else if (m_ops.size() == 0 && !m_clients.empty())
 	{
 		try
 		{
-			std::set<std::string>::iterator it = m_ops.begin();
+			std::set<std::string>::iterator it = m_clients.begin();
 			std::advance(it, rand() % m_clients.size());
 			m_ops.insert(*it);
+
+			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + *it + "\r\n");
+			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " PART " + m_name + "\r\n");
+
+			//pensare meglio se deve scrivere il messaggio di partenza qui.
 		}
 		catch(const std::exception& e)
 		{
