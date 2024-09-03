@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/02 17:28:54 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/03 17:17:10 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,26 +239,34 @@ bool Server::join(int client, std::string channel)
 	return false;
 }
 
-bool Server::part(int client, std::string channels)
+bool Server::part(int client, std::string msg)
 {
-	std::vector<std::string> split_msg = split(channels, " ");
+	std::vector<std::string> split_msg = split(msg, " ");
+	std::string msg_reason;
+	size_t pos = msg.find(" :");
+	if (pos != std::string::npos)
+		msg_reason = msg.substr(pos + 2);
+	else
+		msg_reason = ":Leaving";
+
 	if (split_msg.size() < 2)
 	{
 		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " PART :Not enough parameters");
 		return true;
 	}
-	else if (split_msg.size() > 2)
-	{
-		m_clients[client]->send_message(":irc 400 " + m_clients[client]->get_nick() + " PART :Too many parameters");
-		return true;
-	}
+	// else if (split_msg.size() > 3)
+	// {
+	// 	m_clients[client]->send_message(":irc 400 " + m_clients[client]->get_nick() + " PART :Too many parameters");
+	// 	return true;
+	// }
+	
 	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	for (std::vector<std::string>::iterator it = split_channel.begin(); it != split_channel.end(); it++)
 	{
 		Channel *chan = this->get_channel(*it);
 		if (chan && chan->is_client_in(m_clients[client]->get_nick()))
 		{
-			chan->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
+			chan->remove_client(m_clients[client]->get_nick(), *m_clients[client], msg_reason);
 		}
 		else if (chan && chan->is_client_in(m_clients[client]->get_nick()) == false)
 		{
@@ -384,7 +392,7 @@ bool Server::quit(int client, std::string message)
 		it++;
 		if (tmp->second->is_client_in(m_clients[client]->get_nick()))
 		{
-			tmp->second->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
+			tmp->second->remove_client(m_clients[client]->get_nick(), *m_clients[client], ":Leaving");
 		}
 	}
 
@@ -558,7 +566,7 @@ bool Server::kick(int client, std::string message)
 			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + split_msg[2] + " " + split_msg[1] + " :They aren't on that channel");
 		return true;
 	}
-	chan->remove_client(split_msg[2], *m_clients[client]);
+	chan->remove_client(split_msg[2], *m_clients[client], "TODO reason to kick");
 	chan->add_ban(split_msg[2]);
 	write_to_client(get_client_by_nick(split_msg[1])->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
 	send_msg_to_channel(-1, split_msg[1], "KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
