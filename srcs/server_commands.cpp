@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 12:24:08 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 15:19:27 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,8 +284,6 @@ bool Server::part(int client, std::string msg)
 	return true;
 }
 
-bool Server::mode(int client, std::string message)
-{
 	// std::vector<std::string> l_command;
 	// l_command.push_back(message.substr(message.find("MODE") + strlen("MODE"))); // "MODE"
 	// message = message.substr(message.find("MODE") + strlen("MODE"));
@@ -308,6 +306,8 @@ bool Server::mode(int client, std::string message)
 	// 	// std::cout << "channel not found" << std::endl;
 	// 	return false;
 	// }
+bool Server::mode(int client, std::string message)
+{
 	std::vector<std::string> l_command = split(message, " ");
 	if (l_command.size() < 2)
 	{

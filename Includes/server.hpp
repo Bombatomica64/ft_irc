@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 12:20:43 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 16:15:43 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ class Server
 		/**
 		 * @brief Construct a new Server object
 		 * 
-		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha
+		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
+		 * @warning 🟥 aggiungere comando HELP per lista di comandi
 		 * 
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
@@ -118,7 +119,7 @@ class Server
 		 * 
 		 * @note NICKㅤ<nickname>
 		 * 
-		 * @warning
+		 * @warning 🟥 nick da vedere se funziona su hexchat per il cambio di nome e fa crashare
 		 */
 		bool nick(int client, std::string cmd);
 		
@@ -183,7 +184,7 @@ class Server
 		 * @warning 🟩 non manda ancora il messaggio giusto a remove client e crasha il server 😁. ops per ora ho commentato i messaggi di kick per usare quelli di part. spostato i messaggi di part fuori da remove client. riscritti i messaggi di kick
 		 * 
 		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
-		 * @warning 🟥 non puoi kickarti da solo, secondo Gu
+		 * @warning 🟥 non puoi kickarti da solo, secondo Gu. ma secondo me e lore si 
 		 * @warning 🟥 addirittura il ban?
 		 */
 		bool kick(int client, std::string cmd);
@@ -193,7 +194,7 @@ class Server
 		 * 
 		 * @note INVITEㅤ<nickname>ㅤ#<channel>
 		 * 
-		 * @warning 
+		 * @warning 🟥 deve sbannare se l'utente e' stato kickato, per colpa di lorenzo
 		 */
 		bool invite(int client, std::string cmd);
 		
@@ -209,9 +210,11 @@ class Server
 		/**
 		 * @brief Changes the mode of a channel or user.
 		 * 
-		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k} [<user>]
+		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k|l} [<limit>] [<user>]
+		 * @note o: operator, i: invite only, t: topic, k: key, l: limit
+		 * @note 🟨 -o ora funziona
 		 * 
-		 * @warning
+		 * @warning 🟥 non voglio testare mode 😭. i messaggi di mode mandano a tutto il canale qualcosa? solo +o lo fa (giustamente)
 		 */
 		bool mode(int client, std::string cmd);
 		

@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 12:08:20 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 15:50:30 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,10 +335,14 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 	}
 	else if (!what && is_mod)
 	{
-		if (m_ops.find(client.get_nick()) != m_ops.end())
+		if (m_ops.find(parameters) != m_ops.end())
 		{
-			m_ops.erase(client.get_nick());
+			m_ops.erase(parameters);
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
+		}
+		else
+		{
+			//TODO send error message per dire che non è un op e quindi non può essere rimosso dagli op
 		}
 	}
 	else
