@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/03 17:17:10 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 12:24:08 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,7 +266,9 @@ bool Server::part(int client, std::string msg)
 		Channel *chan = this->get_channel(*it);
 		if (chan && chan->is_client_in(m_clients[client]->get_nick()))
 		{
-			chan->remove_client(m_clients[client]->get_nick(), *m_clients[client], msg_reason);
+			m_clients[client]->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PART " + chan->get_name() + " :" + msg_reason + "\r\n");
+			send_msg_to_channel(-1 , chan->get_name() ,":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PART " + chan->get_name() + " :" + msg_reason + "\r\n");
+			chan->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
 		}
 		else if (chan && chan->is_client_in(m_clients[client]->get_nick()) == false)
 		{
@@ -376,14 +378,20 @@ bool Server::invite(int client, std::string message)
 bool Server::quit(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
-	if (split_msg.size() == 1)
-	{
-		m_clients[client]->send_message("QUIT :Leaving");
-	}
+	std::string quit_msg = "";
+	size_t pos = message.find(" :");
+	if (split_msg.size() > 1 && pos != std::string::npos)
+		quit_msg = message.substr(pos + 2);
 	else
-	{
-		m_clients[client]->send_message("QUIT :" + message.substr(message.find(" :") + 2));
-	}
+		quit_msg = "Leaving";
+	// if (split_msg.size() == 1)
+	// {
+	// 	m_clients[client]->send_message("QUIT :Leaving");
+	// }
+	// else
+	// {
+	// 	m_clients[client]->send_message("QUIT :" + message.substr(message.find(" :") + 2));
+	// }
 
 	std::map<std::string, Channel *>::iterator it = m_channels.begin();
 	while ( it != m_channels.end())
@@ -392,7 +400,8 @@ bool Server::quit(int client, std::string message)
 		it++;
 		if (tmp->second->is_client_in(m_clients[client]->get_nick()))
 		{
-			tmp->second->remove_client(m_clients[client]->get_nick(), *m_clients[client], ":Leaving");
+			send_msg_to_channel(-1 , tmp->second->get_name() ,":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " QUIT :" + quit_msg + "\r\n");
+			tmp->second->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
 		}
 	}
 
@@ -530,11 +539,12 @@ bool Server::user(int client, std::string message)
 
 bool Server::kick(int client, std::string message)
 {
-	std::string kick_msg = "";
-	if (message.find(":") != std::string::npos)
+	std::string kick_msg = "fai schifo";
+	size_t pos = message.find(" :");
+	if (pos != std::string::npos)
 	{
-		kick_msg = message.substr(message.find(":") + 1);
-		message = message.substr(0, message.find(":"));
+		kick_msg = message.substr(pos + 2);
+		message = message.substr(0, pos);
 	}
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() < 3)
@@ -566,10 +576,10 @@ bool Server::kick(int client, std::string message)
 			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + split_msg[2] + " " + split_msg[1] + " :They aren't on that channel");
 		return true;
 	}
-	chan->remove_client(split_msg[2], *m_clients[client], "TODO reason to kick");
+	write_to_client(get_client_by_nick(split_msg[2])->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
+	send_msg_to_channel(-1, split_msg[1], ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
+	chan->remove_client(split_msg[2], *(get_client_by_nick(split_msg[2])));
 	chan->add_ban(split_msg[2]);
-	write_to_client(get_client_by_nick(split_msg[1])->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
-	send_msg_to_channel(-1, split_msg[1], "KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
 	return true;
 }
 

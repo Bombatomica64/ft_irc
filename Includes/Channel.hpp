@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/03 16:28:09 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 11:58:59 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Channel
 
 		//client movement
 		void	add_client(std::string client);
-		void	remove_client(std::string client_nick, Client &client, std::string reason);
+		void	remove_client(std::string client_nick, Client &client);
 		void	join_channel(Client& client, std::string parameters);
 
 		//mode functions

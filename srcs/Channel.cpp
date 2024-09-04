@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/03 17:05:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 12:08:20 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,10 @@ void	Channel::add_client(std::string client)
 	std::cout << "Current channel " << m_name << " is :" << m_clients << std::endl;
 }
 
-void	Channel::remove_client(std::string client_nick, Client &client, std::string reason)
+void	Channel::remove_client(std::string client_nick, Client &client)
 {
 	if (m_clients.find(client_nick) != m_clients.end())
 	{
-		std::cout << "reason: " << reason << std::endl;
-		client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " PART " + m_name + " :" + reason + "\r\n");
-		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " PART " + m_name + " :" + reason + "\r\n");
 		m_clients.erase(client_nick);
 	}
 	if (m_ops.find(client_nick) != m_ops.end())
@@ -100,7 +97,6 @@ void	Channel::remove_client(std::string client_nick, Client &client, std::string
 			m_ops.insert(*it);
 
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + *it + "\r\n");
-			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " PART " + m_name + "\r\n");
 		}
 		catch(const std::exception& e)
 		{

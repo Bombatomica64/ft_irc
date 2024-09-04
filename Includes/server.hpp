@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/03 17:28:17 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 12:20:43 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,7 @@ class Server
 		 * 
 		 * @note QUITㅤ[:<message>]
 		 * @note 🟧 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale. insomma in remove_client ho aggiunto un else if, cosi' magari non controlla se ci sono operatori in un canale appena cancellato. poi in quit ho messo it come tmp, poi it++ e poi cancellato tmp, senno cancellavamo l'iteratore e non potevamo andare avanti
+		 * @note 🟩 ora manda il messaggio di quit (spostato da remove client), default: Leaving
 		 * 
 		 * @warning
 		 */
@@ -179,9 +180,11 @@ class Server
 		 * @brief Kicks a client from a channel.
 		 * 
 		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
+		 * @warning 🟩 non manda ancora il messaggio giusto a remove client e crasha il server 😁. ops per ora ho commentato i messaggi di kick per usare quelli di part. spostato i messaggi di part fuori da remove client. riscritti i messaggi di kick
 		 * 
 		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
-		 * @warning 🟥 non manda ancora il messaggio giusto a remove client TODO
+		 * @warning 🟥 non puoi kickarti da solo, secondo Gu
+		 * @warning 🟥 addirittura il ban?
 		 */
 		bool kick(int client, std::string cmd);
 		
