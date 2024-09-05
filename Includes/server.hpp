@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/05 16:36:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/05 17:18:00 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,8 +186,7 @@ class Server
 		 * 
 		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 * @warning 🟥 non puoi kickarti da solo, secondo Gu. ma secondo me e lore si 
-		 * @warning 🟥 addirittura il ban?
-		 * @warning 🟥 ti banni da un canale in cui sei solo e poi provi a rientrarci...
+		 * @warning 🟥 addirittura il ban? ti banni da un canale in cui sei solo. testa con nc, invalid read
 		 */
 		bool kick(int client, std::string cmd);
 		
@@ -245,7 +244,7 @@ class Server
 		 * 
 		 * @note WHOㅤ<client>ㅤ(parziale)
 		 * 
-		 * @warning 🟥 * #chan :No such nick/channel appena crei un canale
+		 * @warning 🟥 * #chan :No such nick/channel appena crei un canale. if (get_client_by_nick(split_msg[1]) == NULL) dovrebbe essere m_clients[client]->get_nick()?
 		 */
 		bool who(int client, std::string cmd);
 		

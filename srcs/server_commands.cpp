@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/05 16:18:34 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/05 17:18:27 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -579,7 +579,7 @@ bool Server::kick(int client, std::string message)
 	write_to_client(get_client_by_nick(split_msg[2])->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
 	send_msg_to_channel(-1, split_msg[1], ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
 	chan->remove_client(split_msg[2], *(get_client_by_nick(split_msg[2])));
-	chan->add_ban(split_msg[2]);
+	//chan->add_ban(split_msg[2]);
 	return true;
 }
 
