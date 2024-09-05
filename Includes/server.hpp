@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 16:15:43 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/05 16:36:27 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,9 @@ class Server
 		 * @brief Retrieves the user host information.
 		 * 
 		 * @note NICKㅤ<nickname>
+		 * @note 🟩 non crasha piu', ho aggiunto modify_client_nick
+		 * @note 🟨 nick da vedere se funziona su hexchat per il cambio di nome. GARBAGE: mruggier_ changed his nickname to mark. messo il messaggio corretto anche se fuori da qualsiasi canale.
 		 * 
-		 * @warning 🟥 nick da vedere se funziona su hexchat per il cambio di nome e fa crashare
 		 */
 		bool nick(int client, std::string cmd);
 		
@@ -186,6 +187,7 @@ class Server
 		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 * @warning 🟥 non puoi kickarti da solo, secondo Gu. ma secondo me e lore si 
 		 * @warning 🟥 addirittura il ban?
+		 * @warning 🟥 ti banni da un canale in cui sei solo e poi provi a rientrarci...
 		 */
 		bool kick(int client, std::string cmd);
 		

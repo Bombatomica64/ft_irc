@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 15:50:30 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/05 15:52:05 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -445,4 +445,13 @@ int	Channel::get_mode(char mode)
 	if(m_modes.find(mode) == m_modes.end())
 		return m_modes[mode];
 	return -1;
+}
+
+void	Channel::modify_client_nick(std::string old_nick, std::string new_nick)
+{
+	if (m_clients.find(old_nick) != m_clients.end())
+	{
+		m_clients.erase(old_nick);
+		m_clients.insert(new_nick);
+	}
 }

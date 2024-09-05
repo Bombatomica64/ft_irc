@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 15:19:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/05 16:18:34 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -675,8 +675,29 @@ bool Server::nick(int client, std::string message)
 		write_to_client(client, ":irc 432 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Erroneous nickname");
 		return true;
 	}
-	m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " changed his nickname to " + split_msg[1]);
-	m_clients[client]->set_nick(split_msg[1]);
+	//m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " changed his nickname to " + split_msg[1]);
+	
+	//se il client e' in un canale, manda il messaggio di cambio nick a tutti gli utenti del canale. cosi' per ogni canale in cui e' presente
+	std::string old_nick = m_clients[client]->get_nick();
+	std::string new_nick = split_msg[1];
+	bool is_in_channel = false;
+	for (std::map<std::string, Channel *>::iterator it = m_channels.begin(); it != m_channels.end(); it++)
+	{
+		if (it->second->is_client_in(old_nick))
+		{
+			send_msg_to_channel(-1, it->second->get_name(), ":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick + "\r\n");
+			it->second->modify_client_nick(old_nick, new_nick);
+			is_in_channel = true;
+		}
+	}
+
+    if (!is_in_channel)
+    {
+        write_to_client(client, ":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick + "\r\n");
+    }
+
+	m_clients[client]->set_nick(new_nick);
+
 	return true;
 }
 

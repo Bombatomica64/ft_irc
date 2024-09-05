@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 11:58:59 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/05 15:50:51 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Channel
 		void	modify_invite(Client& client, std::string parameters, bool what);
 		void	modify_key_mode(Client& client, std::string parameters, bool what);
 		void	modify_topic_mode(Client& client, std::string parameters, bool what);
+		void	modify_client_nick(std::string old_nick, std::string new_nick);
 		
 		//send functions
 		bool	send_topic(Client &client);
