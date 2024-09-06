@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coucou.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/07/31 15:59:38 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/04 16:41:52 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Coucou::Coucou()
 	m_angry_words.push_back("I can't believe you did that!");
 	m_angry_words.push_back("That was uncalled for!");
 	m_angry_words.push_back("How could you?");
+	m_angry_words.push_back("c'e' troppa frociaggine in questo canale");
 	
 	m_happy_words.push_back("I'm happy");
 	m_happy_words.push_back("I'm glad you're here");

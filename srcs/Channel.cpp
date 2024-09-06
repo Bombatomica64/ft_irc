@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:14:24 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:53:23 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,21 +78,25 @@ void	Channel::add_client(std::string client)
 	std::cout << "Current channel " << m_name << " is :" << m_clients << std::endl;
 }
 
-void	Channel::remove_client(std::string client)
+void	Channel::remove_client(std::string client_nick, Client &client)
 {
-	if (m_clients.find(client) != m_clients.end())
-		m_clients.erase(client);
-	if (m_ops.find(client) != m_ops.end())
-		m_ops.erase(client);
+	if (m_clients.find(client_nick) != m_clients.end())
+	{
+		m_clients.erase(client_nick);
+	}
+	if (m_ops.find(client_nick) != m_ops.end())
+		m_ops.erase(client_nick);
 	if (this->size() == 0)
 		m_server->remove_channel(m_name);
-	if (m_ops.size() == 0)
+	else if (m_ops.size() == 0 && !m_clients.empty())
 	{
 		try
 		{
-			std::set<std::string>::iterator it = m_ops.begin();
+			std::set<std::string>::iterator it = m_clients.begin();
 			std::advance(it, rand() % m_clients.size());
 			m_ops.insert(*it);
+
+			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + *it + "\r\n");
 		}
 		catch(const std::exception& e)
 		{
@@ -282,6 +286,10 @@ void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 		try
 		{
 			m_modes['l'] = std::strtol(parameters.c_str(), NULL, 10);
+            if (m_modes['l'] <= 0)
+            {
+                throw std::invalid_argument("Negative limit");
+            }
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +l " + parameters + "\r\n");
 		}
 		catch(const std::exception& e)
@@ -331,10 +339,17 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 	}
 	else if (!what && is_mod)
 	{
-		if (m_ops.find(client.get_nick()) != m_ops.end())
+		if (m_ops.find(parameters) != m_ops.end())
 		{
-			m_ops.erase(client.get_nick());
+			if (m_ops.size() == 1)
+				client.send_message(":irc 400 " + client.get_nick() + " " + m_name + " :You're the only operator");
+			m_ops.erase(parameters);
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
+		}
+		else
+		{
+			//TODO send error message per dire che non è un op e quindi non può essere rimosso dagli op
+            client.send_message(":irc 441 " + client.get_nick() + " " + m_name + " :They aren't a channel operator");
 		}
 	}
 	else
@@ -437,4 +452,13 @@ int	Channel::get_mode(char mode)
 	if(m_modes.find(mode) == m_modes.end())
 		return m_modes[mode];
 	return -1;
+}
+
+void	Channel::modify_client_nick(std::string old_nick, std::string new_nick)
+{
+	if (m_clients.find(old_nick) != m_clients.end())
+	{
+		m_clients.erase(old_nick);
+		m_clients.insert(new_nick);
+	}
 }

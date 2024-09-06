@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/30 17:45:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/06 16:02:17 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,13 @@ class Server
 		/**
 		 * @brief Construct a new Server object
 		 * 
-		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed
+		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
+		 * @warning 🟥 aggiungere comando HELP per lista di comandi
 		 * 
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
 		 * @note 🟨 dopo il login scritte a caso vengono tagliate da received {c} da capire se ci sono problemi con il fatto che modifico i comandi perche' abbiano sempre \r\n alla fine (duplicato nella registrazione e dopo)
+		 * @note 🟩 dopo join, hexchat manda mode e who insieme, quindi ora tutti i comandi vengono controllati se sono multipli.
 		 */
 		Server() {} //useless
 		Server(std::string port, std::string psw);
@@ -103,6 +105,36 @@ class Server
 		//🟥 🟧 🟨 🟩
 
 		/**
+		 * @brief Registers a password.
+		 * 
+		 * @note PASSㅤ<password>
+		 * @note 🟩 crash if not enough parameters (PASS e basta) basic_string::_M_construct null not valid, ho semplicemente invertito i controlli di un if
+		 * 
+		 * @warning
+		 */
+		bool pass(int client, std::string cmd);
+		
+		/**
+		 * @brief Retrieves the user host information.
+		 * 
+		 * @note NICKㅤ<nickname>
+		 * @note 🟩 non crasha piu', ho aggiunto modify_client_nick
+		 * @note 🟨 nick da vedere se funziona su hexchat per il cambio di nome. GARBAGE: mruggier_ changed his nickname to mark. messo il messaggio corretto anche se fuori da qualsiasi canale.
+		 * 
+		 */
+		bool nick(int client, std::string cmd);
+		
+		/**
+		 * @brief Registers a user.
+		 * 
+		 * @note USERㅤ<username>ㅤ<hostname>ㅤ<servername>ㅤ<realname>
+		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha, aggiunto qualcosa alla fine di USER
+		 * 
+		 * @warning
+		 */
+		bool user(int client, std::string cmd);
+		
+		/**
 		 * @brief Sends a private message to a client.
 		 * 
 		 * @note PRIVMSGㅤ<receiver>{,<receiver>}ㅤ:<message>
@@ -117,46 +149,53 @@ class Server
 		 * 
 		 * @note JOINㅤ#<channel>{,#<channel>}ㅤ[<key>{,<key>}]
 		 * @note 🟨 se dopo essere entrato nel canale scrivo NAMES #chan sembra che entri veramente nel canale. hexchat vuole names anche quando crei il canale. vorra' anche modes e topic?
+		 * @note 🟧 se crei un canale con valgrind crasha, penso per modify mode, insieme al problema sotto, ho palesmente rotto qualcosa
 		 * 
-		 * @warning 🟥 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale.
-		 * @warning 🟥 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori)
-		 * @warning 🟥 se crei un canale con valgrind crasha, penso per modify mode
+		 * @warning
 		 */
 		bool join(int client, std::string cmd);
 		
 		/**
 		 * @brief Leaves a channel.
 		 * 
-		 * @note PARTㅤ#<channel>{,#<channel>}
-		 * 
-		 * @warning 
-		 */
-		bool part(int client, std::string cmd);
-		
-		/**
-		 * @brief Changes the mode of a channel or user.
-		 * 
-		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k} [<user>]
+		 * @note PARTㅤ#<channel>{,#<channel>} [:<message>]
+		 * @note 🟨 se esce l'operatore non viene dato a nessun altro (va rimosso dalla lista degli operatori). ok, ora manda anche il messaggio e il messaggio di part in remove_client. il messaggio di part va mandato li?
+		 * @note 🟩 aggiunti i messaggi per far sapere al client e al server che hai fatto part in remove_client
+		 * @warning 🟨 non funziona perche' hexchat manda part #chan :motivo, anche se il motivo non lo metti, scrive :leaving (se hexchat non vanno messi i :, li mette lui). ora quando esci manda anche il motivo a tutti
 		 * 
 		 * @warning
 		 */
-		bool mode(int client, std::string cmd);
+		bool part(int client, std::string cmd);
 		
 		/**
 		 * @brief Disconnects a client from the server.
 		 * 
 		 * @note QUITㅤ[:<message>]
+		 * @note 🟧 hexchat entrato in un canale, poi premendo x per chiudere tutto, crasha se sono solo nel canale. insomma in remove_client ho aggiunto un else if, cosi' magari non controlla se ci sono operatori in un canale appena cancellato. poi in quit ho messo it come tmp, poi it++ e poi cancellato tmp, senno cancellavamo l'iteratore e non potevamo andare avanti
+		 * @note 🟩 ora manda il messaggio di quit (spostato da remove client), default: Leaving
 		 * 
 		 * @warning
 		 */
 		bool quit(int client, std::string cmd);
 		
 		/**
+		 * @brief Kicks a client from a channel.
+		 * 
+		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
+		 * @warning 🟩 non manda ancora il messaggio giusto a remove client e crasha il server 😁. ops per ora ho commentato i messaggi di kick per usare quelli di part. spostato i messaggi di part fuori da remove client. riscritti i messaggi di kick
+		 * 
+		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
+		 * @warning 🟥 non puoi kickarti da solo, secondo Gu. ma secondo me e lore si 
+		 * @warning 🟥 addirittura il ban? ti banni da un canale in cui sei solo. testa con nc, invalid read
+		 */
+		bool kick(int client, std::string cmd);
+		
+		/**
 		 * @brief Invites a client to a channel.
 		 * 
 		 * @note INVITEㅤ<nickname>ㅤ#<channel>
 		 * 
-		 * @warning 
+		 * @warning 🟥 deve sbannare se l'utente e' stato kickato, per colpa di lorenzo
 		 */
 		bool invite(int client, std::string cmd);
 		
@@ -170,13 +209,17 @@ class Server
 		bool topic(int client, std::string cmd);
 		
 		/**
-		 * @brief Kicks a client from a channel.
+		 * @brief Changes the mode of a channel or user.
 		 * 
-		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
+		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k|l} [<limit>] [<user>]
+		 * @note o: operator, i: invite only, t: topic, k: key, l: limit
+		 * @note 🟨 -o ora funziona
+		 * @warning 🟨 puoi rimuovere tutti da operatore, incluso te stesso (il canale rimane senza operatore). se poi uno esce l'altro diventa operatore (anche se quello uscito non lo era). aggiunto il controllo, con la frase a casp: You're the only operator
+		 * @warning 🟧 vedi te se cambiare il controllo dei numeri negativi e 0 con il controllo se < degli utenti nel canale, allora errore. per me e' piu' corretto cosi'
 		 * 
-		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
+		 * @warning 🟥 i messaggi di mode mandano a tutto il canale qualcosa? solo +o lo fa (giustamente)
 		 */
-		bool kick(int client, std::string cmd);
+		bool mode(int client, std::string cmd);
 		
 		/**
 		 * @brief Lists the clients in a channel.
@@ -188,26 +231,6 @@ class Server
 		 * @warning 🟥 non puoi fare NAMES su hexchat se al di fuori di un canale, quindi non gli arriva il fatto che sia un canale pubblico
 		 */
 		bool names(int client, std::string cmd);
-		
-		/**
-		 * @brief Registers a password.
-		 * 
-		 * @note PASSㅤ<password>
-		 * @note 🟩 crash if not enough parameters (PASS e basta) basic_string::_M_construct null not valid, ho semplicemente invertito i controlli di un if
-		 * 
-		 * @warning
-		 */
-		bool pass(int client, std::string cmd);
-		
-		/**
-		 * @brief Registers a user.
-		 * 
-		 * @note USERㅤ<username>ㅤ<hostname>ㅤ<servername>ㅤ<realname>
-		 * @note 🟨 se dopo NICK non scrivo qualcosa che non sia USER crasha, aggiunto qualcosa alla fine di USER
-		 * 
-		 * @warning
-		 */
-		bool user(int client, std::string cmd);
 		
 		/**
 		 * @brief Registers a nickname.
@@ -223,7 +246,7 @@ class Server
 		 * 
 		 * @note WHOㅤ<client>ㅤ(parziale)
 		 * 
-		 * @warning 🟥 * #chan :No such nick/channel appena crei un canale
+		 * @warning 🟥 * #chan :No such nick/channel appena crei un canale. if (get_client_by_nick(split_msg[1]) == NULL) dovrebbe essere m_clients[client]->get_nick()?
 		 */
 		bool who(int client, std::string cmd);
 		
@@ -236,15 +259,6 @@ class Server
 		 * @warning
 		 */
 		bool ping(int client, std::string cmd);
-		
-		/**
-		 * @brief Retrieves the user host information.
-		 * 
-		 * @note NICKㅤ<nickname>
-		 * 
-		 * @warning
-		 */
-		bool nick(int client, std::string cmd);
 		
 		/**
 		 * @brief Retrieves the user host information.

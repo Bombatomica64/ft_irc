@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/06 10:05:47 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/05 15:50:51 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Channel
 
 		//client movement
 		void	add_client(std::string client);
-		void	remove_client(std::string client);
+		void	remove_client(std::string client_nick, Client &client);
 		void	join_channel(Client& client, std::string parameters);
 
 		//mode functions
@@ -64,6 +64,7 @@ class Channel
 		void	modify_invite(Client& client, std::string parameters, bool what);
 		void	modify_key_mode(Client& client, std::string parameters, bool what);
 		void	modify_topic_mode(Client& client, std::string parameters, bool what);
+		void	modify_client_nick(std::string old_nick, std::string new_nick);
 		
 		//send functions
 		bool	send_topic(Client &client);
