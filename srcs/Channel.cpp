@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/05 15:52:05 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:53:23 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,6 +286,10 @@ void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 		try
 		{
 			m_modes['l'] = std::strtol(parameters.c_str(), NULL, 10);
+            if (m_modes['l'] <= 0)
+            {
+                throw std::invalid_argument("Negative limit");
+            }
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +l " + parameters + "\r\n");
 		}
 		catch(const std::exception& e)
@@ -337,12 +341,15 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 	{
 		if (m_ops.find(parameters) != m_ops.end())
 		{
+			if (m_ops.size() == 1)
+				client.send_message(":irc 400 " + client.get_nick() + " " + m_name + " :You're the only operator");
 			m_ops.erase(parameters);
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
 		}
 		else
 		{
 			//TODO send error message per dire che non è un op e quindi non può essere rimosso dagli op
+            client.send_message(":irc 441 " + client.get_nick() + " " + m_name + " :They aren't a channel operator");
 		}
 	}
 	else

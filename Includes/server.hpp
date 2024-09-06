@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/05 17:18:00 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/06 16:02:17 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,8 +214,10 @@ class Server
 		 * @note MODEㅤ#<channel>ㅤ{[+|-]|o|i|t|k|l} [<limit>] [<user>]
 		 * @note o: operator, i: invite only, t: topic, k: key, l: limit
 		 * @note 🟨 -o ora funziona
+		 * @warning 🟨 puoi rimuovere tutti da operatore, incluso te stesso (il canale rimane senza operatore). se poi uno esce l'altro diventa operatore (anche se quello uscito non lo era). aggiunto il controllo, con la frase a casp: You're the only operator
+		 * @warning 🟧 vedi te se cambiare il controllo dei numeri negativi e 0 con il controllo se < degli utenti nel canale, allora errore. per me e' piu' corretto cosi'
 		 * 
-		 * @warning 🟥 non voglio testare mode 😭. i messaggi di mode mandano a tutto il canale qualcosa? solo +o lo fa (giustamente)
+		 * @warning 🟥 i messaggi di mode mandano a tutto il canale qualcosa? solo +o lo fa (giustamente)
 		 */
 		bool mode(int client, std::string cmd);
 		
