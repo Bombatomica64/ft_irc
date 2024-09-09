@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/06 15:53:23 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/09 12:50:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,7 +342,10 @@ void	Channel::modify_op(Client &client, std::string parameters, bool what)
 		if (m_ops.find(parameters) != m_ops.end())
 		{
 			if (m_ops.size() == 1)
+			{
 				client.send_message(":irc 400 " + client.get_nick() + " " + m_name + " :You're the only operator");
+				return;
+			}
 			m_ops.erase(parameters);
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -o " + parameters + "\r\n");
 		}

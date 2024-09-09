@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 10:33:37 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/09 12:43:50 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,9 @@ class Server
 		 * 
 		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
 		 * @warning 🟥 aggiungere comando HELP per lista di comandi
-		 * @warning 🟥 se spammi ping crasha
+		 * @warning 🟨 missing NOTICE, WHOIS, HELP
 		 * 
+		 * @note 🟥 se spammi ping crasha se non ottimizzato
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, 
 		 * facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
@@ -271,8 +272,6 @@ class Server
 		 */
 		bool userhost(int client, std::string cmd);
 
-		void	handle_file_request(int client, std::string cmd, std::string receiver);
-		void	transfer_file(t_file file);
 	public:
 		class clientSocketException : public std::exception
 		{

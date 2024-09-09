@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/05 17:18:27 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/09 12:38:35 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,16 +137,16 @@ bool Server::privmsg(int client, std::string message)
 			// send to user
 			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
 			std::cout << "spcific_send: " << spcific_send << std::endl;
-			if (spcific_send.find(" :DCC") == std::string::npos)
-			{
+			// if (spcific_send.find(" :DCC") == std::string::npos)
+			// {
 				if (!this->get_client_by_nick(*it)->send_message(to_send))
 					return false;
-			}
-			else
-			{
-				std::cout << "DCC" << std::endl;
-				handle_file_request(client, spcific_send, *it);
-			}
+			// }
+			// else
+			// {
+			// 	std::cout << "DCC" << std::endl;
+			// 	handle_file_request(client, spcific_send, *it);
+			// }
 			break;
 			spcific_send = "";
 		}
@@ -746,30 +746,33 @@ std::string	Server::get_ip() const
 	return m_ip;
 }
 
-void	Server::handle_file_request(int client, std::string message, std::string target)
-{
-	std::vector<std::string> split_cmd = split(message.substr(message.find(":DCC")), " ");
-	if (split_cmd.size() < 3)
-	{
-		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " DCC :Not enough parameters");
-		return;
-	}
-	if (split_cmd[1] == "SEND")
-	{
-		if (split_cmd.size() < 6)
-		{
-			write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " DCC :Not enough parameters");
-			return;
-		}
-		std::string filename = split_cmd[2];
-		std::string ip = decode_ip(split_cmd[3]);
-		int port = std::strtol(split_cmd[4].c_str(), NULL, 10);
-		double filesize = std::strtod(split_cmd[5].c_str(), NULL);
-		t_file file = {client, get_client_by_nick(target)->get_clientSocket() , filename, ip, port, filesize};
-		m_files.push_back(file);
-		get_client_by_nick(target)->send_message(":" + m_clients[client]->get_nick() + " DCC SEND " + filename + " " + split_cmd[3] + " " + split_cmd[4] + " " + split_cmd[5]); 
-	}
-}
+// void	Server::handle_file_request(int client, std::string message, std::string target)
+// {
+// 	std::vector<std::string> split_cmd = split(message.substr(message.find(":DCC")), " ");
+// 	client++;
+// 	target[0]++;
+	// if (split_cmd.size() < 3)
+	// {
+	// 	write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " DCC :Not enough parameters");
+	// 	return;
+	// }
+	// if (split_cmd[1] == "SEND")
+	// {
+	// 	if (split_cmd.size() < 6)
+	// 	{
+	// 		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " DCC :Not enough parameters");
+	// 		return;
+	// 	}
+	// 	std::string filename = split_cmd[2];
+	// 	std::string ip = decode_ip(split_cmd[3]);
+	// 	int port = std::strtol(split_cmd[4].c_str(), NULL, 10);
+	// 	double filesize = std::strtod(split_cmd[5].c_str(), NULL);
+	// 	t_file file = {client, get_client_by_nick(target)->get_clientSocket() , filename, ip, port, filesize};
+	// 	m_files.push_back(file);
+	// 	get_client_by_nick(target)->send_message(":" + m_clients[client]->get_nick() + " DCC SEND " + filename + " " + split_cmd[3] + " " + split_cmd[4] + " " + split_cmd[5]); 
+	// }
+// 
+// }
 
 /*Received: {PRIVMSG gu :DCC SEND ComicMono.ttf 8 1026 18724}
 split_cmd: |PRIVMSG
