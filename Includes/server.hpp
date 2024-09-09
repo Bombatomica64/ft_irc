@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 12:43:50 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/09 17:02:29 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,6 +271,8 @@ class Server
 		 * @warning 
 		 */
 		bool userhost(int client, std::string cmd);
+
+		bool info(int client, std::string cmd);
 
 	public:
 		class clientSocketException : public std::exception

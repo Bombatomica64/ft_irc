@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 12:38:35 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/09 17:03:11 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ void Server::get_cmds()
 	m_cmds["WHO"] = &Server::who;
 	m_cmds["PING"] = &Server::ping;
 	m_cmds["USERHOST"] = &Server::userhost;
+	m_commands["INFO"] = &Server::info;
+	m_commands["info"] = &Server::info;
 }
 
 void Server::write_to_client(int client, std::string msg)
@@ -630,7 +632,7 @@ bool Server::who(int client, std::string message)
 		write_to_client(client, ":irc 431 " + m_clients[client]->get_nick() + " WHO :No nickname given");
 		return true;
 	}
-	if (get_client_by_nick(split_msg[1]) == NULL)
+	if (get_client_by_nick(split_msg[1]) == NULL || m_channels.find(split_msg[1]) == m_channels.end())
 	{
 		write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such nick/channel");
 		return true;
@@ -699,6 +701,19 @@ bool Server::nick(int client, std::string message)
 	m_clients[client]->set_nick(new_nick);
 
 	return true;
+}
+
+bool Server::info(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 2)
+	{
+		//list all the avaliable commands
+	}
+	else
+	{
+		//list the info of the command
+	}
 }
 
 bool Server::is_client_in_channel(std::string channel, std::string client)
