@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/06 16:02:17 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/09 10:33:37 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,10 @@ class Server
 		 * 
 		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
 		 * @warning 🟥 aggiungere comando HELP per lista di comandi
+		 * @warning 🟥 se spammi ping crasha
 		 * 
-		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
+		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, 
+		 * facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
 		 * @note 🟨 dopo il login scritte a caso vengono tagliate da received {c} da capire se ci sono problemi con il fatto che modifico i comandi perche' abbiano sempre \r\n alla fine (duplicato nella registrazione e dopo)
 		 * @note 🟩 dopo join, hexchat manda mode e who insieme, quindi ora tutti i comandi vengono controllati se sono multipli.
