@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 17:03:11 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/09 17:52:15 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ void Server::get_cmds()
 	m_cmds["WHO"] = &Server::who;
 	m_cmds["PING"] = &Server::ping;
 	m_cmds["USERHOST"] = &Server::userhost;
-	m_commands["INFO"] = &Server::info;
-	m_commands["info"] = &Server::info;
+	m_cmds["INFO"] = &Server::info;
+	m_cmds["info"] = &Server::info;
 }
 
 void Server::write_to_client(int client, std::string msg)
@@ -708,7 +708,8 @@ bool Server::info(int client, std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() < 2)
 	{
-		//list all the avaliable commands
+		write_to_client(client, "These are the available commands: \n[CAP] [JOIN] [MODE] [NAMES] [NICK] [PART] [PING] [PRIVMSG] [QUIT] [TOPIC] [WHO] [USERHOST] [INVITE] [KICK]");
+
 	}
 	else
 	{
