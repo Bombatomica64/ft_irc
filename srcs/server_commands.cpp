@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 16:44:10 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 16:48:39 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -757,6 +757,8 @@ bool Server::info(int client, std::string message)
 		{
 			m_clients[client]->send_message("Explanation of command " + split_msg[1] + ": " + m_cmds_help[split_msg[1]]);
 		}
+		else
+			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");
 	}
 	else
 		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");

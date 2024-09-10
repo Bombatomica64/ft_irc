@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 10:28:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 16:47:32 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ class Server
 		 * @brief Construct a new Server object
 		 * 
 		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
-		 * @warning 🟥 aggiungere comando HELP per lista di comandi
 		 * @warning 🟨 missing NOTICE, WHOIS, HELP
 		 * 
 		 * @note 🟥 se spammi ping crasha se non ottimizzato
