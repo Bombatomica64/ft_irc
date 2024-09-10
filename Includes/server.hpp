@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 16:47:32 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 17:00:24 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,9 @@ class Server
 		 * @brief Construct a new Server object
 		 * 
 		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
-		 * @warning 🟨 missing NOTICE, WHOIS, HELP
+		 * @warning 🟨 missing NOTICE, WHOIS, LIST
 		 * 
+		 * @note 🟩 info (help) done
 		 * @note 🟥 se spammi ping crasha se non ottimizzato
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, 
 		 * facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
@@ -190,7 +191,6 @@ class Server
 		 * 
 		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 * @warning 🟥 non puoi kickarti da solo, secondo Gu. ma secondo me e lore si 
-		 * @warning 🟥 addirittura il ban? ti banni da un canale in cui sei solo. testa con nc, invalid read
 		 */
 		bool kick(int client, std::string cmd);
 		
@@ -199,7 +199,6 @@ class Server
 		 * 
 		 * @note INVITEㅤ<nickname>ㅤ#<channel>
 		 * 
-		 * @warning 🟥 deve sbannare se l'utente e' stato kickato, per colpa di lorenzo
 		 */
 		bool invite(int client, std::string cmd);
 		
@@ -208,7 +207,6 @@ class Server
 		 * 
 		 * @note TOPICㅤ#<channel>ㅤ[:<topic>]
 		 * 
-		 * @warning
 		 */
 		bool topic(int client, std::string cmd);
 		
