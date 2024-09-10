@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 17:02:29 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 10:28:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ class Server
 		std::map<std::string, Channel*> m_channels;
 		
 		//commands
-		std::map<std::string, bool (Server::*)(int, std::string)> m_cmds;
+		std::map<std::string, bool (Server::*)(int, std::string)>	m_cmds;
+		std::map<std::string, std::string> 							m_cmds_help;
 		
 		//Net stuff
 		struct pollfd		m_server_fd;
@@ -75,7 +76,8 @@ class Server
 		void	create_socket(void);
 		void	bind_socket(void);
 		void	accept_connection( void );
-		void	get_cmds();
+		void	get_cmds( void );
+		void	get_cmds_help( void );
 
 	/**
 	 * @brief server functions
@@ -118,7 +120,7 @@ class Server
 		bool pass(int client, std::string cmd);
 		
 		/**
-		 * @brief Retrieves the user host information.
+		 * @brief Registers a nickname.
 		 * 
 		 * @note NICKㅤ<nickname>
 		 * @note 🟩 non crasha piu', ho aggiunto modify_client_nick

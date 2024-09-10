@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 12:50:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 12:27:40 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,6 +366,8 @@ void	Channel::send_modes(Client &client)
 {
 	std::string start = ":irc 324 " + client.get_nick() + " " + this->get_name();
 	std::string modes = " +";
+	std::string key = "";
+	std::string limit = "";
 	for (std::map<char, int>::iterator it = m_modes.begin(); it != m_modes.end(); ++it)
 	{
 		if (it->second != 0)
@@ -374,12 +376,15 @@ void	Channel::send_modes(Client &client)
 		}
 	}
 	if (m_modes['l'])
-		modes += " " + NumberToString(m_modes['l']);
+		limit += " " + NumberToString(m_modes['l']);
 	if (m_modes['k'])
-		modes += " " + m_key;
+		key += " " + m_key;
 	if (modes == " +")
 		modes = " none";
-	client.send_message(start + modes);
+	if (modes.find('l') < modes.find('k'))
+		client.send_message(start + modes + limit + key);
+	else
+		client.send_message(start + modes + key + limit);
 }
 
 bool	Channel::send_topic(Client &client)

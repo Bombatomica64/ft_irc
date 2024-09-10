@@ -21,6 +21,7 @@ Server::Server(std::string port, std::string psw)
 	// Variables
 	m_coucou = Coucou();
 	get_cmds();
+	get_cmds_help();
 	m_date = get_time(0);
 
 	// Input validation
@@ -389,11 +390,7 @@ void Server::register_client(int client)
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
-		// throw Server::ClientException();
-		//  return;
 	}
-	// if (msg == "\n")
-	// 	return;
 
 	//hexchat
 	//e non e' alla fine del messaggio
@@ -424,13 +421,30 @@ void Server::register_client(int client)
 	{
 		msg += "\r\n";
 		login(client, msg);
-		// std::cout << YELLOW << m_clients[client]->get_reg_steps() << RESET << std::endl;
-		// std::cout << YELLOW << m_clients[client]->get_nick_failed() << RESET << std::endl;
-		// std::cout << YELLOW << m_clients[client]->get_str_user() << RESET << std::endl;
 		if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
 		{
 			login (client, m_clients[client]->get_str_user());
 		}
 
 	}
+}
+
+void Server::get_cmds_help( void )
+{
+	m_cmds_help["INFO"] = "INFO :Lists all the available commands";
+	m_cmds_help["PASS"] = "PASS <password> :Registers a password";
+	m_cmds_help["NICK"] = "NICK <nickname> :Used to either change or register a nickname";
+	m_cmds_help["USER"] = "USER <username> <hostname> <servername> <realname> :Registers a user";
+	m_cmds_help["PRIVMSG"] = "PRIVMSG <target>{,<target>} :<message> :Sends messages to the target(s)"; 
+	m_cmds_help["JOIN"] = "JOIN <channel>{,<channel>} [<key>{,<key>}] :Joins a channel(s), the channel names must start with # or &. \n If the channel is password protected, the key must be provided";
+	m_cmds_help["PART"] = "PART <channel>{,<channel>} [:<message>] :Leaves a channel(s) with an optional message";
+	m_cmds_help["QUIT"] = "QUIT [:<message>] :Disconnects from the server with an optional message";
+	m_cmds_help["KICK"] = "KICK <channel> <user> [:<message>] :Kicks a user from a channel with an optional message";
+	m_cmds_help["INVITE"] = "INVITE <user> <channel> :Invites a user to a channel, required if the channel is invite-only";
+	m_cmds_help["TOPIC"] = "TOPIC <channel> [:<topic>] :Without a topic, it will display the current topic. With a topic, it will set the topic";
+	m_cmds_help["NAMES"] = "NAMES [<channel>] :Lists all the users in a channel {with @ if they are operators}, if no channel is provided, it will list all the users and all the users in all the channels";
+	m_cmds_help["CAP"] = "CAP <subcommand> :Used to negotiate capabilities with the server";
+	m_cmds_help["WHO"] = "WHO <target> : Gives information about the target.";
+	m_cmds_help["PING"] = "PING <target> <message> : Pings the target with a message expecting a PONG reply";
+	m_cmds_help["USERHOST"] = "USERHOST <nickname>{<nickname>} : Returns the hostname of the nickname(s)";
 }

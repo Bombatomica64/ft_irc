@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/09 17:52:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 12:38:58 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -708,8 +708,7 @@ bool Server::info(int client, std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() < 2)
 	{
-		write_to_client(client, "These are the available commands: \n[CAP] [JOIN] [MODE] [NAMES] [NICK] [PART] [PING] [PRIVMSG] [QUIT] [TOPIC] [WHO] [USERHOST] [INVITE] [KICK]");
-
+		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");
 	}
 	else
 	{
