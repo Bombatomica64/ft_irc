@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 12:54:26 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 16:09:16 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -711,11 +711,16 @@ bool Server::info(int client, std::string message)
 		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");
 		return true;
 	}
-	else
+	else if (split_msg.size() == 2)
 	{
-		return true;
-		//list the info of the command
+		if (m_cmds.find(split_msg[1]) != m_cmds.end())
+		{
+			m_clients[client]->send_message("Explanation of command " + split_msg[1] + ": " + m_cmds_help[split_msg[1]]);
+		}
 	}
+	else
+	
+			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");	
 }
 
 bool Server::is_client_in_channel(std::string channel, std::string client)
