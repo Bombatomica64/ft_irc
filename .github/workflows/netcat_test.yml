@@ -14,10 +14,10 @@ jobs:
         run: "sleep 10"
 
       - name: op IRC client
-        run: "nc localhost 8000 < tests/test.txt > logs/out_client.log 2> logs/out_client_err.log &"
+        run: "nc localhost 8000 < tests/test > logs/out_client.log 2> logs/out_client_err.log &"
 
       - name: non-op IRC client
-        run: "nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2> logs/out_client_err2.log &"
+        run: "nc localhost 8000 < tests/test2 > logs/out_client2.log 2> logs/out_client_err2.log &"
 
 
       - name: kill IRC
