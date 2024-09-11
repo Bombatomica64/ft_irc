@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:01:54 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/05 15:50:51 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/11 12:24:21 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,17 @@ class Channel
 
 		public:
 		// accessors
-		int	size() { return static_cast<int>(m_clients.size()); }
-		int	get_limit() { return m_limit; }
+		int	size( void ) { return static_cast<int>(m_clients.size()); }
+		int	get_limit( void ) { return m_limit; }
 		int	get_mode(char mode);
-		std::string	get_key() { return m_key; }
-		std::string	get_name() { return m_name; }
-		std::string	get_topic() { return m_topic; }
-		std::set<std::string>	get_clients() { return m_clients; }
-		std::set<std::string>	get_bans() { return m_bans; }
-		std::set<std::string>	get_invites() { return m_invites; }
-		std::set<std::string>	get_ops() { return m_ops; }
-		std::map<char, int>		get_modes() { return m_modes; }
+		std::string	get_key( void ) { return m_key; }
+		std::string	get_name( void ) { return m_name; }
+		std::string	get_topic( void ) { return m_topic; }
+		std::set<std::string>	get_clients( void ) { return m_clients; }
+		std::set<std::string>	get_bans( void ) { return m_bans; }
+		std::set<std::string>	get_invites( void ) { return m_invites; }
+		std::set<std::string>	get_ops( void ) { return m_ops; }
+		std::map<char, int>		get_modes( void ) { return m_modes; }
 
 		// mutators
 		void	set_name(std::string name) { m_name = name; }

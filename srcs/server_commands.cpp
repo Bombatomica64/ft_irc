@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 10:38:52 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 12:32:14 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void Server::get_cmds()
 	m_cmds["USERHOST"] = &Server::userhost;
 	m_cmds["INFO"] = &Server::info;
 	m_cmds["info"] = &Server::info;
+	m_cmds["LIST"] = &Server::list;
 }
 
 void Server::write_to_client(int client, std::string msg)
@@ -192,6 +193,11 @@ bool Server::send_msg_to_channel(int client, std::string channel, std::string ms
 bool Server::join(int client, std::string channel)
 {
 	std::vector<std::string> split_msg = split(channel, " ");
+	if (split_msg.size() < 2)
+	{
+		m_clients[client]->send_message(":irc 461 " + m_clients[client]->get_nick() + " JOIN :Not enough parameters");
+		return true;
+	}
 	std::vector<std::string> split_channel = split(split_msg[1], ",");
 	std::vector<std::string> split_key;
 	if (split_msg.size() > 2)
@@ -281,6 +287,36 @@ bool Server::part(int client, std::string msg)
 		{
 			m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
 			return true;
+		}
+	}
+	return true;
+}
+
+bool Server::list(int client, std::string params)
+{
+	std::vector<std::string> split_msg = split(params, " ");
+	if (split_msg.size() == 1)
+	{
+		m_clients[client]->send_message(":irc 321 " + m_clients[client]->get_nick() + " Channel :Users Name");
+		for (std::map<std::string, Channel *>::iterator it = m_channels.begin(); it != m_channels.end(); it++)
+		{
+			m_clients[client]->send_message(":irc 322 " + m_clients[client]->get_nick() + " " + it->first + " " + NumberToString(it->second->get_clients().size()) + " :" + it->second->get_topic());
+		}
+		m_clients[client]->send_message(":irc 323 " + m_clients[client]->get_nick() + " :End of /LIST");	
+	}
+	else
+	{
+		std::vector<std::string> split_channels = split(split_msg[1], ",");
+		for (std::vector<std::string>::iterator it = split_channels.begin(); it != split_channels.end(); it++)
+		{
+			if (m_channels.find(*it) == m_channels.end())
+			{
+				m_clients[client]->send_message(":irc 403 " + m_clients[client]->get_nick() + " " + *it + " :No such channel");
+				return true;
+			}
+			m_clients[client]->send_message(":irc 321 " + m_clients[client]->get_nick() + " Channel :Users Name");
+			m_clients[client]->send_message(":irc 322 " + m_clients[client]->get_nick() + " " + *it + " " + NumberToString(m_channels[*it]->get_clients().size()) + " :" + m_channels[*it]->get_topic());
+			m_clients[client]->send_message(":irc 323 " + m_clients[client]->get_nick() + " :End of /LIST");
 		}
 	}
 	return true;
@@ -756,7 +792,7 @@ bool Server::info(int client, std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() < 2)
 	{
-		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");
+		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
 		return true;
 	}
 	else if (split_msg.size() == 2)
@@ -766,10 +802,10 @@ bool Server::info(int client, std::string message)
 			m_clients[client]->send_message("Explanation of command " + split_msg[1] + ": " + m_cmds_help[split_msg[1]]);
 		}
 		else
-			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");
+			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");;
 	}
 	else
-		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK]");
+		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
 	return true;
 }
 
