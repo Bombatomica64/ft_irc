@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 15:11:59 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/11 17:44:02 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,8 @@ class Server
 		bool	client_exist(const std::string &nick) const;
 		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
 		void	login(int client, std::string msg);
+		bool	kick_in_loop(int client, std::string kick_chan, std::string kick_client, std::string kick_msg);
+
 		
 		//🟥 🟧 🟨 🟩
 
