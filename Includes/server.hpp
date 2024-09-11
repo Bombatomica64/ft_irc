@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 17:00:24 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/10 17:50:02 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,6 +272,13 @@ class Server
 		bool userhost(int client, std::string cmd);
 
 		bool info(int client, std::string cmd);
+
+		/**
+		 * @brief Lists the channel on the server.
+		 * 
+		 * @note LISTㅤ[#<channel>{,#<channel>}]
+		 */
+		bool list(int client, std::string cmd);
 
 	public:
 		class clientSocketException : public std::exception

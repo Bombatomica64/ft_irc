@@ -1,20 +1,17 @@
-name: IRC tests
+name: Netcat Test
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install netcat && make re
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Updated to the latest version
 
-      - name: Run IRC
-        run: |
-          ./ircserv 8000 2 >logs/out.log 2> logs/out_err.log &
-          ps aux | grep ircserv
+      - name: wait for IRC to start
+        run: "sleep 10"
 
       - name: op IRC client
         run: "nc localhost 8000 < tests/test.txt > logs/out_client.log 2> logs/out_client_err.log &"
@@ -22,17 +19,12 @@ jobs:
       - name: non-op IRC client
         run: "nc localhost 8000 < tests/test2.txt > logs/out_client2.log 2> logs/out_client_err2.log &"
 
-      - name: wait for IRC to start
-        run: "sleep 10"
-
-      - name: Cat log files
-        run: "cat logs/*"
 
       - name: kill IRC
         run: "killall ircserv || true" # Prevents the workflow from failing if ircserv is not found
 
       - name: Upload log files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # Ensure this is the latest version
         with:
           name: irc-logs
           path: logs/

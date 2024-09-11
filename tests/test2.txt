@@ -1,4 +1,4 @@
-PASS 2 
+PASS 2
 NICK testuser2
 USER testuser2 0 * :Test User
 JOIN #testchannel
