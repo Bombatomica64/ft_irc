@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 12:32:14 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:00:41 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void Server::get_cmds()
 	m_cmds["INFO"] = &Server::info;
 	m_cmds["info"] = &Server::info;
 	m_cmds["LIST"] = &Server::list;
+	m_cmds["ISON"] = &Server::ison;
 }
 
 void Server::write_to_client(int client, std::string msg)
@@ -807,6 +808,23 @@ bool Server::info(int client, std::string message)
 	else
 		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
 	return true;
+}
+
+bool Server::ison(int client, std::string params)
+{
+	std::vector<std::string> split_msg = split(params, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " ISON :Not enough parameters");
+		return true;
+	}
+	std::string response = ":irc 303 " + m_clients[client]->get_nick() + " :";
+	for (std::vector<std::string>::iterator it = split_msg.begin() + 1; it != split_msg.end(); it++)
+	{
+		if (get_client_by_nick(*it) != NULL)
+			response += *it + " ";
+	}
+	write_to_client(client, response);
 }
 
 bool Server::is_client_in_channel(std::string channel, std::string client)

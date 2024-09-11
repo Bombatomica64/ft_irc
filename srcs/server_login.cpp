@@ -449,4 +449,5 @@ void Server::get_cmds_help( void )
 	m_cmds_help["PING"] = "PING <target> <message> : Pings the target with a message expecting a PONG reply";
 	m_cmds_help["USERHOST"] = "USERHOST <nickname>{<nickname>} : Returns the hostname of the nickname(s)";
 	m_cmds_help["LIST"] = "LIST [<channel>{,<channel>}] : Lists all the channels on the server, if a channel is provided, it will give information about that channel";
+	m_cmds_help["ISON"] = "ISON <nickname>{<nickname>} : Checks if the nickname(s) are online";
 }
