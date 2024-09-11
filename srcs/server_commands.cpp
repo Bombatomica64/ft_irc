@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 16:42:18 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 17:44:26 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -405,7 +405,7 @@ bool Server::invite(int client, std::string message)
 		chan->add_invite(split_msg[1]);
 		m_clients[client]->send_message(":irc 341 " + m_clients[client]->get_nick() + " " + split_msg[1] + " " + split_msg[2]);
 		send_msg_to_channel(-1, chan->get_name(), ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " INVITE " + split_msg[1] + " " + split_msg[2] + "\r\n");
-		get_client_by_nick(split_msg[1])->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " INVITE " + split_msg[1] + " " + split_msg[2] + "\r\n");
+		get_client_by_nick(split_msg[1])->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " INVITE " + split_msg[1] + " " + split_msg[2]);
 		return true;
 	}
 
@@ -591,34 +591,49 @@ bool Server::kick(int client, std::string message)
 		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " KICK :Not enough parameters");
 		return true;
 	}
-	Channel *chan = get_channel(split_msg[1]);
+	std::vector<std::string> kick_channels = split(split_msg[1], ",");
+	std::vector<std::string> kick_clients = split(split_msg[2], ",");
+	for (std::vector<std::string>::iterator it = kick_channels.begin(); it != kick_channels.end(); ++it)
+	{
+		for (std::vector<std::string>::iterator it2 = kick_clients.begin(); it2 != kick_clients.end(); ++it2)
+		{
+			kick_in_loop(client, *it, *it2, kick_msg);
+		}
+	}
+	return true;
+}
+
+
+bool Server::kick_in_loop(int client, std::string kick_chan, std::string kick_client, std::string kick_msg)
+{
+	Channel *chan = get_channel(kick_chan);
 	if (!chan)
 	{
-		write_to_client(client, ":irc 403 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such channel");
+		write_to_client(client, ":irc 403 " + m_clients[client]->get_nick() + " " + kick_chan + " :No such channel");
 		return true;
 	}
 	if (!chan->is_client_in(m_clients[client]->get_nick()))
 	{
-		write_to_client(client, ":irc 442 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not on that channel");
+		write_to_client(client, ":irc 442 " + m_clients[client]->get_nick() + " " + kick_chan + " :You're not on that channel");
 		return true;
 	}
 	if (!chan->is_op(m_clients[client]->get_nick()))
 	{
-		write_to_client(client, ":irc 482 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :You're not channel operator");
+		write_to_client(client, ":irc 482 " + m_clients[client]->get_nick() + " " + kick_chan + " :You're not channel operator");
 		return true;
 	}
-	if (!chan->is_client_in(split_msg[2]))
+	if (!chan->is_client_in(kick_client))
 	{
-		if (get_client_by_nick(split_msg[2]) == NULL)
-			write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[2] + " :No such nick/channel");
+		if (get_client_by_nick(kick_client) == NULL)
+			write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + kick_client + " :No such nick/channel");
 		else
-			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + split_msg[2] + " " + split_msg[1] + " :They aren't on that channel");
+			write_to_client(client, ":irc 441 " + m_clients[client]->get_nick() + " " + kick_client + " " + kick_chan + " :They aren't on that channel");
 		return true;
 	}
-	write_to_client(get_client_by_nick(split_msg[2])->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
-	send_msg_to_channel(-1, split_msg[1], ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " KICK " + split_msg[1] + " " + split_msg[2] + " :" + kick_msg);
-	chan->remove_client(split_msg[2], *(get_client_by_nick(split_msg[2])));
-	// chan->add_ban(split_msg[2]);
+	write_to_client(get_client_by_nick(kick_client)->get_clientSocket(), ":" + m_clients[client]->get_nick() + " KICK " + kick_chan + " " + kick_client + " :" + kick_msg);
+	send_msg_to_channel(-1, kick_chan, ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " KICK " + kick_chan + " " + kick_client + " :" + kick_msg);
+	chan->remove_client(kick_client, *(get_client_by_nick(kick_client)));
+	// chan->add_ban(kick_client);
 	return true;
 }
 
