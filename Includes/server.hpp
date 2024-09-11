@@ -58,7 +58,7 @@ class Server
 		 * @brief Construct a new Server object
 		 * 
 		 * @warning 🟥 ctrl c con nc manda messaggio error: client failed, ah, e se sei dentro un canale crasha, forse.
-		 * @warning 🟨 missing NOTICE, WHOIS, LIST
+		 * @warning 🟨 missing NOTICE, WHOIS, LIST, ISON
 		 * 
 		 * @note 🟩 info (help) done
 		 * @note 🟨 se spammi ping crasha se non ottimizzato
@@ -271,8 +271,6 @@ class Server
 		 */
 		bool userhost(int client, std::string cmd);
 
-		bool info(int client, std::string cmd);
-
 		/**
 		 * @brief Lists the channel on the server.
 		 * 
@@ -280,6 +278,8 @@ class Server
 		 */
 		bool list(int client, std::string cmd);
 
+		bool info(int client, std::string cmd);
+		bool ison(int client, std::string cmd);
 	public:
 		class clientSocketException : public std::exception
 		{
