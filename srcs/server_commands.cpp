@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 15:20:57 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 16:42:18 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ bool Server::privmsg(int client, std::string message)
 			if (get_client_by_nick(*it) == NULL)
 			{
 				m_clients[client]->send_message(":irc 401 " + m_clients[client]->get_nick() + " " + *it + " :No such nick/channel");
-				continue ;
+				continue;
 			}
 			if (!this->get_client_by_nick(*it)->send_message(to_send))
 				return false;
@@ -300,7 +300,7 @@ bool Server::list(int client, std::string params)
 		{
 			m_clients[client]->send_message(":irc 322 " + m_clients[client]->get_nick() + " " + it->first + " " + NumberToString(it->second->get_clients().size()) + " :" + it->second->get_topic());
 		}
-		m_clients[client]->send_message(":irc 323 " + m_clients[client]->get_nick() + " :End of /LIST");	
+		m_clients[client]->send_message(":irc 323 " + m_clients[client]->get_nick() + " :End of /LIST");
 	}
 	else
 	{
@@ -403,8 +403,9 @@ bool Server::invite(int client, std::string message)
 	if (split_msg.size() == 3)
 	{
 		chan->add_invite(split_msg[1]);
-		get_client_by_nick(split_msg[1])->send_message(":" + m_clients[client]->get_nick() + " 341 " + split_msg[1] + " " + split_msg[2]);
-		// send_msg_to_channel(-1, chan->get_name(), "INVITE " + split_msg[2] + " " + m_clients[client]->get_nick());
+		m_clients[client]->send_message(":irc 341 " + m_clients[client]->get_nick() + " " + split_msg[1] + " " + split_msg[2]);
+		send_msg_to_channel(-1, chan->get_name(), ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " INVITE " + split_msg[1] + " " + split_msg[2] + "\r\n");
+		get_client_by_nick(split_msg[1])->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " INVITE " + split_msg[1] + " " + split_msg[2] + "\r\n");
 		return true;
 	}
 
@@ -623,35 +624,35 @@ bool Server::kick(int client, std::string message)
 
 bool Server::cap(int client, std::string message)
 {
-    std::cout << BRIGHT_GREEN + message + RESET << std::endl;
+	std::cout << BRIGHT_GREEN + message + RESET << std::endl;
 
-    if (message.find("LS 302") != std::string::npos)
-    {
-        // Advertise supported capabilities
-        std::string capabilities = "away-notify invite-notify";
-        write_to_client(client, "CAP * LS :" + capabilities);
-        return true;
-    }
-    else if (message.find("REQ") != std::string::npos)
-    {
-        // Extract the requested capabilities from the message
-        std::string requested_caps = message.substr(message.find("REQ :") + 5);
-        std::cout << "requested_caps: |" << requested_caps << "|" << std::endl;
-        write_to_client(client, "CAP * ACK :" + requested_caps);
-        return true;
-    }
-    else if (message.find("END") != std::string::npos)
-    {
-        // Acknowledge the end of capability negotiation
-        write_to_client(client, "CAP * ACK :");
-        return true;
-    }
-    else
-    {
-        // Handle other CAP subcommands if necessary
-        write_to_client(client, "CAP * NAK :");
-        return true;
-    }
+	if (message.find("LS 302") != std::string::npos)
+	{
+		// Advertise supported capabilities
+		std::string capabilities = "away-notify invite-notify";
+		write_to_client(client, "CAP * LS :" + capabilities);
+		return true;
+	}
+	else if (message.find("REQ") != std::string::npos)
+	{
+		// Extract the requested capabilities from the message
+		std::string requested_caps = message.substr(message.find("REQ :") + 5);
+		std::cout << "requested_caps: |" << requested_caps << "|" << std::endl;
+		write_to_client(client, "CAP * ACK :" + requested_caps);
+		return true;
+	}
+	else if (message.find("END") != std::string::npos)
+	{
+		// Acknowledge the end of capability negotiation
+		write_to_client(client, "CAP * ACK :");
+		return true;
+	}
+	else
+	{
+		// Handle other CAP subcommands if necessary
+		write_to_client(client, "CAP * NAK :");
+		return true;
+	}
 }
 
 bool Server::ping(int client, std::string message)
@@ -711,7 +712,7 @@ bool Server::who(int client, std::string message)
 			Client *chan_client = get_client_by_nick(*it);
 			if (chan_client)
 			{
-				std::string msgwho = ":irc 352 " + split_msg[1] + " " + m_clients[client]->get_nick() + " " +
+				std::string msgwho = ":irc 352 " + m_clients[client]->get_nick() + " " + split_msg[1] + " " +
 									 chan_client->get_user() + " " + chan_client->get_hostname() + " " +
 									 chan_client->get_servername() + " " + chan_client->get_nick() + " H :0 " +
 									 chan_client->get_realname();
@@ -800,7 +801,8 @@ bool Server::info(int client, std::string message)
 			m_clients[client]->send_message("Explanation of command " + split_msg[1] + ": " + m_cmds_help[split_msg[1]]);
 		}
 		else
-			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");;
+			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
+		;
 	}
 	else
 		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
@@ -821,6 +823,8 @@ bool Server::ison(int client, std::string params)
 		if (get_client_by_nick(*it) != NULL)
 			response += *it + " ";
 	}
+	if (response == ":irc 303 " + m_clients[client]->get_nick() + " :")
+		response = ":irc 303 " + m_clients[client]->get_nick() + " :No such nick";
 	write_to_client(client, response);
 	return true;
 }
