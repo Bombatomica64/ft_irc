@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 17:44:26 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/11 17:54:24 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -734,7 +734,7 @@ bool Server::who(int client, std::string message)
 				write_to_client(client, msgwho);
 			}
 		}
-		write_to_client(client, ":irc 315 " + split_msg[1] + " :End of /WHO list");
+		write_to_client(client, ":irc 315 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :End of /WHO list");
 	}
 	return true;
 }

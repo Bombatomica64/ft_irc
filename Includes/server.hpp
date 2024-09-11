@@ -6,7 +6,7 @@
 /*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 17:44:02 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/11 17:49:18 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,8 +190,8 @@ class Server
 		 * 
 		 * @note KICKㅤ#<channel>ㅤ<user>ㅤ[:<message>]
 		 * @warning 🟩 non manda ancora il messaggio giusto a remove client e crasha il server 😁. ops per ora ho commentato i messaggi di kick per usare quelli di part. spostato i messaggi di part fuori da remove client. riscritti i messaggi di kick
+		 * @warning 🟨 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 * 
-		 * @warning 🟥 #<channel>{,#<channel>} <user>{,<user>} [:<comment>]
 		 * @warning 🟥 non puoi kickarti da solo, secondo Gu. ma secondo me e lore si 
 		 */
 		bool kick(int client, std::string cmd);
