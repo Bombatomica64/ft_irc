@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 12:54:35 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 15:11:59 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class Server
 		 * @warning 🟨 missing NOTICE, WHOIS, LIST, ISON
 		 * 
 		 * @note 🟩 info (help) done
-		 * @note 🟥 se spammi ping crasha se non ottimizzato
+		 * @note 🟨 se spammi ping crasha se non ottimizzato
 		 * @note 🟩 aprendo 2 hexchat, il secondo dovra' cambiare nick, 
 		 * facendo crahare il server. ora semplicemente non contina con USER? perche' semplicemente hexchat l'aveva gia mandato, quindi sono io stronzo che dopo il suo secondo tentativo di NICK devo rimandare USER
 		 * @note 🟩 se il terminale e' troppo piccolo, crasha all'avvio. anche se si avvia e poi lo rimpicciolisci, alla chiusura crasha 😂 perche' size_t ha deciso di interpretare -2 come 18446744073709551614
@@ -145,7 +145,7 @@ class Server
 		 * @note PRIVMSGㅤ<receiver>{,<receiver>}ㅤ:<message>
 		 * @note users or channels
 		 * 
-		 * @warning 
+		 * @warning
 		 */
 		bool privmsg(int client, std::string cmd);
 		
@@ -218,8 +218,8 @@ class Server
 		 * @note 🟨 -o ora funziona
 		 * @warning 🟨 puoi rimuovere tutti da operatore, incluso te stesso (il canale rimane senza operatore). se poi uno esce l'altro diventa operatore (anche se quello uscito non lo era). aggiunto il controllo, con la frase a casp: You're the only operator
 		 * @warning 🟧 vedi te se cambiare il controllo dei numeri negativi e 0 con il controllo se < degli utenti nel canale, allora errore. per me e' piu' corretto cosi'
+		 * @warning 🟨 i messaggi di mode mandano a tutto il canale qualcosa? solo +o lo fa (giustamente). +k +l non mandano la modifica effettuata a titti, per qualche motivo aggiungo anche gli altri
 		 * 
-		 * @warning 🟥 i messaggi di mode mandano a tutto il canale qualcosa? solo +o lo fa (giustamente)
 		 */
 		bool mode(int client, std::string cmd);
 		

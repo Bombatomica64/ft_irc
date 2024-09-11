@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 11:01:50 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 13:11:12 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,9 +199,15 @@ void	Channel::modify_invite(Client &client, std::string parameters, bool what)
 	(void)parameters;
 	bool is_mod = m_ops.find(client.get_nick()) != m_ops.end();
 	if (what && is_mod)
+	{
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +i\r\n");
 		m_modes['i'] = 1;
+	}
 	else if (!what && is_mod)
+	{
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -i\r\n");
 		m_modes['i'] = 0;
+	}
 	else
 	{
 		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
@@ -216,17 +222,20 @@ void	Channel::modify_key_mode(Client &client, std::string parameters, bool what)
 	{
 		m_modes['k'] = 1;
 		m_key = parameters;
-		client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +k " + m_key + "\r\n");
+		//client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +k " + m_key);
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +k :" + m_key + "\r\n");
+		
 	}
 	else if (!what && is_mod)
 	{
 		m_modes['k'] = 0;
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -k\r\n");
+		
 		m_key = "";
 	}
 	else
 	{
 		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
-		// std::cerr << "You are not an operator" << std::endl;
 	}
 }
 /**
@@ -246,7 +255,7 @@ void	Channel::topuc(Client &client, std::string parameters)
 		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
 		return;
 	}
-	m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic);
+	m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
 }
 
 void	Channel::modify_topic_mode(Client &client, std::string parameters, bool what)
@@ -256,13 +265,17 @@ void	Channel::modify_topic_mode(Client &client, std::string parameters, bool wha
 	{
 		m_modes['t'] = 1;
 		if (!parameters.empty())
+		{
 			m_topic = parameters;
+			topuc(client, m_topic);
+		}
 		// client.send_message(":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic + "\r\n");
-		send_topic(client);
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +t" + "\r\n");
 	}
 	else if (!what && is_mod)
 	{
 		m_modes['t'] = 0;
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -t\r\n");
 		if (parameters.find(" ") != std::string::npos)
 			m_topic = parameters.substr(parameters.find(" ") + 1);
 	}
@@ -301,6 +314,8 @@ void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 	else if (!what && is_mod)
 	{
 		m_modes['l'] = 0;
+		m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " -l\r\n");
+
 	}
 	else
 	{
