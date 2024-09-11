@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 16:45:15 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 16:57:03 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,7 +183,9 @@ void	Coucou::parse_message(Client& client, std::string message)
 void	Coucou::send_message(Client& client, std::string message)
 {
 	message.insert(0, ":Coucou!coucou@Coucou PRIVMSG " + client.get_nick() + " :");
-	client.send_message(message);
+	std::vector<std::string> split_msg = split(message, "\n");
+	for (std::vector<std::string>::iterator it = split_msg.begin(); it != split_msg.end(); it++)
+		client.send_message(*it);
 }
 
 std::string Coucou::get_name(Client& client) const
