@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 13:00:41 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 15:20:57 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ bool Server::privmsg(int client, std::string message)
 				return false;
 			break;
 		default:
-			if (*it == "coucou[bot]" || *it == "coucou")
+			if (*it == "coucou[bot]" || *it == "coucou" || *it == "Coucou" || *it == "Coucou[bot]")
 			{
 				m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :") + 2, to_send.size()));
 				return true;
@@ -141,16 +141,13 @@ bool Server::privmsg(int client, std::string message)
 			// send to user
 			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
 			std::cout << "spcific_send: " << spcific_send << std::endl;
-			// if (spcific_send.find(" :DCC") == std::string::npos)
-			// {
+			if (get_client_by_nick(*it) == NULL)
+			{
+				m_clients[client]->send_message(":irc 401 " + m_clients[client]->get_nick() + " " + *it + " :No such nick/channel");
+				continue ;
+			}
 			if (!this->get_client_by_nick(*it)->send_message(to_send))
 				return false;
-			// }
-			// else
-			// {
-			// 	std::cout << "DCC" << std::endl;
-			// 	handle_file_request(client, spcific_send, *it);
-			// }
 			break;
 			spcific_send = "";
 		}
@@ -825,6 +822,7 @@ bool Server::ison(int client, std::string params)
 			response += *it + " ";
 	}
 	write_to_client(client, response);
+	return true;
 }
 
 bool Server::is_client_in_channel(std::string channel, std::string client)

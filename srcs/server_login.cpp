@@ -355,7 +355,7 @@ void Server::login(int client, std::string msg)
 				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- try not to break anything");
 				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- ");
 				m_clients[client]->send_message(":irc 376 " + m_clients[client]->get_nick() + " :- End of MOTD command");
-				m_clients[client]->send_message(":irc 335 coucou coucou :is a Bot on IRCv3");
+				m_clients[client]->send_message(":Coucou!coucou@Coucou PRIVMSG " + m_clients[client]->get_nick() + " :Coucou is here to help you");
 			}
 			else
 				write_to_client(client, ":irc USER :You must send a username first");

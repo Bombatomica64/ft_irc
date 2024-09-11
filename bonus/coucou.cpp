@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coucou.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/04 16:41:52 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/11 15:23:13 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void	Coucou::parse_message(Client& client, std::string message)
 
 void	Coucou::send_message(Client& client, std::string message)
 {
-	message.insert(0, ":" + this->get_name(client) + "!" + client.get_nick() + " ");
+	message.insert(0, ":Coucou!coucou@Coucou PRIVMSG " + client.get_nick() + " :");
 	client.send_message(message);
 }
 
