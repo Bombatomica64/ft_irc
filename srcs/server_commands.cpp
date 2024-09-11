@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 16:48:39 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 10:38:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -589,27 +589,35 @@ bool Server::kick(int client, std::string message)
 
 bool Server::cap(int client, std::string message)
 {
-	if (message.find("LS 302") != std::string::npos)
-	{
-		// Advertise supported capabilities
-		write_to_client(client, "CAP * LS :multi-prefix away-notify invite-notify");
-		return true;
-	}
-	else if (message.find("REQ") != std::string::npos)
-	{
-		// Extract the requested capabilities from the message
-		std::string requested_caps = message.substr(message.find("REQ :") + 5);
-		std::cout << "requested_caps: |" << requested_caps << "|" << std::endl;
-		write_to_client(client, "CAP * ACK :" + requested_caps);
-		return true;
-	}
-	else if (message.find("END") != std::string::npos)
-	{
-		write_to_client(client, "CAP * ACK :multi-prefix away-notify");
-		return true;
-	}
-	write_to_client(client, "CAP * NAK :multi-prefix away-notify invite-notify");
-	return true;
+    std::cout << BRIGHT_GREEN + message + RESET << std::endl;
+
+    if (message.find("LS 302") != std::string::npos)
+    {
+        // Advertise supported capabilities
+        std::string capabilities = "away-notify invite-notify";
+        write_to_client(client, "CAP * LS :" + capabilities);
+        return true;
+    }
+    else if (message.find("REQ") != std::string::npos)
+    {
+        // Extract the requested capabilities from the message
+        std::string requested_caps = message.substr(message.find("REQ :") + 5);
+        std::cout << "requested_caps: |" << requested_caps << "|" << std::endl;
+        write_to_client(client, "CAP * ACK :" + requested_caps);
+        return true;
+    }
+    else if (message.find("END") != std::string::npos)
+    {
+        // Acknowledge the end of capability negotiation
+        write_to_client(client, "CAP * ACK :");
+        return true;
+    }
+    else
+    {
+        // Handle other CAP subcommands if necessary
+        write_to_client(client, "CAP * NAK :");
+        return true;
+    }
 }
 
 bool Server::ping(int client, std::string message)

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/10 12:27:40 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/11 11:01:50 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,7 +246,7 @@ void	Channel::topuc(Client &client, std::string parameters)
 		client.send_message(":irc 482 " + client.get_nick() + " " + m_name + " :You're not a channel operator");
 		return;
 	}
-	send_topic(client);
+	m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " TOPIC " + m_name + " :" + m_topic);
 }
 
 void	Channel::modify_topic_mode(Client &client, std::string parameters, bool what)
