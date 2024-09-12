@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 17:54:24 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/12 10:52:56 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,15 +421,6 @@ bool Server::quit(int client, std::string message)
 		quit_msg = message.substr(pos + 2);
 	else
 		quit_msg = "Leaving";
-	// if (split_msg.size() == 1)
-	// {
-	// 	m_clients[client]->send_message("QUIT :Leaving");
-	// }
-	// else
-	// {
-	// 	m_clients[client]->send_message("QUIT :" + message.substr(message.find(" :") + 2));
-	// }
-
 	std::map<std::string, Channel *>::iterator it = m_channels.begin();
 	while (it != m_channels.end())
 	{
@@ -550,14 +541,6 @@ bool Server::names(int client, std::string params)
 		}
 		m_clients[client]->send_message(":irc 366 " + m_clients[client]->get_nick() + " " + split_msg[1] + " * :End of /NAMES list");
 	}
-	// if (!message.empty())
-	// {
-	// 	if (client != -1)
-	// 		m_clients[client]->send_message(message);
-	// 	else
-	// 		send_msg_to_channel(client, split_msg[1], message);
-	// 	return true;
-	// }
 	return true;
 }
 
@@ -684,23 +667,6 @@ bool Server::ping(int client, std::string message)
 	return false;
 }
 
-// bool Server::who(int client, std::string message)
-// {
-// 	std::vector<std::string> split_msg = split(message, " ");
-// 	if (split_msg.size() < 2)
-// 	{
-// 		write_to_client(client, ":irc 431 " + m_clients[client]->get_nick() + " WHO :No nickname given");
-// 		return true;
-// 	}
-// 	if (get_client_by_nick(split_msg[1]) == NULL || m_channels.find(split_msg[1]) == m_channels.end())
-// 	{
-// 		write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such nick/channel");
-// 		return true;
-// 	}
-// 	write_to_client(client, ":irc 352 " + m_clients[client]->get_nick() + " " + split_msg[1] + " " + m_clients[client]->get_user() + " " + m_clients[client]->get_hostname() + " " + m_clients[client]->get_servername() + " " + split_msg[1] + " H :0 " + m_clients[client]->get_realname());
-// 	return true;
-// }
-
 bool Server::who(int client, std::string message)
 {
 	std::vector<std::string> split_msg = split(message, " ");
@@ -775,8 +741,6 @@ bool Server::nick(int client, std::string message)
 		write_to_client(client, ":irc 432 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :Erroneous nickname");
 		return true;
 	}
-	// m_clients[client]->send_message(":" + m_clients[client]->get_nick() + " changed his nickname to " + split_msg[1]);
-
 	// se il client e' in un canale, manda il messaggio di cambio nick a tutti gli utenti del canale. cosi' per ogni canale in cui e' presente
 	std::string old_nick = m_clients[client]->get_nick();
 	std::string new_nick = split_msg[1];
@@ -789,6 +753,10 @@ bool Server::nick(int client, std::string message)
 			it->second->modify_client_nick(old_nick, new_nick);
 			is_in_channel = true;
 		}
+	}
+	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); it++)
+	{
+		it->second->send_message(":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick + "\r\n");
 	}
 
 	if (!is_in_channel)

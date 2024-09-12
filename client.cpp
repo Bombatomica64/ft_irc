@@ -13,7 +13,7 @@ int main() {
 	}
 
 	// Set up server details
-	std::string serverIP = "127.0.0.1"; // Replace with your IRC server IP
+	std::string serverIP = "10.11.6.6"; // Replace with your IRC server IP
 	int serverPort = 8000; // Replace with your IRC server port
 
 	// Set up server address

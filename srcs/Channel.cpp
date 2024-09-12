@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 12:37:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 13:11:12 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:27:52 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -483,5 +483,15 @@ void	Channel::modify_client_nick(std::string old_nick, std::string new_nick)
 	{
 		m_clients.erase(old_nick);
 		m_clients.insert(new_nick);
+	}
+	if (m_ops.find(old_nick) != m_ops.end())
+	{
+		m_ops.erase(old_nick);
+		m_ops.insert(new_nick);
+	}
+	if (m_bans.find(old_nick) != m_bans.end())
+	{
+		m_bans.erase(old_nick);
+		m_bans.insert(new_nick);
 	}
 }
