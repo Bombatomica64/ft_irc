@@ -6,18 +6,18 @@
 #    By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:29:36 by lmicheli          #+#    #+#              #
-#    Updated: 2024/09/11 15:35:42 by lmicheli         ###   ########.fr        #
+#    Updated: 2024/09/12 17:45:24 by lmicheli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ircserv
+BOT = bot
 
 SRCS =	srcs/main.cpp \
 		srcs/parse.cpp \
 		srcs/Client.cpp  \
 		srcs/Channel.cpp  \
 		srcs/Hashing.cpp   \
-		bonus/coucou.cpp    \
 		srcs/server_login.cpp \
 		srcs/server_commands.cpp \
 
@@ -25,6 +25,12 @@ SRCS =	srcs/main.cpp \
 UTILS = utils/string_utils.cpp
 
 SRC = $(SRCS) $(UTILS)
+
+BOTSRCS =	bonus/coucou.cpp \
+		bonus/bot.cpp \
+		srcs/Client.cpp  \
+		utils/string_utils.cpp \
+		srcs/parse.cpp
 
 INC = -I Includes
 
@@ -43,13 +49,20 @@ all: $(NAME)
 $(NAME):
 	$(CC) $(INC) $(SRC) -o $(NAME) $(CRYPTO)
 
+bot:
+	$(CC) $(INC) $(BOTSRCS) -o $(BOT) 
+
 clean:
 	rm -f $(OBJS)
 
 fclean: clean
 	rm -f $(NAME)
-	rm -f test
+	rm -f $(BOT)
 
 re: fclean all
+
+rebot:
+	rm -f $(BOT)
+	$(CC) $(INC) $(BOTSRCS) -o $(BOT)
 
 .PHONY: all clean fclean re

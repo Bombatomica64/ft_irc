@@ -19,7 +19,6 @@ Server::~Server()
 Server::Server(std::string port, std::string psw)
 {
 	// Variables
-	m_coucou = Coucou();
 	get_cmds();
 	get_cmds_help();
 	m_date = get_time(0);

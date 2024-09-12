@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/28 12:59:58 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/12 17:10:51 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Client
 	public:
 		//constructors
 		Client(Client const &src);
+		Client(std::string nick, std::string user, std::string host);
 		Client(int clientSocket, struct sockaddr_in clientAddr);
 		~Client();
 		Client &operator=(Client const &src);
