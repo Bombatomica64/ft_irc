@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 10:52:56 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/12 16:15:40 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ void Server::parse_cmds(int client, std::string cmd)
 			m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command"); //??????
 	}
 	else if (m_clients[client]->parse_cmds(cmd) == false)
-		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
+		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
 	else
-		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command\n");
+		m_clients[client]->send_message(":irc 421 " + m_clients[client]->get_nick() + " " + split_cmd[0] + " :Unknown command");
 }
 
 //: juco!~juco@hostname.com PRIVMSG #channel :Hello world
@@ -272,7 +272,7 @@ bool Server::part(int client, std::string msg)
 		Channel *chan = this->get_channel(*it);
 		if (chan && chan->is_client_in(m_clients[client]->get_nick()))
 		{
-			m_clients[client]->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PART " + chan->get_name() + " :" + msg_reason + "\r\n");
+			m_clients[client]->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PART " + chan->get_name() + " :" + msg_reason);
 			send_msg_to_channel(-1, chan->get_name(), ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PART " + chan->get_name() + " :" + msg_reason + "\r\n");
 			chan->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
 		}
@@ -756,12 +756,12 @@ bool Server::nick(int client, std::string message)
 	}
 	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 	{
-		it->second->send_message(":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick + "\r\n");
+		it->second->send_message(":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick);
 	}
 
 	if (!is_in_channel)
 	{
-		write_to_client(client, ":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick + "\r\n");
+		write_to_client(client, ":" + old_nick + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " NICK :" + new_nick);
 	}
 
 	m_clients[client]->set_nick(new_nick);
