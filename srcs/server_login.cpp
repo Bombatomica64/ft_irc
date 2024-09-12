@@ -378,23 +378,58 @@ void Server::register_client(int client)
 {
 	char temp[BUFFER_SIZE] = {0};
 	int total_ret;
-
 	std::string msg = "";
-	total_ret = recv(client, temp, BUFFER_SIZE, 0);
+	std::string temp_msg = "";
+
+	do
+    {
+        total_ret = recv(client, temp, BUFFER_SIZE - 1, 0);
+		if (total_ret == -1)
+			continue;
+        if (total_ret <= 0)
+        {
+            // Gestisci la disconnessione o l'errore
+            std::cout << "Error: " << strerror(errno) << std::endl;
+            // throw Server::ClientException();
+        }
+
+        temp[total_ret] = '\0'; // Assicurati che il buffer sia terminato con null
+        std::string temp_str(temp);
+
+        // Rimuovi tutti i caratteri Ctrl+D dall'input
+        temp_str.erase(std::remove(temp_str.begin(), temp_str.end(), '\004'), temp_str.end());
+
+        temp_msg += temp_str;
+    }
+    while (temp_msg.find('\n') == std::string::npos);
+
+
+	// do
+	// {
+	// 	total_ret = recv(client, temp, BUFFER_SIZE, 0);
+	// 	temp[total_ret] = '\0';
+	// 	temp_msg.append(temp);
+	// 	if (total_ret == 0)
+	// 		break;
+	// }
+	// while (temp_msg.find('\n') == std::string::npos || temp_msg.find('\004') != std::string::npos);
+
+
+
+
 	std::cerr << "size:" << total_ret << std::endl;
 	if (total_ret == -1 || total_ret == 0)
 	{
 		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
 		throw Server::ClientException();
 	}
-	msg.append(temp);
+	msg.append(temp_msg);
 	if (msg.empty())
 	{
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
 	}
 
 	//hexchat
-	//e non e' alla fine del messaggio
 	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
 	{
 		msg = msg.substr(0, msg.size() - 2);
