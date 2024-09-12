@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 10:52:56 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/12 15:07:46 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,14 +133,13 @@ bool Server::privmsg(int client, std::string message)
 				return false;
 			break;
 		default:
-			if (*it == "coucou[bot]" || *it == "coucou" || *it == "Coucou" || *it == "Coucou[bot]")
-			{
-				m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :") + 2, to_send.size()));
-				return true;
-			}
+			// if (*it == "coucou[bot]" || *it == "coucou" || *it == "Coucou" || *it == "Coucou[bot]")
+			// {
+			// 	m_coucou.parse_message(*m_clients[client], to_send.substr(to_send.find(" :") + 2, to_send.size()));
+			// 	return true;
+			// }
 			// send to user
 			spcific_send = to_send.insert(to_send.find("PRIVMSG ") + strlen("PRIVMSG "), *it);
-			std::cout << "spcific_send: " << spcific_send << std::endl;
 			if (get_client_by_nick(*it) == NULL)
 			{
 				m_clients[client]->send_message(":irc 401 " + m_clients[client]->get_nick() + " " + *it + " :No such nick/channel");
@@ -885,14 +884,3 @@ std::string Server::get_ip() const
 //
 // }
 
-/*Received: {PRIVMSG gu :DCC SEND ComicMono.ttf 8 1026 18724}
-split_cmd: |PRIVMSG
-gu
-:DCC
-SEND
-ComicMono.ttf
-8
-1026
-18724
-|
- PRIVMSG gu :DCC SEND ComicMono.ttf 8 1026 18724*/
