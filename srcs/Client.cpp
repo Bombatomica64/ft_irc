@@ -64,7 +64,7 @@ Client& Client::operator=(Client const &src)
 
 Client::~Client()
 {
-	std::cout << BLUE << "Client " << m_nick << " disconnected: " << __FILE__ << " at line " << __LINE__ << RESET<< std::endl;
+	// std::cout << BLUE << "Client " << m_nick << " disconnected: " << __FILE__ << " at line " << __LINE__ << RESET<< std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, Client const &src)

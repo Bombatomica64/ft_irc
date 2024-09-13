@@ -276,11 +276,11 @@ void	Coucou::print_relations(Client& client)
 	{
 		response += it->first + " is ";
 		if (it->second == HAPPY)
-			response += "happy with them\n";
+			response += "happy with them \r\n";
 		else if (it->second == ANGRY)
-			response += "angry with them\n";
+			response += "angry with them \r\n";
 		else
-			response += "normal with them\n";
+			response += "normal with them \r\n";
 		it++;
 	}
 	send_message(client, response);
