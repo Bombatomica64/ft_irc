@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:10:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 17:36:41 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/13 12:37:43 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 void signal_handler(int signum)
 {
-	std::cout << "Caught signal " << signum << std::endl;
+	std::cout << "\nCaught signal " << signum << std::endl;
 	throw std::runtime_error("Bot closed");
 }
 

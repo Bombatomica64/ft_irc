@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 17:55:28 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/13 12:40:55 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,12 +215,20 @@ void	Coucou::parse_message(Client& client, std::string message)
 //todo add back :Coucou!coucou@Coucou 
 void	Coucou::send_message(Client& client, std::string message)
 {
+	std::cerr << "sending message: "<< message << std::endl;
 	if (client.get_nick() == "Coucou")
 		return;
-	message.insert(0, "PRIVMSG " + client.get_nick() + " :");
-	if (send(m_socket, message.c_str(), message.size(), 0) == -1)
+	if (message.find("\r\n") == std::string::npos)
 	{
-		throw std::runtime_error("Failed to send message.");
+		message.insert(0, "PRIVMSG " + client.get_nick() + " :");
+		client.send_message(message);
+		return;
+	}
+	std::vector<std::string> split_msg = split(message, "\r\n");
+	for (std::vector<std::string>::iterator it = split_msg.begin(); it != split_msg.end(); it++)
+	{
+		it->insert(0, "PRIVMSG " + client.get_nick() + " :");
+		client.send_message(*it);
 	}
 }
 
