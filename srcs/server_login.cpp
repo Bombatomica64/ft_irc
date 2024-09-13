@@ -373,73 +373,72 @@ void Server::login(int client, std::string msg)
 	}
 }
 
+std::string Server::receive_complete_message(int client)
+{
+	std::string complete_message;
+
+	char buffer[BUFFER_SIZE] = {0};
+	ssize_t	m_ret;
+
+	while (true)
+	{
+		m_ret = recv(client, buffer, BUFFER_SIZE, 0);
+		if (m_ret == -1)
+            continue;
+		else if (m_ret == 0)
+		{
+			std::cerr << "Client disconnected" << std::endl;
+			throw Server::ClientException();
+		}
+		buffer[m_ret] = '\0';
+		std::string temp_msg(buffer);
+		temp_msg.erase(std::remove(temp_msg.begin(), temp_msg.end(), '\004'), temp_msg.end()); // Rimuove Ctrl+D
+		complete_message.append(temp_msg);
+		if (complete_message.find('\n') != std::string::npos) {
+			break;
+		}
+	}
+
+	std::cout << "Received: [" << complete_message << "]" << std::endl;
+	return complete_message;
+}
+
 void Server::register_client(int client)
 {
-	// do
-    // {
-    //     total_ret = recv(client, temp, BUFFER_SIZE - 1, 0);
-	// 	if (total_ret == -1 && std::string(temp).find('\n') == std::string::npos)
-	// 		continue;
-    //     temp[total_ret] = '\0';
-    //     std::string temp_str(temp);
-    //     // Rimuovi tutti i caratteri Ctrl+D dall'input
-    //     temp_str.erase(std::remove(temp_str.begin(), temp_str.end(), '\004'), temp_str.end());
-    //     temp_msg += temp_str;
-    // }
-    // while (temp_msg.find('\n') == std::string::npos);
+        std::string msg = receive_complete_message(client);
+		// if (msg.find('\n') != std::string::npos)
+		// 	complete_message.clear();
+        if (msg.empty()) {
+            std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+        }
 
-
-	char temp_msg[BUFFER_SIZE] = {0};
-
-	ssize_t total_ret = recv(client, temp_msg, BUFFER_SIZE, 0);
-	temp_msg[total_ret] = '\0';
-	std::string msg(temp_msg);
-	// msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
-	std::cerr << "size:" << total_ret << std::endl;
-	if (total_ret == -1 || total_ret == 0)
-	{
-		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
-		throw Server::ClientException();
-	}
-	if (msg.empty())
-	{
-		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
-	}
-
-	//hexchat
-	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
-	{
-		msg = msg.substr(0, msg.size() - 2);
-	}
-	else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n")
-	{
-		msg = msg.substr(0, msg.size() - 1);
-	}
-	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
-	if (msg.find("\r\n") != std::string::npos)
-	{
-		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
-		for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++)
-		{
-			*it += "\r\n";
-			if ((*it).find("USER") != std::string::npos)
-				{m_clients[client]->set_str_user(*it);
-				std::cerr <<YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;}
-			login (client, *it);
-			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
-				login (client, m_clients[client]->get_str_user());
-		}
-	}
-	else
-	{
-		msg += "\r\n";
-		login(client, msg);
-		if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
-		{
-			login (client, m_clients[client]->get_str_user());
-		}
-
-	}
+        //hexchat
+        if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n") {
+            msg = msg.substr(0, msg.size() - 2);
+        } else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n") {
+            msg = msg.substr(0, msg.size() - 1);
+        }
+        std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
+        if (msg.find("\r\n") != std::string::npos) {
+            std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
+            for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++) {
+                *it += "\r\n";
+                if ((*it).find("USER") != std::string::npos) {
+                    m_clients[client]->set_str_user(*it);
+                    std::cerr << YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;
+                }
+                login(client, *it);
+                if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2) {
+                    login(client, m_clients[client]->get_str_user());
+                }
+            }
+        } else {
+            msg += "\r\n";
+            login(client, msg);
+            if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2) {
+                login(client, m_clients[client]->get_str_user());
+            }
+        }
 }
 
 void Server::get_cmds_help( void )
