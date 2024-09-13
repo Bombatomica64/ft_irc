@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/11 17:49:18 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/12 15:08:25 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ class Server
 		struct sockaddr_in	m_addr;
 		std::string			m_ip;
 
-		//bot
-		Coucou				m_coucou;
+		//bot is now a client
+		// Coucou				m_coucou;
 		
 		//other
 		std::string			m_date;

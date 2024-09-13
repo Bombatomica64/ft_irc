@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/08/28 12:57:02 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/12 17:12:57 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,20 @@ Client::Client(int clientSocket, struct sockaddr_in clientAddr)
 	m_registered = false;
 	m_connected = false;
 	m_reg_steps = 0;
-	// m_cmds["NICK"] = &Client::nick;
-	// m_cmds["OPER"] = &Client::oper;
-	// m_cmds["KICK"] = &Client::kick;
-	// m_cmds["PING"] = &Client::ping;
 	m_cmds["AWAY"] = &Client::away;
-	// m_cmds["TOPIC"] = &Client::topic;
+}
+
+Client::Client(std::string nick, std::string user, std::string host)
+{
+	str_user = "";
+	nickfailed = false;
+	m_nick = nick;
+	m_user = user;
+	m_hostname = host;
+	m_registered = false;
+	m_connected = false;
+	m_reg_steps = 0;
+	m_cmds["AWAY"] = &Client::away;
 }
 
 Client::Client(Client const &src)
@@ -56,7 +64,7 @@ Client& Client::operator=(Client const &src)
 
 Client::~Client()
 {
-	std::cout << BLUE << "Client " << m_nick << " disconnected: " << __FILE__ << " at line " << __LINE__ << RESET<< std::endl;
+	// std::cout << BLUE << "Client " << m_nick << " disconnected: " << __FILE__ << " at line " << __LINE__ << RESET<< std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, Client const &src)
