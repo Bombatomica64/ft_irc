@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/13 12:40:55 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/13 16:27:14 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,17 +218,25 @@ void	Coucou::send_message(Client& client, std::string message)
 	std::cerr << "sending message: "<< message << std::endl;
 	if (client.get_nick() == "Coucou")
 		return;
-	if (message.find("\r\n") == std::string::npos)
+	if (message.find("DELIMITER") == std::string::npos)
 	{
 		message.insert(0, "PRIVMSG " + client.get_nick() + " :");
-		client.send_message(message);
+		message.append("\r\n");
+		if (send(m_socket, message.c_str(), message.size(), 0) == -1)
+		{
+			throw std::runtime_error("Failed to send message.");
+		}
 		return;
 	}
-	std::vector<std::string> split_msg = split(message, "\r\n");
+	std::vector<std::string> split_msg = split(message, "DELIMITER");
 	for (std::vector<std::string>::iterator it = split_msg.begin(); it != split_msg.end(); it++)
 	{
 		it->insert(0, "PRIVMSG " + client.get_nick() + " :");
-		client.send_message(*it);
+		it->append("\r\n");
+		if (send(m_socket, it->c_str(), it->size(), 0) == -1)
+		{
+			throw std::runtime_error("Failed to send message.");
+		}
 	}
 }
 
@@ -284,11 +292,11 @@ void	Coucou::print_relations(Client& client)
 	{
 		response += it->first + " is ";
 		if (it->second == HAPPY)
-			response += "happy with them \r\n";
+			response += "happy with them DELIMITER";
 		else if (it->second == ANGRY)
-			response += "angry with them \r\n";
+			response += "angry with them DELIMITER";
 		else
-			response += "normal with them \r\n";
+			response += "normal with them DELIMITER";
 		it++;
 	}
 	send_message(client, response);
