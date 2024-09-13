@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:41:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 17:12:57 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/13 09:56:04 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ Client& Client::operator=(Client const &src)
 
 Client::~Client()
 {
-	std::cout << BLUE << "Client " << m_nick << " disconnected: " << __FILE__ << " at line " << __LINE__ << RESET<< std::endl;
+	// std::cout << BLUE << "Client " << m_nick << " disconnected: " << __FILE__ << " at line " << __LINE__ << RESET<< std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, Client const &src)
