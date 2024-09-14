@@ -390,11 +390,10 @@ void Server::register_client(int client)
 
 
 	char temp_msg[BUFFER_SIZE] = {0};
-
 	ssize_t total_ret = recv(client, temp_msg, BUFFER_SIZE, 0);
 	temp_msg[total_ret] = '\0';
 	std::string msg(temp_msg);
-	// msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
+	msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
 	std::cerr << "size:" << total_ret << std::endl;
 	if (total_ret == -1 || total_ret == 0)
 	{
