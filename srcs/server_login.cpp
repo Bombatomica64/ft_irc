@@ -373,6 +373,38 @@ void Server::login(int client, std::string msg)
 	}
 }
 
+std::string Server::receive_complete_message(int client)
+{
+    char buffer[BUFFER_SIZE] = {0};
+    std::string complete_message;
+    int m_ret;
+
+    while (true) {
+        m_ret = recv(client, buffer, BUFFER_SIZE, 0);
+		int i = 0;
+		while (buffer[i] != '\0')
+			i++;
+		if (m_ret != i)
+			continue;
+
+		if (m_ret != -1)
+        	complete_message.append(buffer, m_ret);
+		if (m_ret == -1)
+            continue; // Interruzione da segnale, riprovare
+        else if (m_ret == 0)
+		{
+			std::cerr << "Client disconnected" << std::endl;
+			throw Server::ClientException();
+		}
+            //break; // Connessione chiusa, esci dal ciclo
+
+        if (complete_message.find("\n") != std::string::npos)
+            break; // Messaggio completo ricevuto, esci dal ciclo
+    }
+
+    return complete_message;
+}
+
 void Server::register_client(int client)
 {
 	// do
@@ -405,40 +437,33 @@ void Server::register_client(int client)
 		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
 	}
 
-	//hexchat
-	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
-	{
-		msg = msg.substr(0, msg.size() - 2);
-	}
-	else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n")
-	{
-		msg = msg.substr(0, msg.size() - 1);
-	}
-	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
-	if (msg.find("\r\n") != std::string::npos)
-	{
-		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
-		for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++)
-		{
-			*it += "\r\n";
-			if ((*it).find("USER") != std::string::npos)
-				{m_clients[client]->set_str_user(*it);
-				std::cerr <<YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;}
-			login (client, *it);
-			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
-				login (client, m_clients[client]->get_str_user());
-		}
-	}
-	else
-	{
-		msg += "\r\n";
-		login(client, msg);
-		if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
-		{
-			login (client, m_clients[client]->get_str_user());
-		}
-
-	}
+        //hexchat
+        if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n") {
+            msg = msg.substr(0, msg.size() - 2);
+        } else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n") {
+            msg = msg.substr(0, msg.size() - 1);
+        }
+        std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
+        if (msg.find("\r\n") != std::string::npos) {
+            std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
+            for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++) {
+                *it += "\r\n";
+                if ((*it).find("USER") != std::string::npos) {
+                    m_clients[client]->set_str_user(*it);
+                    std::cerr << YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;
+                }
+                login(client, *it);
+                if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2) {
+                    login(client, m_clients[client]->get_str_user());
+                }
+            }
+        } else {
+            msg += "\r\n";
+            login(client, msg);
+            if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2) {
+                login(client, m_clients[client]->get_str_user());
+            }
+        }
 }
 
 void Server::get_cmds_help( void )
