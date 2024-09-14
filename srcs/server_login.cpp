@@ -375,32 +375,34 @@ void Server::login(int client, std::string msg)
 
 std::string Server::receive_complete_message(int client)
 {
-	std::string complete_message;
+    char buffer[BUFFER_SIZE] = {0};
+    std::string complete_message;
+    int m_ret;
 
-	char buffer[BUFFER_SIZE] = {0};
-	ssize_t	m_ret;
+    while (true) {
+        m_ret = recv(client, buffer, BUFFER_SIZE, 0);
+		int i = 0;
+		while (buffer[i] != '\0')
+			i++;
+		if (m_ret != i)
+			continue;
 
-	while (true)
-	{
-		m_ret = recv(client, buffer, BUFFER_SIZE, 0);
+		if (m_ret != -1)
+        	complete_message.append(buffer, m_ret);
 		if (m_ret == -1)
-            continue;
-		else if (m_ret == 0)
+            continue; // Interruzione da segnale, riprovare
+        else if (m_ret == 0)
 		{
 			std::cerr << "Client disconnected" << std::endl;
 			throw Server::ClientException();
 		}
-		buffer[m_ret] = '\0';
-		std::string temp_msg(buffer);
-		temp_msg.erase(std::remove(temp_msg.begin(), temp_msg.end(), '\004'), temp_msg.end()); // Rimuove Ctrl+D
-		complete_message.append(temp_msg);
-		if (complete_message.find('\n') != std::string::npos) {
-			break;
-		}
-	}
+            //break; // Connessione chiusa, esci dal ciclo
 
-	std::cout << "Received: [" << complete_message << "]" << std::endl;
-	return complete_message;
+        if (complete_message.find("\n") != std::string::npos)
+            break; // Messaggio completo ricevuto, esci dal ciclo
+    }
+
+    return complete_message;
 }
 
 void Server::register_client(int client)
