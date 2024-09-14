@@ -82,7 +82,7 @@ void Server::bind_socket(void)
 
 	m_addr.sin_addr = *addr_list[0];
 
-	if(bind(m_socket, reinterpret_cast<struct sockaddr *>(&m_addr), sizeof(m_addr)) == -1)
+	if (bind(m_socket, reinterpret_cast<struct sockaddr *>(&m_addr), sizeof(m_addr)) == -1)
 	{
 		std::cerr << "Error: socket binding failed - " << strerror(errno) << std::endl;
 		throw Server::BindException();
@@ -186,33 +186,34 @@ void Server::read_from_client(int client)
 		register_client(client);
 		return;
 	}
-	char temp[BUFFER_SIZE] = {0};
-	int total_ret;
+	// char temp[BUFFER_SIZE] = {0};
+	// int total_ret;
 
-	std::string msg = "";
-	total_ret = recv(client, temp, BUFFER_SIZE, 0);
-	std::cerr << total_ret << std::endl;
-	if (total_ret == -1)
-	{
-		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
-		throw Server::ClientException();
-	}
-	temp[total_ret] = '\0';
-	msg.append(temp);
+	// std::string msg = "";
+	// total_ret = recv(client, temp, BUFFER_SIZE, 0);
+	// std::cerr << total_ret << std::endl;
+	// if (total_ret == -1)
+	// {
+	// 	std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
+	// 	throw Server::ClientException();
+	// }
+	// temp[total_ret] = '\0';
+	// msg.append(temp);
 
-	std::cerr << total_ret << std::endl;
+	// std::cerr << total_ret << std::endl;
 	// if (total_ret == -1)
 	// {
 	// 	std::cout << "Error: mannagia a cristo b" << strerror(errno) << std::endl;
 	// } perche' ce ne erano 2?
-	if (total_ret == 0)
-		throw Server::ClientException();
-	if (msg.empty())
-	{
-		std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
-		throw Server::ClientException();
-		return;
-	}
+	// if (total_ret == 0)
+	// 	throw Server::ClientException();
+	// if (msg.empty())
+	// {
+	// 	std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
+	// 	throw Server::ClientException();
+	// 	return;
+	// }
+	std::string msg = receive_complete_message(client);
 	if (msg == "\n")
 		return;
 
@@ -254,7 +255,7 @@ void Server::login(int client, std::string msg)
 	std::cout << RED "Received: [" << msg.substr(0, msg.size() - 2) << "]" << RESET << std::endl; // TODO remove
 	if (msg == "\r\n")
 	{
-		//write_to_client(client, ":irc PASS :You must send a password first");
+		// write_to_client(client, ":irc PASS :You must send a password first");
 		return;
 	}
 	std::vector<std::string> split_msg = split(msg, " ");
@@ -284,7 +285,7 @@ void Server::login(int client, std::string msg)
 		}
 		else
 		{
-			//per quale cavolo di motivo qui non posso scrivere You must send a password first TODO
+			// per quale cavolo di motivo qui non posso scrivere You must send a password first TODO
 			write_to_client(client, ":irc 461 PASS :Not enough parameters"); // ERR_NEEDMOREPARAMS
 		}
 		break;
@@ -375,12 +376,13 @@ void Server::login(int client, std::string msg)
 
 std::string Server::receive_complete_message(int client)
 {
-    char buffer[BUFFER_SIZE] = {0};
-    std::string complete_message;
-    int m_ret;
+	char buffer[BUFFER_SIZE] = {0};
+	std::string complete_message;
+	int m_ret;
 
-    while (true) {
-        m_ret = recv(client, buffer, BUFFER_SIZE, 0);
+	while (true)
+	{
+		m_ret = recv(client, buffer, BUFFER_SIZE, 0);
 		int i = 0;
 		while (buffer[i] != '\0')
 			i++;
@@ -388,91 +390,101 @@ std::string Server::receive_complete_message(int client)
 			continue;
 
 		if (m_ret != -1)
-        	complete_message.append(buffer, m_ret);
+			complete_message.append(buffer, m_ret);
 		if (m_ret == -1)
-            continue; // Interruzione da segnale, riprovare
-        else if (m_ret == 0)
+			continue; // Interruzione da segnale, riprovare
+		else if (m_ret == 0)
 		{
 			std::cerr << "Client disconnected" << std::endl;
 			throw Server::ClientException();
 		}
-            //break; // Connessione chiusa, esci dal ciclo
+		// break; // Connessione chiusa, esci dal ciclo
 
-        if (complete_message.find("\n") != std::string::npos)
-            break; // Messaggio completo ricevuto, esci dal ciclo
-    }
+		if (complete_message.find("\n") != std::string::npos)
+			break; // Messaggio completo ricevuto, esci dal ciclo
+	}
 
-    return complete_message;
+	return complete_message;
 }
 
 void Server::register_client(int client)
 {
 	// do
-    // {
-    //     total_ret = recv(client, temp, BUFFER_SIZE - 1, 0);
+	// {
+	//     total_ret = recv(client, temp, BUFFER_SIZE - 1, 0);
 	// 	if (total_ret == -1 && std::string(temp).find('\n') == std::string::npos)
 	// 		continue;
-    //     temp[total_ret] = '\0';
-    //     std::string temp_str(temp);
-    //     // Rimuovi tutti i caratteri Ctrl+D dall'input
-    //     temp_str.erase(std::remove(temp_str.begin(), temp_str.end(), '\004'), temp_str.end());
-    //     temp_msg += temp_str;
-    // }
-    // while (temp_msg.find('\n') == std::string::npos);
+	//     temp[total_ret] = '\0';
+	//     std::string temp_str(temp);
+	//     // Rimuovi tutti i caratteri Ctrl+D dall'input
+	//     temp_str.erase(std::remove(temp_str.begin(), temp_str.end(), '\004'), temp_str.end());
+	//     temp_msg += temp_str;
+	// }
+	// while (temp_msg.find('\n') == std::string::npos);
 
+	// char temp_msg[BUFFER_SIZE] = {0};
+	// ssize_t total_ret = recv(client, temp_msg, BUFFER_SIZE, 0);
+	// temp_msg[total_ret] = '\0';
+	// std::string msg(temp_msg);
+	// msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
+	// std::cerr << "size:" << total_ret << std::endl;
+	// if (total_ret == -1 || total_ret == 0)
+	// {
+	// 	std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
+	// 	throw Server::ClientException();
+	// }
+	// if (msg.empty())
+	// {
+	// 	std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+	// }
+	std::string msg = receive_complete_message(client);
 
-	char temp_msg[BUFFER_SIZE] = {0};
-	ssize_t total_ret = recv(client, temp_msg, BUFFER_SIZE, 0);
-	temp_msg[total_ret] = '\0';
-	std::string msg(temp_msg);
-	msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
-	std::cerr << "size:" << total_ret << std::endl;
-	if (total_ret == -1 || total_ret == 0)
+	// hexchat
+	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
 	{
-		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
-		throw Server::ClientException();
+		msg = msg.substr(0, msg.size() - 2);
 	}
-	if (msg.empty())
+	else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n")
 	{
-		std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
+		msg = msg.substr(0, msg.size() - 1);
 	}
-
-        //hexchat
-        if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n") {
-            msg = msg.substr(0, msg.size() - 2);
-        } else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n") {
-            msg = msg.substr(0, msg.size() - 1);
-        }
-        std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
-        if (msg.find("\r\n") != std::string::npos) {
-            std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
-            for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++) {
-                *it += "\r\n";
-                if ((*it).find("USER") != std::string::npos) {
-                    m_clients[client]->set_str_user(*it);
-                    std::cerr << YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;
-                }
-                login(client, *it);
-                if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2) {
-                    login(client, m_clients[client]->get_str_user());
-                }
-            }
-        } else {
-            msg += "\r\n";
-            login(client, msg);
-            if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2) {
-                login(client, m_clients[client]->get_str_user());
-            }
-        }
+	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
+	if (msg.find("\r\n") != std::string::npos)
+	{
+		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
+		for (std::vector<std::string>::iterator it = multiple_msg.begin(); it != multiple_msg.end(); it++)
+		{
+			*it += "\r\n";
+			if ((*it).find("USER") != std::string::npos)
+			{
+				m_clients[client]->set_str_user(*it);
+				std::cerr << YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;
+			}
+			login(client, *it);
+			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
+			{
+				login(client, m_clients[client]->get_str_user());
+			}
+		}
+	}
+	else
+	{
+		msg += "\r\n";
+		login(client, msg);
+		if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
+		{
+			login(client, m_clients[client]->get_str_user());
+		}
+	}
 }
 
-void Server::get_cmds_help( void )
+void Server::get_cmds_help(void)
 {
 	m_cmds_help["INFO"] = "INFO :Lists all the available commands";
 	m_cmds_help["PASS"] = "PASS <password> :Registers a password";
 	m_cmds_help["NICK"] = "NICK <nickname> :Used to either change or register a nickname";
 	m_cmds_help["USER"] = "USER <username> <hostname> <servername> <realname> :Registers a user";
-	m_cmds_help["PRIVMSG"] = "PRIVMSG <target>{,<target>} :<message> :Sends messages to the target(s)"; 
+	m_cmds_help["PRIVMSG"] = "PRIVMSG <target>{,<target>} :<message> :Sends messages to the target(s)";
 	m_cmds_help["JOIN"] = "JOIN <channel>{,<channel>} [<key>{,<key>}] :Joins a channel(s), the channel names must start with # or &. \n If the channel is password protected, the key must be provided";
 	m_cmds_help["PART"] = "PART <channel>{,<channel>} [:<message>] :Leaves a channel(s) with an optional message";
 	m_cmds_help["QUIT"] = "QUIT [:<message>] :Disconnects from the server with an optional message";

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/14 12:40:37 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:17:33 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void Server::get_cmds()
 	m_cmds["info"] = &Server::info;
 	m_cmds["LIST"] = &Server::list;
 	m_cmds["ISON"] = &Server::ison;
+	m_cmds["WHOIS"] = &Server::whois;
 }
 
 void Server::write_to_client(int client, std::string msg)
@@ -803,6 +804,29 @@ bool Server::ison(int client, std::string params)
 	if (response == ":irc 303 " + m_clients[client]->get_nick() + " :")
 		response = ":irc 303 " + m_clients[client]->get_nick() + " :No such nick";
 	write_to_client(client, response);
+	return true;
+}
+
+bool Server::whois(int client, std::string params)
+{
+	std::vector<std::string> split_msg = split(params, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 431 " + m_clients[client]->get_nick() + " WHOIS :No nickname given");
+		return true;
+	}
+	if (get_client_by_nick(split_msg[1]) == NULL)
+	{
+		write_to_client(client, ":irc 401 " + m_clients[client]->get_nick() + " " + split_msg[1] + " :No such nick/channel");
+		return true;
+	}
+	else
+	{
+		Client *client_info = get_client_by_nick(split_msg[1]);
+		write_to_client(client, ":irc 311 " + m_clients[client]->get_nick() + " " + client_info->get_nick() + " " + client_info->get_user() + " " + client_info->get_hostname() + " * :" + client_info->get_realname());
+		write_to_client(client, ":irc 312 " + m_clients[client]->get_nick() + " " + client_info->get_nick() + " " + m_ip + " :The one and only IRC server");
+		write_to_client(client, ":irc 318 " + m_clients[client]->get_nick() + " " + client_info->get_nick() + " :End of /WHOIS list");
+	}
 	return true;
 }
 

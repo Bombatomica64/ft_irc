@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/13 18:41:08 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:06:48 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,6 +282,7 @@ class Server
 
 		bool info(int client, std::string cmd);
 		bool ison(int client, std::string cmd);
+		bool whois(int client, std::string cmd);
 	public:
 		class clientSocketException : public std::exception
 		{
