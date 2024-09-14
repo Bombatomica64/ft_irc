@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 15:08:25 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/13 18:41:08 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ class Server
 		std::string	getNamesMessage(Channel* chan, int client, std::set<std::string>& client_names);
 		void	login(int client, std::string msg);
 		bool	kick_in_loop(int client, std::string kick_chan, std::string kick_client, std::string kick_msg);
-
+		std::string receive_complete_message(int client);
 		
 		//🟥 🟧 🟨 🟩
 
