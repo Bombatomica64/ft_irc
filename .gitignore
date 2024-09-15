@@ -34,3 +34,4 @@ ircserv
 bot*
 
 .nfs*
+.vscode/*.json
