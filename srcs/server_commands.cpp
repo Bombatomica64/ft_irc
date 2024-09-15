@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/14 16:17:33 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/15 23:18:48 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ void Server::add_channel(std::string name, std::map<char, int> modes)
 void Server::parse_cmds(int client, std::string cmd)
 {
 	std::vector<std::string> split_cmd = split(cmd, " ");
-	std::cout << "split_cmd: |" << split_cmd << "|" << std::endl;
 	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
 	{
 		bool ret = (this->*(m_cmds[split_cmd[0]]))(client, cmd);
@@ -617,8 +616,6 @@ bool Server::kick_in_loop(int client, std::string kick_chan, std::string kick_cl
 
 bool Server::cap(int client, std::string message)
 {
-	std::cout << BRIGHT_GREEN + message + RESET << std::endl;
-
 	if (message.find("LS 302") != std::string::npos)
 	{
 		// Advertise supported capabilities

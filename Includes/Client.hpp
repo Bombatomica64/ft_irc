@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:20:05 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 17:10:51 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/15 21:12:50 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ class Client
 		std::string m_nick;
 		std::string str_user;
 		bool nickfailed;
+		
+		std::string ctrlD_msg;
 		
 		//client internet stuff
 		int					m_clientSocket;
@@ -86,6 +88,7 @@ class Client
 		bool		is_away( void ) const { return m_away; }
 		bool		get_nick_failed( void ) const { return nickfailed; }
 		std::string get_str_user( void ) const { return str_user; }
+		std::string get_ctrlD_msg( void ) const { return ctrlD_msg; }
 
 		//mutators
 		void		set_reg(int step) { m_reg_steps = step; }
@@ -98,6 +101,8 @@ class Client
 		void		set_realname(std::string realname) { m_realname = realname; }
 		void		set_nick_failed(bool failed) { nickfailed = failed; }
 		void		set_str_user(std::string user) { str_user = user; }
+		void		append_ctrlD_msg(std::string msg) { ctrlD_msg = ctrlD_msg + msg; }
+		void		clear_ctrlD_msg( void ) { ctrlD_msg.clear(); }
 };
 
 //prints alle the information about the client

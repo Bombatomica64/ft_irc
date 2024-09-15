@@ -186,46 +186,11 @@ void Server::read_from_client(int client)
 		register_client(client);
 		return;
 	}
-	// char temp[BUFFER_SIZE] = {0};
-	// int total_ret;
 
-	// std::string msg = "";
-	// total_ret = recv(client, temp, BUFFER_SIZE, 0);
-	// std::cerr << total_ret << std::endl;
-	// if (total_ret == -1)
-	// {
-	// 	std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
-	// 	throw Server::ClientException();
-	// }
-	// temp[total_ret] = '\0';
-	// msg.append(temp);
-
-	// std::cerr << total_ret << std::endl;
-	// if (total_ret == -1)
-	// {
-	// 	std::cout << "Error: mannagia a cristo b" << strerror(errno) << std::endl;
-	// } perche' ce ne erano 2?
-	// if (total_ret == 0)
-	// 	throw Server::ClientException();
-	// if (msg.empty())
-	// {
-	// 	std::cerr << "🥍haha, i'm in danger 🚌️🤸️" << std::endl;
-	// 	throw Server::ClientException();
-	// 	return;
-	// }
-	std::string msg = receive_complete_message(client);
-	if (msg == "\n")
+	std::string msg = actually_recv(client);
+	if (msg.empty())
 		return;
 
-	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
-	{
-		msg = msg.substr(0, msg.size() - 2);
-	}
-	else if (msg.size() >= 1 && msg.substr(msg.size() - 1) == "\n")
-	{
-		msg = msg.substr(0, msg.size() - 1);
-	}
-	msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
 	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
 	if (msg.find("\r\n") != std::string::npos)
 	{
@@ -374,70 +339,26 @@ void Server::login(int client, std::string msg)
 	}
 }
 
-std::string Server::receive_complete_message(int client)
+std::string Server::actually_recv(int client)
 {
-	char buffer[BUFFER_SIZE] = {0};
-	std::string complete_message;
-	int m_ret;
-
-	while (true)
+	char temp[BUFFER_SIZE] = {0};
+	ssize_t total_ret = recv(client, temp, BUFFER_SIZE, 0);
+	if (total_ret == -1 || total_ret == 0)
 	{
-		m_ret = recv(client, buffer, BUFFER_SIZE, 0);
-		int i = 0;
-		while (buffer[i] != '\0')
-			i++;
-		if (m_ret != i)
-			continue;
-
-		if (m_ret != -1)
-			complete_message.append(buffer, m_ret);
-		if (m_ret == -1)
-			continue; // Interruzione da segnale, riprovare
-		else if (m_ret == 0)
-		{
-			std::cerr << "Client disconnected" << std::endl;
-			throw Server::ClientException();
-		}
-		// break; // Connessione chiusa, esci dal ciclo
-
-		if (complete_message.find("\n") != std::string::npos)
-			break; // Messaggio completo ricevuto, esci dal ciclo
+		std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
+		throw Server::ClientException();
 	}
+	std::string msg(temp);
 
-	return complete_message;
-}
-
-void Server::register_client(int client)
-{
-	// do
-	// {
-	//     total_ret = recv(client, temp, BUFFER_SIZE - 1, 0);
-	// 	if (total_ret == -1 && std::string(temp).find('\n') == std::string::npos)
-	// 		continue;
-	//     temp[total_ret] = '\0';
-	//     std::string temp_str(temp);
-	//     // Rimuovi tutti i caratteri Ctrl+D dall'input
-	//     temp_str.erase(std::remove(temp_str.begin(), temp_str.end(), '\004'), temp_str.end());
-	//     temp_msg += temp_str;
-	// }
-	// while (temp_msg.find('\n') == std::string::npos);
-
-	// char temp_msg[BUFFER_SIZE] = {0};
-	// ssize_t total_ret = recv(client, temp_msg, BUFFER_SIZE, 0);
-	// temp_msg[total_ret] = '\0';
-	// std::string msg(temp_msg);
-	// msg.erase(std::remove(msg.begin(), msg.end(), '\004'), msg.end());
-	// std::cerr << "size:" << total_ret << std::endl;
-	// if (total_ret == -1 || total_ret == 0)
-	// {
-	// 	std::cout << "Error: mannagia a cristo" << strerror(errno) << std::endl;
-	// 	throw Server::ClientException();
-	// }
-	// if (msg.empty())
-	// {
-	// 	std::cerr << "haha, i'm in danger 🚌️🤸️" << std::endl;
-	// }
-	std::string msg = receive_complete_message(client);
+	//ctrl D
+	m_clients[client]->append_ctrlD_msg(msg);
+	if (m_clients[client]->get_ctrlD_msg().find("\n") == std::string::npos)
+		return "";
+	msg = m_clients[client]->get_ctrlD_msg();
+	m_clients[client]->clear_ctrlD_msg();
+	//std::string msg = receive_complete_message(client);
+	if (msg == "\n")
+		return "";
 
 	// hexchat
 	if (msg.size() >= 2 && msg.substr(msg.size() - 2) == "\r\n")
@@ -448,6 +369,15 @@ void Server::register_client(int client)
 	{
 		msg = msg.substr(0, msg.size() - 1);
 	}
+	return msg;
+}
+
+void Server::register_client(int client)
+{
+	std::string msg = actually_recv(client);
+	if (msg.empty())
+		return;
+
 	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
 	if (msg.find("\r\n") != std::string::npos)
 	{
