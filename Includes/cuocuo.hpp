@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cuocuo.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:26:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 17:36:14 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 17:33:17 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Coucou
 
 	//bot stuff
 	private:
+		std::string m_new_nick;
 		std::string m_name;
 		std::string m_angry_name;
 		std::string m_happy_name;
