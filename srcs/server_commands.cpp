@@ -470,7 +470,7 @@ bool Server::names(int client, std::string params)
 		}
 		if (!client_names.empty())
 		{
-			std::string message = ":irc 353 " + m_clients[client]->get_nick() + "= * :";
+			std::string message = ":irc 353 " + m_clients[client]->get_nick() + " = * :";
 			for (std::set<std::string>::iterator it = client_names.begin(); it != client_names.end(); it++)
 			{
 				message += *it + " ";
