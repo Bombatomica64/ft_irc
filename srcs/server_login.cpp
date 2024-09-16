@@ -373,11 +373,17 @@ void Server::register_client(int client)
 			*it += "\r\n";
 			if ((*it).find("USER") != std::string::npos)
 				m_clients[client]->set_str_user(*it);
-			login(client, *it);
+			if ((*it).find("NICK") != std::string::npos || (*it).find("PASS") != std::string::npos || (*it).find("USER") != std::string::npos)
+			{
+				login(client, *it);
+				continue;
+			}
 			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
 			{
 				login(client, m_clients[client]->get_str_user());
+				continue;
 			}
+			parse_cmds(client, *it);
 		}
 	}
 	else

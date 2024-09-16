@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 15:27:18 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 16:42:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -465,7 +465,7 @@ bool Server::names(int client, std::string params)
 		}
 		if (!client_names.empty())
 		{
-			std::string message = ":irc 353 " + m_clients[client]->get_nick() + "= * :";
+			std::string message = ":irc 353 " + m_clients[client]->get_nick() + " = * :";
 			for (std::set<std::string>::iterator it = client_names.begin(); it != client_names.end(); it++)
 			{
 				message += *it + " ";
