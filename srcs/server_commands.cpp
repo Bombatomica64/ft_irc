@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 17:45:45 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/16 18:07:59 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,7 +319,7 @@ bool Server::mode(int client, std::string message)
 		l_command.push_back("");
 	if (get_client_by_nick(l_command[1]))
 	{
-		user_modes(client, l_command);
+		// user_modes(client, l_command);
 		return true;
 	}
 	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]);
