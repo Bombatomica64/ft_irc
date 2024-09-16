@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 11:48:30 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 15:27:18 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void Server::add_channel(std::string name, std::map<char, int> modes)
 
 void Server::parse_cmds(int client, std::string cmd)
 {
+	std::cout << YELLOW << m_clients[client]->get_nick() <<": " GREEN "{" << cmd << "}" RESET << std::endl;
 	std::vector<std::string> split_cmd = split(cmd, " ");
 	if (m_cmds.find(split_cmd[0]) != m_cmds.end())
 	{

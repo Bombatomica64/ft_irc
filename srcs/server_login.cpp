@@ -198,14 +198,14 @@ void Server::read_from_client(int client)
 		{
 			*it += "\r\n";
 			msg = *it;
-			std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
+			// std::cout << GREEN "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
 			parse_cmds(client, trimString(msg));
 		}
 	}
 	else
 	{
 		msg += "\r\n";
-		std::cout << RED "Received: {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
+		// std::cout << YELLOW << m_clients[client]->get_nick() <<": " "{" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
 		parse_cmds(client, trimString(msg));
 	}
 
@@ -218,6 +218,7 @@ void Server::login(int client, std::string msg)
 {
 	if (msg == "\r\n")
 		return;
+	std::cout << BRIGHT_MAGENTA "Client[" YELLOW << client << BRIGHT_MAGENTA "]:" GREEN " {" << msg.substr(0, msg.size() - 2) << "}" RESET << std::endl;
 	std::vector<std::string> split_msg = split(msg, " ");
 	if (split_msg.size() > 0 && split_msg[0] == "CAP")
 	{
@@ -364,7 +365,6 @@ void Server::register_client(int client)
 	if (msg.empty())
 		return;
 
-	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
 	if (msg.find("\r\n") != std::string::npos)
 	{
 		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
@@ -372,10 +372,7 @@ void Server::register_client(int client)
 		{
 			*it += "\r\n";
 			if ((*it).find("USER") != std::string::npos)
-			{
 				m_clients[client]->set_str_user(*it);
-				std::cerr << YELLOW "userstr:" << m_clients[client]->get_str_user() << RESET << std::endl;
-			}
 			login(client, *it);
 			if (m_clients[client]->get_nick_failed() == true && !m_clients[client]->get_str_user().empty() && m_clients[client]->get_reg_steps() == 2)
 			{
