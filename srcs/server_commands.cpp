@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 11:10:07 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 11:48:30 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void Server::get_cmds()
 	m_cmds["LIST"] = &Server::list;
 	m_cmds["ISON"] = &Server::ison;
 	m_cmds["WHOIS"] = &Server::whois;
+	m_cmds["whois"] = &Server::whois;
 }
 
 void Server::write_to_client(int client, std::string msg)

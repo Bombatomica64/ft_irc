@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:38:59 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/12 16:30:44 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/16 12:07:45 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ std::string trimString(std::string nick)
 	std::string result = nick;
 	result.erase(std::remove(result.begin(), result.end(), '\r'), result.end());
 	result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
-	// result.erase(std::remove(result.begin(), result.end(), ' '), result.end());
 	return result;
 }
 

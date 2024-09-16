@@ -191,7 +191,6 @@ void Server::read_from_client(int client)
 	if (msg.empty())
 		return;
 
-	std::cout << GREEN "Received: [" << msg.substr(0, msg.size()) << "]" << RESET << std::endl; // TODO remove
 	if (msg.find("\r\n") != std::string::npos)
 	{
 		std::vector<std::string> multiple_msg = cosplit(msg, "\r\n");
@@ -217,7 +216,6 @@ void Server::read_from_client(int client)
 
 void Server::login(int client, std::string msg)
 {
-	std::cout << RED "Received: [" << msg.substr(0, msg.size() - 2) << "]" << RESET << std::endl; // TODO remove
 	if (msg == "\r\n")
 		return;
 	std::vector<std::string> split_msg = split(msg, " ");
@@ -250,7 +248,7 @@ void Server::login(int client, std::string msg)
 			{
 				if (get_client_by_nick(split_msg[1]) != NULL || split_msg[1].find("[bot]") != std::string::npos || split_msg[1] == "coucou")
 				{
-					write_to_client(client, ":irc 433 " + split_msg[1] + " :Nickname already in use"); // ERR_NICKNAMEINUSE
+					write_to_client(client, ":irc 433 :Nickname already in use"); // ERR_NICKNAMEINUSE
 					m_clients[client]->set_nick_failed(true);
 					break;
 				}
@@ -345,7 +343,6 @@ std::string Server::actually_recv(int client)
 		return "";
 	msg = m_clients[client]->get_ctrlD_msg();
 	m_clients[client]->clear_ctrlD_msg();
-	// std::string msg = receive_complete_message(client);
 	if (msg == "\n")
 		return "";
 
