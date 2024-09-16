@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coucou.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/13 16:27:14 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 17:39:36 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Coucou::Coucou(std::string info[3])
 {
 	srand(time(NULL));
 
-
+	m_new_nick = "Coucou";
 	m_name = "Coucou";
 	m_angry_name = "Anouk";
 	m_happy_name = "lollo";
@@ -115,19 +115,11 @@ Coucou::~Coucou()
 	
 }
 
-void	Coucou::change_relation(Client& client, std::vector<std::string> words, std::string message) //controlla lo stato se va cambiato o no? AAAAAAA o offese generiche. 
+void	Coucou::change_relation(Client& client, std::vector<std::string> words, std::string message)
 {
 	if (m_relations.find(client.get_nick()) == m_relations.end())
 	{
 		m_relations.insert(std::pair<std::string, relation>(client.get_nick(), NORMAL));
-	}
-	if (words[0] == "DOMAIN")
-	{
-		domain_expansion(client);
-	}
-	else if (words[0] == "RELATION")
-	{
-		print_relations(client);
 	}
 
 	int nUpper = 0;
@@ -185,8 +177,17 @@ void	Coucou::recieve_message( void )
 	}
 	else
 	{
-		//todo
-		//throw std::runtime_error("Failed to recieve message.");
+		if (message.find("433") != std::string::npos)
+		{
+			
+			m_new_nick = m_new_nick + "_";
+			std::string nickname = "NICK " + m_new_nick + "\r\n";
+			
+			if (send(m_socket, nickname.c_str(), nickname.size(), 0) == -1)
+			{
+				throw std::runtime_error("Failed to authenticate.");
+			}
+		}
 	}
 }
 
@@ -194,6 +195,16 @@ void	Coucou::parse_message(Client& client, std::string message)
 {
 	std::vector<std::string> words = split(message, " ");
 	std::cerr << words << std::endl;
+	if (words[0] == "DOMAIN")
+	{
+		domain_expansion(client);
+		return;
+	}
+	else if (words[0] == "RELATION")
+	{
+		print_relations(client);
+		return;
+	}
 	
 	change_relation(client, words, message);
 	
@@ -212,11 +223,12 @@ void	Coucou::parse_message(Client& client, std::string message)
 			std::cout << "default" << std::endl;
 	}
 }
+
 //todo add back :Coucou!coucou@Coucou 
 void	Coucou::send_message(Client& client, std::string message)
 {
 	std::cerr << "sending message: "<< message << std::endl;
-	if (client.get_nick() == "Coucou")
+	if (client.get_nick() == m_new_nick)
 		return;
 	if (message.find("DELIMITER") == std::string::npos)
 	{
@@ -283,6 +295,7 @@ void	Coucou::domain_expansion(Client& client)
 	}
 	send_message(client, response);
 }
+
 //todo fix
 void	Coucou::print_relations(Client& client)
 {
@@ -290,17 +303,18 @@ void	Coucou::print_relations(Client& client)
 	std::map<std::string, relation>::iterator it = m_relations.begin();
 	while (it != m_relations.end())
 	{
-		response += it->first + " is ";
+		response += "I'm ";
 		if (it->second == HAPPY)
-			response += "happy with them DELIMITER";
+			response += "happy with " + it->first + "DELIMITER";
 		else if (it->second == ANGRY)
-			response += "angry with them DELIMITER";
+			response += "angry with " + it->first + "DELIMITER";
 		else
-			response += "normal with them DELIMITER";
+			response += "normal with " + it->first + "DELIMITER";
 		it++;
 	}
 	send_message(client, response);
 }
+
 void Coucou::start_network(std::string info[3])
 {
 	m_server_addr.sin_family = AF_INET;
@@ -327,11 +341,25 @@ void Coucou::start_network(std::string info[3])
 		throw std::runtime_error("Failed to set socket to non-blocking.");
 	}
 
+	/*std::string password = "PASS " + info[2] + "\r\n";
+	std::string nickname = "NICK Coucou\r\n";
+	std::string nickname2 = "NICK Cazzi\r\n";
+	std::string username = "USER Coucou the best :Coucou\r\n";
+	if (send(m_socket, password.c_str(), password.size(), 0) == -1)
+		throw std::runtime_error("Failed to authenticate.");
+	if (send(m_socket, nickname.c_str(), nickname.size(), 0) == -1)
+		send(m_socket, nickname2.c_str(), nickname2.size(), 0);
+	if (send(m_socket, username.c_str(), username.size(), 0) == -1)
+		throw std::runtime_error("Failed to authenticate.");*/
+	
 	std::string startUpMessage = "PASS " + info[2] + "\r\nNICK Coucou\r\nUSER Coucou the best :Coucou\r\n";
+	
 	if (send(m_socket, startUpMessage.c_str(), startUpMessage.size(), 0) == -1)
 	{
 		throw std::runtime_error("Failed to authenticate.");
 	}
+
+	
 	pollfd poll_fd = {m_socket, POLLIN, 0};
 	m_fds.push_back(poll_fd);
 	while (true)
