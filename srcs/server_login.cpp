@@ -219,10 +219,7 @@ void Server::login(int client, std::string msg)
 {
 	std::cout << RED "Received: [" << msg.substr(0, msg.size() - 2) << "]" << RESET << std::endl; // TODO remove
 	if (msg == "\r\n")
-	{
-		// write_to_client(client, ":irc PASS :You must send a password first");
 		return;
-	}
 	std::vector<std::string> split_msg = split(msg, " ");
 	if (split_msg.size() > 0 && split_msg[0] == "CAP")
 	{
@@ -239,20 +236,12 @@ void Server::login(int client, std::string msg)
 			if (split_msg.size() >= 2 && verify_password(split_msg[1], m_hash, m_salt))
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
-			{
 				write_to_client(client, ":irc 461 PASS :Not enough parameters"); // ERR_NEEDMOREPARAMS
-			}
 			else
-			{
 				write_to_client(client, "Wrong password");
-				// std::cerr << BRIGHT_MAGENTA"|" << split_msg[1] <<"|" RESET << std::endl;
-			}
 		}
 		else
-		{
-			// per quale cavolo di motivo qui non posso scrivere You must send a password first TODO
-			write_to_client(client, ":irc 461 PASS :Not enough parameters"); // ERR_NEEDMOREPARAMS
-		}
+			write_to_client(client, ":irc 461 PASS :Not enough parameters"); // ERR_NEEDMOREPARAMS // per quale cavolo di motivo qui non posso scrivere You must send a password first TODO
 		break;
 	case 1:
 		if (split_msg[0] == "NICK")
@@ -350,13 +339,13 @@ std::string Server::actually_recv(int client)
 	}
 	std::string msg(temp);
 
-	//ctrl D
+	// ctrl D
 	m_clients[client]->append_ctrlD_msg(msg);
 	if (m_clients[client]->get_ctrlD_msg().find("\n") == std::string::npos)
 		return "";
 	msg = m_clients[client]->get_ctrlD_msg();
 	m_clients[client]->clear_ctrlD_msg();
-	//std::string msg = receive_complete_message(client);
+	// std::string msg = receive_complete_message(client);
 	if (msg == "\n")
 		return "";
 
@@ -428,4 +417,5 @@ void Server::get_cmds_help(void)
 	m_cmds_help["USERHOST"] = "USERHOST <nickname>{<nickname>} : Returns the hostname of the nickname(s)";
 	m_cmds_help["LIST"] = "LIST [<channel>{,<channel>}] : Lists all the channels on the server, if a channel is provided, it will give information about that channel";
 	m_cmds_help["ISON"] = "ISON <nickname>{<nickname>} : Checks if the nickname(s) are online";
+	m_cmds_help["WHOIS"] = "WHOIS <nickname> : Gives information about the nickname";
 }

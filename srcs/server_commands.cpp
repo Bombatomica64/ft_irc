@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 10:14:55 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 10:45:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -723,7 +723,7 @@ bool Server::info(int client, std::string message)
 	std::vector<std::string> split_msg = split(message, " ");
 	if (split_msg.size() < 2)
 	{
-		write_to_client(client, "These are the available commands: \n[INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
+		write_to_client(client, "These are the available commands: \n[INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST] [ISON] [WHOIS]");
 		return true;
 	}
 	else if (split_msg.size() == 2)
@@ -731,10 +731,10 @@ bool Server::info(int client, std::string message)
 		if (m_cmds.find(split_msg[1]) != m_cmds.end())
 			m_clients[client]->send_message("Explanation of command " + split_msg[1] + ": " + m_cmds_help[split_msg[1]]);
 		else
-			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
+			write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST] [ISON] [WHOIS]");
 	}
 	else
-		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST]");
+		write_to_client(client, "These are the available commands: \n [INFO] [CAP] [PASS] [NICK] \n[USER] [JOIN] [MODE] [NAMES] \n[PART] [PING] [PRIVMSG] [QUIT] \n[TOPIC] [WHO] [USERHOST] [INVITE] \n[KICK] [LIST] [ISON] [WHOIS]");
 	return true;
 }
 
