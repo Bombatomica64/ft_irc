@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:10:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/13 12:37:43 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 11:07:35 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int main(int ac, char **av)
 	}
 
 	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
 	try
 	{
 		if(inet_addr(av[1]) == INADDR_NONE)

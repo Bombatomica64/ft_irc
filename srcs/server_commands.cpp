@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 10:45:17 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/16 11:10:07 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,7 +315,6 @@ bool Server::mode(int client, std::string message)
 	}
 	if (l_command.size() < 3)
 		l_command.push_back("");
-	std::cout << "l_command: " << l_command << "size is " << l_command.size() << std::endl;
 	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]);
 	// TODO handle error
 	return ret;
@@ -405,7 +404,6 @@ bool Server::topic(int client, std::string params)
 	{
 		topic = params.substr(params.find(":") + 1);
 		params = params.substr(0, params.find(":"));
-		std::cout << "topic: " << topic << std::endl;
 	}
 	std::vector<std::string> split_msg = split(params, " ");
 
@@ -443,12 +441,8 @@ std::string Server::getNamesMessage(Channel *chan, int client, std::set<std::str
 			message += "@" + *it + " ";
 		else
 			message += *it + " ";
-		std::cout << "client_names: " << *it << std::endl;
 		if (client_names.find(*it) != client_names.end())
-		{
 			client_names.erase(*it);
-			std::cout << " found" << std::endl;
-		}
 	}
 	return message;
 }
@@ -582,7 +576,6 @@ bool Server::cap(int client, std::string message)
 	{
 		// Extract the requested capabilities from the message
 		std::string requested_caps = message.substr(message.find("REQ :") + 5);
-		std::cout << "requested_caps: |" << requested_caps << "|" << std::endl;
 		write_to_client(client, "CAP * ACK :" + requested_caps);
 		return true;
 	}
