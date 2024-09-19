@@ -319,7 +319,7 @@ bool Server::mode(int client, std::string message)
 		l_command.push_back("");
 	if (get_client_by_nick(l_command[1]))
 	{
-		user_modes(client, l_command);
+		//user_modes(client, l_command);
 		return true;
 	}
 	bool ret = m_channels[l_command[1]]->modify_mode(l_command, *m_clients[client]);
