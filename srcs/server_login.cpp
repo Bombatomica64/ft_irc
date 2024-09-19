@@ -27,9 +27,11 @@ Server::Server(std::string port, std::string psw)
 	check_input(port, psw);
 	m_port = std::strtold(port.c_str(), NULL);
 
+	
+	m_psw = psw;
 	// Password hashing
-	m_salt = generate_salt(16);
-	m_hash = hash_password(psw.c_str(), m_salt);
+	// m_salt = generate_salt(16);
+	// m_hash = hash_password(psw.c_str(), m_salt);
 	create_socket();
 }
 
@@ -232,7 +234,7 @@ void Server::login(int client, std::string msg)
 		{
 			if (split_msg.size() > 1 && split_msg[1].find(":") == 0)
 				split_msg[1].erase(0, 1);
-			if (split_msg.size() >= 2 && verify_password(split_msg[1], m_hash, m_salt))
+			if (split_msg.size() >= 2 && split_msg[1] == m_psw)
 				m_clients[client]->set_reg(1);
 			else if (split_msg.size() == 1)
 				write_to_client(client, ":irc 461 PASS :Not enough parameters"); // ERR_NEEDMOREPARAMS
