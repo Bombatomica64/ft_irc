@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   coucou.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:25:55 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 17:39:36 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:14:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,14 @@ void	Coucou::recieve_message( void )
 				throw std::runtime_error("Failed to authenticate.");
 			}
 		}
+		else if (message.find(":irc 004") != std::string::npos)
+		{
+			std::string me_bot = "BOTINFO Coucou 1.0\r\n";
+			if (send(m_socket, me_bot.c_str(), me_bot.size(), 0) == -1)
+			{
+				throw std::runtime_error("Failed to authenticate.");
+			}
+		}
 	}
 }
 
@@ -341,24 +349,12 @@ void Coucou::start_network(std::string info[3])
 		throw std::runtime_error("Failed to set socket to non-blocking.");
 	}
 
-	/*std::string password = "PASS " + info[2] + "\r\n";
-	std::string nickname = "NICK Coucou\r\n";
-	std::string nickname2 = "NICK Cazzi\r\n";
-	std::string username = "USER Coucou the best :Coucou\r\n";
-	if (send(m_socket, password.c_str(), password.size(), 0) == -1)
-		throw std::runtime_error("Failed to authenticate.");
-	if (send(m_socket, nickname.c_str(), nickname.size(), 0) == -1)
-		send(m_socket, nickname2.c_str(), nickname2.size(), 0);
-	if (send(m_socket, username.c_str(), username.size(), 0) == -1)
-		throw std::runtime_error("Failed to authenticate.");*/
-	
 	std::string startUpMessage = "PASS " + info[2] + "\r\nNICK Coucou\r\nUSER Coucou the best :Coucou\r\n";
 	
 	if (send(m_socket, startUpMessage.c_str(), startUpMessage.size(), 0) == -1)
 	{
 		throw std::runtime_error("Failed to authenticate.");
 	}
-
 	
 	pollfd poll_fd = {m_socket, POLLIN, 0};
 	m_fds.push_back(poll_fd);

@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 18:07:59 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:32:59 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ void Server::get_cmds()
 	m_cmds["ISON"] = &Server::ison;
 	m_cmds["WHOIS"] = &Server::whois;
 	m_cmds["whois"] = &Server::whois;
+	m_cmds["BROADCAST"] = &Server::broadcast;
+	m_cmds["BOTINFO"] = &Server::botinfo;
 }
 
 void Server::write_to_client(int client, std::string msg)
@@ -393,6 +395,10 @@ bool Server::quit(int client, std::string message)
 			send_msg_to_channel(-1, tmp->second->get_name(), ":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " QUIT :" + quit_msg + "\r\n");
 			tmp->second->remove_client(m_clients[client]->get_nick(), *m_clients[client]);
 		}
+	}
+	if (client == m_bot_fd)
+	{
+		m_bot_online = false;
 	}
 
 	std::vector<struct pollfd>::iterator it2 = std::find(m_client_fds.begin(), m_client_fds.end(), client);
@@ -778,6 +784,39 @@ bool Server::whois(int client, std::string params)
 		write_to_client(client, ":irc 312 " + m_clients[client]->get_nick() + " " + client_info->get_nick() + " " + m_ip + " :The one and only IRC server");
 		write_to_client(client, ":irc 318 " + m_clients[client]->get_nick() + " " + client_info->get_nick() + " :End of /WHOIS list");
 	}
+	return true;
+}
+
+bool Server::broadcast(int client, std::string message)
+{
+	std::vector<std::string> split_msg = split(message, " ");
+	if (split_msg.size() < 2)
+	{
+		write_to_client(client, ":irc 461 " + m_clients[client]->get_nick() + " BROADCAST :Not enough parameters");
+		return true;
+	}
+	std::string msg = "";
+	if (message.find(":") != std::string::npos)
+		msg = message.substr(message.find(":") + 1);
+	else
+		msg = message.substr(message.find(" ") + 1);
+	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); it++)
+	{
+		it->second->send_message(":" + m_clients[client]->get_nick() + "!" + m_clients[client]->get_user() + "@" + m_clients[client]->get_hostname() + " PRIVMSG " + it->second->get_nick() + " :" + msg);
+	}
+	return true;
+}
+
+bool Server::botinfo(int client, std::string message)
+{
+	if (m_bot_online == false)
+	{
+		m_bot_online = true;
+		m_bot_fd = client;
+		m_bot_info = message.substr(message.find(":") + 1);
+	}
+	else
+		m_clients[client]->send_message(":irc 400 "+ m_clients[client]->get_nick() + m_bot_info);
 	return true;
 }
 

@@ -21,6 +21,7 @@ Server::Server(std::string port, std::string psw)
 	// Variables
 	get_cmds();
 	get_cmds_help();
+	m_bot_online = false;
 	m_date = get_time(0);
 
 	// Input validation
@@ -310,7 +311,8 @@ void Server::login(int client, std::string msg)
 				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- try not to break anything");
 				m_clients[client]->send_message(":irc 372 " + m_clients[client]->get_nick() + " :- ");
 				m_clients[client]->send_message(":irc 376 " + m_clients[client]->get_nick() + " :- End of MOTD command");
-				m_clients[client]->send_message(":Coucou!coucou@Coucou PRIVMSG " + m_clients[client]->get_nick() + " :Coucou is here to help you");
+				if (m_bot_online == true)
+					privmsg(m_bot_fd, "PRIVMSG " + m_clients[client]->get_nick() + " :" + m_clients[m_bot_fd]->get_nick() + " is here to talk with you");
 			}
 			else
 				write_to_client(client, ":irc USER :You must send a username first");

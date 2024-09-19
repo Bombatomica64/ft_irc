@@ -6,7 +6,7 @@
 /*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:01:39 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/19 13:44:22 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:21:17 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,10 @@ class Server
 		struct sockaddr_in	m_addr;
 		std::string			m_ip;
 
-		//bot is now a client
-		// Coucou				m_coucou;
+		//bot
+		bool				m_bot_online;
+		std::string			m_bot_info;
+		int					m_bot_fd;
 		
 		//other
 		std::string			m_date;
@@ -282,6 +284,9 @@ class Server
 		bool info(int client, std::string cmd);
 		bool ison(int client, std::string cmd);
 		bool whois(int client, std::string cmd);
+		bool broadcast(int client, std::string cmd);
+		bool botinfo(int client, std::string cmd);
+
 	public:
 		class clientSocketException : public std::exception
 		{

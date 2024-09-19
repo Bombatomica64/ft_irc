@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cuocuo.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 18:26:18 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/16 17:33:17 by mruggier         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:16:48 by lmicheli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,9 @@ class Coucou
 {
 	//network stuff
 	private:
-		std::vector<pollfd>		m_fds;
-		int			m_socket;
-		// int			m_port;
-		std::string	m_ip;
+		int					m_socket;
+		std::string			m_ip;
+		std::vector<pollfd>	m_fds;
 		struct sockaddr_in	m_server_addr;
 
 	public:
