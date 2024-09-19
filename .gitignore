@@ -32,6 +32,7 @@
 *.app
 ircserv
 bot*
+bot
 
 .nfs*
 .vscode/*.json
