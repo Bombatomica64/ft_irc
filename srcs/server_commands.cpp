@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_commands.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lmicheli <lmicheli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mruggier <mruggier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 11:59:47 by lmicheli          #+#    #+#             */
-/*   Updated: 2024/09/19 14:32:59 by lmicheli         ###   ########.fr       */
+/*   Updated: 2024/09/19 14:57:34 by mruggier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void Server::get_cmds()
 {
 	m_cmds["NICK"] = &Server::nick;
 	m_cmds["PRIVMSG"] = &Server::privmsg;
+	m_cmds["privmsg"] = &Server::privmsg;
 	m_cmds["JOIN"] = &Server::join;
 	m_cmds["PART"] = &Server::part;
 	m_cmds["MODE"] = &Server::mode;
@@ -97,6 +98,9 @@ void Server::parse_cmds(int client, std::string cmd)
 bool Server::privmsg(int client, std::string message)
 {
 	size_t start = message.find("PRIVMSG");
+	if (start == std::string::npos)
+		start = message.find("privmsg");
+	
 	bool flag = false;
 	for (std::string::iterator it = message.begin() + start; it != message.end(); it++)
 	{
