@@ -102,7 +102,7 @@ bool Server::privmsg(int client, std::string message)
 		start = message.find("privmsg");
 	
 	bool flag = false;
-	for (std::string::iterator it = message.begin() + start; it != message.end(); it++)
+	for (std::string::iterator it = message.begin() + static_cast<std::string::difference_type>(start); it != message.end(); it++)
 	{
 		if (*it != ' ' || (*it > 6 && *it < 14))
 		{
@@ -218,7 +218,7 @@ bool Server::join(int client, std::string channel)
 		}
 	}
 
-	int i = 0;
+	size_t i = 0;
 	for (std::vector<std::string>::iterator it = split_channel.begin();; it++)
 	{
 		if (it == split_channel.end())
@@ -859,7 +859,7 @@ void Server::send_msg_to_set(std::set<std::string> clients, std::string msg)
 	}
 }
 
-int Server::get_port() const
+size_t Server::get_port() const
 {
 	return m_port;
 }

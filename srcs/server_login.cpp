@@ -26,7 +26,7 @@ Server::Server(std::string port, std::string psw)
 
 	// Input validation
 	check_input(port, psw);
-	m_port = std::strtold(port.c_str(), NULL);
+	m_port = std::strtoul(port.c_str(), NULL, 10);
 
 	
 	m_psw = psw;

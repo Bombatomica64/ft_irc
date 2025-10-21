@@ -41,7 +41,7 @@ class Server
 		//Net stuff
 		struct pollfd		m_server_fd;
 		int					m_socket;
-		int					m_port;
+		size_t				m_port;
 		struct sockaddr_in	m_addr;
 		std::string			m_ip;
 
@@ -91,7 +91,7 @@ class Server
 		void		remove_channel(std::string name);
 		std::string	get_ip( void ) const ;
 		std::string	get_date( void ) const { return m_date; }
-		int			get_port( void ) const ;
+		size_t		get_port( void ) const ;
 		// bool		send_msg_to_all(int client, std::string msg);
 	/**
 	 * @brief client functions

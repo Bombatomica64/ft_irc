@@ -96,7 +96,7 @@ int getTerminalHeight() {
 	return ws.ws_row;
 }
 
-void printLogo(std::string ip, int port) {
+void printLogo(std::string ip, size_t port) {
     std::string art[] = {
 	"┌──┬───────────────────────────────┬──┐ ",
 	"│  │                               │  │",
@@ -142,7 +142,7 @@ void printLogo(std::string ip, int port) {
 	(void)ip;
 	for (size_t i = 0; i < artHeight; ++i)
 	{
-		int padding = terminalWidth - artWidth;
+		size_t padding = terminalWidth - artWidth;
 		if (padding > 0)
 			padding = padding / 2;
 		else
@@ -152,7 +152,7 @@ void printLogo(std::string ip, int port) {
     }
 }
 
-std::vector<std::string> scale_down(std::vector<std::string> art, int terminalWidth, int terminalHeight)
+std::vector<std::string> scale_down(std::vector<std::string> art, size_t terminalWidth, size_t terminalHeight)
 {
     size_t artWidth = art[0].length();
     size_t artHeight = art.size();
@@ -208,7 +208,7 @@ void printQrCode()
 
     for (size_t i = 0; i < artHeight; ++i)
 	{
-		int padding = terminalWidth - artWidth;
+		size_t padding = terminalWidth - artWidth;
 		if (padding > 0)
 			padding = padding / 2;
 		else
@@ -221,7 +221,7 @@ void printQrCode()
 std::string decode_ip(std::string ip)
 {
 	std::string result;
-	int ip_int = std::strtol(ip.c_str(), NULL, 10);
+	long ip_int = std::strtol(ip.c_str(), NULL, 10);
 	struct in_addr addr;
 	addr.s_addr = htonl(ip_int);
 	result = inet_ntoa(addr);

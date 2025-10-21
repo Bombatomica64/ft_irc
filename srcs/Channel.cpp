@@ -93,7 +93,7 @@ void	Channel::remove_client(std::string client_nick, Client &client)
 		try
 		{
 			std::set<std::string>::iterator it = m_clients.begin();
-			std::advance(it, rand() % m_clients.size());
+			std::advance(it, static_cast<size_t>(rand()) % m_clients.size());
 			m_ops.insert(*it);
 
 			m_server->send_msg_to_channel(-1 , this->get_name() ,":" + client.get_nick() + "!" + client.get_user() + "@" + client.get_hostname() + " MODE " + m_name + " +o " + *it + "\r\n");
@@ -143,7 +143,7 @@ void	Channel::join_channel(Client& client, std::string parameters)
 
 bool	Channel::modify_mode(std::vector<std::string> command, Client &client)
 {
-	int i = 0;
+	size_t i = 0;
 	std::cout << "Modifiying mode on channel |" << m_name << "|" << std::endl;
 
 	std::cout << "command[2] = " << command[2] << std::endl;
@@ -298,7 +298,7 @@ void	Channel::modify_limit(Client &client, std::string parameters, bool what)
 	{
 		try
 		{
-			m_modes['l'] = std::strtol(parameters.c_str(), NULL, 10);
+			m_modes['l'] = static_cast<int>(std::strtol(parameters.c_str(), NULL, 10));
             if (m_modes['l'] <= 0)
             {
                 throw std::invalid_argument("Negative limit");
