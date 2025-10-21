@@ -34,5 +34,8 @@ ircserv
 bot*
 bot
 
+# Object directory
+.obj/
+
 .nfs*
 .vscode/*.json

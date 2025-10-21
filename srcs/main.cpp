@@ -28,7 +28,7 @@ int main(int ac, char **av)
 	//CTRL + C
 	signal(SIGINT,	handle_signal);
 
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	try
 	{
